@@ -1,4 +1,103 @@
-site_name: My Docs
+site_name: "记录"
 
-theme:
-  name: material
+theme: windmill
+
+# Plugins
+plugins:
+  - search:
+      prebuild_index: true
+      lang:
+        - en
+        
+
+  - minify:
+      minify_html: true
+
+  - git-revision-date-localized:
+      type: iso_datetime
+
+  #- awesome-pages:
+      #title: Lorem ipsum dolor sit amet
+      #arrange:
+      #  - page-1.md
+      #  - page-2.md
+      #  - subdirectory
+      #hide: true
+      #collapse: true
+
+
+
+
+copyright: Copyright &copy; 2020 - 2020 张磊
+
+
+# Extensions
+markdown_extensions:
+  - markdown.extensions.admonition
+  - markdown.extensions.attr_list
+  - markdown.extensions.codehilite:
+      guess_lang: false
+  - markdown.extensions.def_list
+  - markdown.extensions.footnotes
+  - markdown.extensions.meta
+  - markdown.extensions.toc:
+      permalink: true
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  # - pymdownx.highlight:
+  #     linenums_style: pymdownx-inline
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: squidfunk
+      repo: mkdocs-material
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+
+
+nav:
+  - 介绍: index.md 
+  - 设计模式: 
+    - 0-分类:                DesignPattern/0-分类.md
+    - 1-策略模式:             DesignPattern/1-策略模式.md
+    - 2-装饰模式:             DesignPattern/2-装饰模式.md
+    - 3-代理模式:             DesignPattern/3-代理模式.md
+    - 4-工厂方法模式:          DesignPattern/4-工厂方法模式.md
+    - 5-原型模式:             DesignPattern/5-原型模式.md
+    - 6-模板方法模式:          DesignPattern/6-模板方法模式.md
+    - 7-外观模式:             DesignPattern/7-外观模式.md
+    - 8-建造者模式:           DesignPattern/8-建造者模式.md
+    - 9-观察者模式:           DesignPattern/9-观察者模式.md
+    - 10-抽象工厂模式:         DesignPattern/10-抽象工厂模式.md
+    - 11-状态模式:            DesignPattern/11-状态模式.md
+    - 12-适配器模式:          DesignPattern/12-适配器模式.md
+    - 13-备忘录模式:          DesignPattern/13-备忘录模式.md
+    - 14-组合模式:            DesignPattern/14-组合模式.md
+    - 15-迭代器模式:          DesignPattern/15-迭代器模式.md
+    - 16-单例模式:            DesignPattern/16-单例模式.md
+    - 17-桥接模式:            DesignPattern/17-桥接模式.md
+    - 18-命令模式:            DesignPattern/18-命令模式.md
+    - 19-职责链模式:          DesignPattern/19-职责链模式.md
+    - 20-中介者模式:          DesignPattern/20-中介者模式.md
+    - 21-享元模式:            DesignPattern/21-享元模式.md
+    - 22-解释器模式:          DesignPattern/22-解释器模式.md
+    - 23-访问者模式:          DesignPattern/23-访问者模式.md
+  
+
+    

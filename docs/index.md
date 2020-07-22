@@ -1,8 +1,8 @@
-# Welcome to MkDocs
+# 这是我用来记录的个人博客
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+该博客的地址是(https://908760230.github.io/MyRecords)
 
-## Commands
+## Commandsddd
 
 * `mkdocs new [dir-name]` - Create a new project.
 * `mkdocs serve` - Start the live-reloading docs server.
