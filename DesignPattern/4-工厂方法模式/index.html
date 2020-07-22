@@ -1,0 +1,76 @@
+<!DOCTYPE html><html lang=en> <head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" href=../../img/favicon.ico><meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"><title>工厂方法模式 - 记录</title><link href=../../css/bootstrap-3.3.7.min.css rel=stylesheet><link href=../../css/font-awesome-4.7.0.css rel=stylesheet><link href=../../css/base.css rel=stylesheet><link rel=stylesheet href=../../css/highlight.css><!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries --><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]--><script src=../../js/jquery-3.2.1.min.js></script><script src=../../js/bootstrap-3.3.7.min.js></script><script src=../../js/highlight.pack.js></script><base target=_top><script>
+      var base_url = '../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u5de5\u5382\u65b9\u6cd5\u6a21\u5f0f", url: "#_top", children: [
+              {title: "\u5b9a\u4e49\uff1a", url: "#_2" },
+              {title: "\u4ee3\u7801\uff1a", url: "#_3" },
+          ]},
+        ];
+
+    </script><script src=../../js/base.js></script></head> <body> <script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script> <div class="container-fluid wm-page-content"> <a name=_top></a> <h1 id=_1>工厂方法模式<a class=headerlink href=#_1 title="Permanent link">&para;</a></h1> <h2 id=_2>定义：<a class=headerlink href=#_2 title="Permanent link">&para;</a></h2> <p><strong><em>一个用于创建对象的接口，让子类决定实例化哪一个类。工厂方法使一个类的实例化延迟到其子类。*</em></strong></p> <p><img alt src=https://github.com/908760230/Records/blob/master/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/image/%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F.png></p> <h2 id=_3>代码：<a class=headerlink href=#_3 title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=cp>#include</span><span class=cpf>&lt;iostream&gt;</span><span class=cp></span>
+<span class=k>using</span> <span class=k>namespace</span> <span class=n>std</span><span class=p>;</span>
+
+<span class=k>class</span> <span class=nc>Product</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>Product</span><span class=p>()</span> <span class=p>{}</span>
+<span class=p>};</span>
+
+<span class=k>class</span> <span class=nc>ConcreteProductA</span> <span class=o>:</span> <span class=k>public</span> <span class=n>Product</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>ConcreteProductA</span><span class=p>()</span> <span class=p>{</span>
+        <span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;ConcreteProductA&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>endl</span><span class=p>;</span>
+    <span class=p>}</span>
+<span class=p>};</span>
+<span class=k>class</span> <span class=nc>ConcreteProductB</span> <span class=o>:</span> <span class=k>public</span> <span class=n>Product</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>ConcreteProductB</span><span class=p>()</span> <span class=p>{</span>
+        <span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;ConcreteProductB&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>endl</span><span class=p>;</span>
+    <span class=p>}</span>
+<span class=p>};</span>
+
+<span class=k>class</span> <span class=nc>Creator</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=k>virtual</span> <span class=n>Product</span><span class=o>*</span> <span class=n>create</span><span class=p>()</span> <span class=p>{</span> <span class=k>return</span> <span class=k>nullptr</span><span class=p>;</span> <span class=p>}</span>
+<span class=p>};</span>
+
+<span class=k>class</span> <span class=nc>ConcreteCreatorA</span> <span class=o>:</span> <span class=k>public</span> <span class=n>Creator</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>Product</span><span class=o>*</span> <span class=n>create</span><span class=p>()</span> <span class=k>override</span> <span class=p>{</span>
+        <span class=k>return</span> <span class=k>new</span> <span class=n>ConcreteProductA</span><span class=p>();</span>
+    <span class=p>}</span>
+<span class=p>};</span>
+<span class=k>class</span> <span class=nc>ConcreteCreatorB</span> <span class=o>:</span> <span class=k>public</span> <span class=n>Creator</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>Product</span><span class=o>*</span> <span class=n>create</span><span class=p>()</span> <span class=k>override</span> <span class=p>{</span>
+        <span class=k>return</span> <span class=k>new</span> <span class=n>ConcreteProductB</span><span class=p>();</span>
+    <span class=p>}</span>
+<span class=p>};</span>
+
+<span class=kt>int</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
+    <span class=n>ConcreteCreatorA</span> <span class=o>*</span><span class=n>factoryA</span> <span class=o>=</span> <span class=k>new</span> <span class=n>ConcreteCreatorA</span><span class=p>();</span>
+    <span class=n>Product</span> <span class=o>*</span><span class=n>product</span> <span class=o>=</span> <span class=n>factoryA</span><span class=o>-&gt;</span><span class=n>create</span><span class=p>();</span>
+
+    <span class=k>delete</span> <span class=n>product</span><span class=p>;</span>
+    <span class=n>ConcreteCreatorB</span> <span class=o>*</span><span class=n>factoryB</span> <span class=o>=</span> <span class=k>new</span> <span class=n>ConcreteCreatorB</span><span class=p>();</span>
+    <span class=n>product</span> <span class=o>=</span> <span class=n>factoryB</span><span class=o>-&gt;</span><span class=n>create</span><span class=p>();</span>
+
+    <span class=k>delete</span> <span class=n>product</span><span class=p>;</span>
+    <span class=k>delete</span> <span class=n>factoryA</span><span class=p>;</span>
+    <span class=k>delete</span> <span class=n>factoryB</span><span class=p>;</span>
+
+    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>}</span>
+</code></pre></div> <br> <br> </div> <footer class="container-fluid wm-page-content"><p>Copyright &copy; 2020 - 2020 张磊</p> <p>Documentation built with <a href=http://www.mkdocs.org/ >MkDocs</a> using <a href=https://github.com/gristlabs/mkdocs-windmill>Windmill</a> theme by Grist Labs.</p> </footer> </body> </html>

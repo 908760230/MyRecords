@@ -1,0 +1,101 @@
+<!DOCTYPE html><html lang=en> <head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" href=../../img/favicon.ico><meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"><title>中介者模式 - 记录</title><link href=../../css/bootstrap-3.3.7.min.css rel=stylesheet><link href=../../css/font-awesome-4.7.0.css rel=stylesheet><link href=../../css/base.css rel=stylesheet><link rel=stylesheet href=../../css/highlight.css><!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries --><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]--><script src=../../js/jquery-3.2.1.min.js></script><script src=../../js/bootstrap-3.3.7.min.js></script><script src=../../js/highlight.pack.js></script><base target=_top><script>
+      var base_url = '../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u4e2d\u4ecb\u8005\u6a21\u5f0f", url: "#_top", children: [
+              {title: "\u5b9a\u4e49", url: "#_2" },
+              {title: "\u4f18\u7f3a\u70b9", url: "#_3" },
+              {title: "\u4ee3\u7801", url: "#_4" },
+          ]},
+        ];
+
+    </script><script src=../../js/base.js></script></head> <body> <script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script> <div class="container-fluid wm-page-content"> <a name=_top></a> <h1 id=_1>中介者模式<a class=headerlink href=#_1 title="Permanent link">&para;</a></h1> <h2 id=_2>定义<a class=headerlink href=#_2 title="Permanent link">&para;</a></h2> <p>用一个中介对象来封装一系列的对象交互。中介者使各对象不需要显示地相互引用，从而使其耦合松散，而且可以独立地改变它们之间的交互。</p> <p><img alt src=https://github.com/908760230/Records/blob/master/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/image/%E4%B8%AD%E4%BB%8B%E8%80%85%E6%A8%A1%E5%BC%8F.png></p> <h2 id=_3>优缺点<a class=headerlink href=#_3 title="Permanent link">&para;</a></h2> <p>减少了各个Colleague的耦合，使得可以独立地改变和复用各个Colleague 和Mediator.</p> <p>由于ConcreteMediator控制集中化，于是就把交互的复杂性变为了中介者的复杂性，这就使得中介者变得比任何一个ConcreteColleague都复杂</p> <h2 id=_4>代码<a class=headerlink href=#_4 title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=cp>#include</span><span class=cpf>&lt;iostream&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;string&gt;</span><span class=cp></span>
+
+<span class=k>using</span> <span class=k>namespace</span> <span class=n>std</span><span class=p>;</span>
+
+<span class=k>class</span> <span class=nc>Colleague</span><span class=p>;</span>
+
+<span class=k>class</span> <span class=nc>Mediator</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=n>Send</span><span class=p>(</span><span class=n>string</span> <span class=n>message</span><span class=p>,</span> <span class=n>Colleague</span> <span class=o>*</span><span class=n>col</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>};</span>
+
+<span class=k>class</span> <span class=nc>Colleague</span>
+<span class=p>{</span>
+<span class=k>protected</span><span class=o>:</span>
+    <span class=n>Mediator</span> <span class=o>*</span><span class=n>mediator</span><span class=p>;</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>Colleague</span><span class=p>(</span><span class=n>Mediator</span> <span class=o>*</span><span class=n>m</span><span class=p>)</span> <span class=p>{</span>
+        <span class=n>mediator</span> <span class=o>=</span> <span class=n>m</span><span class=p>;</span>
+    <span class=p>}</span>
+<span class=p>};</span>
+
+<span class=k>class</span> <span class=nc>ConcreteColleague1</span> <span class=o>:</span> <span class=k>public</span> <span class=n>Colleague</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>ConcreteColleague1</span><span class=p>(</span><span class=n>Mediator</span> <span class=o>*</span><span class=n>m</span><span class=p>)</span><span class=o>:</span><span class=n>Colleague</span><span class=p>(</span><span class=n>m</span><span class=p>){}</span>
+    <span class=kt>void</span> <span class=n>Send</span><span class=p>(</span><span class=n>string</span> <span class=n>message</span><span class=p>)</span> <span class=p>{</span>
+        <span class=n>mediator</span><span class=o>-&gt;</span><span class=n>Send</span><span class=p>(</span><span class=n>message</span><span class=p>,</span><span class=k>this</span><span class=p>);</span>
+    <span class=p>}</span>
+    <span class=kt>void</span> <span class=n>Notify</span><span class=p>(</span><span class=n>string</span> <span class=n>message</span><span class=p>)</span> <span class=p>{</span>
+        <span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;同事1 得到消息 &quot;</span> <span class=o>&lt;&lt;</span> <span class=n>message</span> <span class=o>&lt;&lt;</span> <span class=n>endl</span><span class=p>;</span>
+    <span class=p>}</span>
+<span class=p>};</span>
+
+<span class=k>class</span> <span class=nc>ConcreteColleague2</span> <span class=o>:</span> <span class=k>public</span> <span class=n>Colleague</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>ConcreteColleague2</span><span class=p>(</span><span class=n>Mediator</span> <span class=o>*</span><span class=n>m</span><span class=p>)</span> <span class=o>:</span><span class=n>Colleague</span><span class=p>(</span><span class=n>m</span><span class=p>)</span> <span class=p>{}</span>
+    <span class=kt>void</span> <span class=n>Send</span><span class=p>(</span><span class=n>string</span> <span class=n>message</span><span class=p>)</span> <span class=p>{</span>
+        <span class=n>mediator</span><span class=o>-&gt;</span><span class=n>Send</span><span class=p>(</span><span class=n>message</span><span class=p>,</span> <span class=k>this</span><span class=p>);</span>
+    <span class=p>}</span>
+    <span class=kt>void</span> <span class=n>Notify</span><span class=p>(</span><span class=n>string</span> <span class=n>message</span><span class=p>)</span> <span class=p>{</span>
+        <span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;同事2 得到消息 &quot;</span> <span class=o>&lt;&lt;</span> <span class=n>message</span> <span class=o>&lt;&lt;</span> <span class=n>endl</span><span class=p>;</span>
+    <span class=p>}</span>
+<span class=p>};</span>
+
+<span class=k>class</span> <span class=nc>ConcreteMediator</span> <span class=o>:</span> <span class=k>public</span> <span class=n>Mediator</span>
+<span class=p>{</span>
+<span class=k>private</span><span class=o>:</span>
+    <span class=n>ConcreteColleague1</span> <span class=o>*</span><span class=n>colleage1</span><span class=p>;</span>
+    <span class=n>ConcreteColleague2</span> <span class=o>*</span><span class=n>colleage2</span><span class=p>;</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=kt>void</span> <span class=n>setConcreteColleague1</span><span class=p>(</span><span class=n>ConcreteColleague1</span> <span class=o>*</span><span class=n>val</span><span class=p>)</span> <span class=p>{</span>
+        <span class=n>colleage1</span> <span class=o>=</span> <span class=n>val</span><span class=p>;</span>
+    <span class=p>}</span>
+    <span class=kt>void</span> <span class=n>setConcreteColleague2</span><span class=p>(</span><span class=n>ConcreteColleague2</span> <span class=o>*</span><span class=n>val</span><span class=p>)</span> <span class=p>{</span>
+        <span class=n>colleage2</span> <span class=o>=</span> <span class=n>val</span><span class=p>;</span>
+    <span class=p>}</span>
+    <span class=kt>void</span> <span class=n>Send</span><span class=p>(</span><span class=n>string</span> <span class=n>message</span><span class=p>,</span> <span class=n>Colleague</span> <span class=o>*</span><span class=n>col</span><span class=p>)</span> <span class=k>override</span> <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>col</span> <span class=o>==</span> <span class=n>colleage1</span><span class=p>)</span> <span class=n>colleage2</span><span class=o>-&gt;</span><span class=n>Notify</span><span class=p>(</span><span class=n>message</span><span class=p>);</span>
+        <span class=k>else</span> <span class=n>colleage1</span><span class=o>-&gt;</span><span class=n>Notify</span><span class=p>(</span><span class=n>message</span><span class=p>);</span>
+    <span class=p>}</span>
+<span class=p>};</span>
+
+<span class=kt>int</span> <span class=nf>main</span><span class=p>()</span> <span class=p>{</span>
+
+    <span class=n>ConcreteMediator</span> <span class=o>*</span><span class=n>m</span> <span class=o>=</span> <span class=k>new</span> <span class=n>ConcreteMediator</span><span class=p>();</span>
+
+    <span class=n>ConcreteColleague1</span> <span class=o>*</span><span class=n>c1</span> <span class=o>=</span> <span class=k>new</span> <span class=n>ConcreteColleague1</span><span class=p>(</span><span class=n>m</span><span class=p>);</span>
+    <span class=n>ConcreteColleague2</span> <span class=o>*</span><span class=n>c2</span> <span class=o>=</span> <span class=k>new</span> <span class=n>ConcreteColleague2</span><span class=p>(</span><span class=n>m</span><span class=p>);</span>
+
+    <span class=n>m</span><span class=o>-&gt;</span><span class=n>setConcreteColleague1</span><span class=p>(</span><span class=n>c1</span><span class=p>);</span>
+    <span class=n>m</span><span class=o>-&gt;</span><span class=n>setConcreteColleague2</span><span class=p>(</span><span class=n>c2</span><span class=p>);</span>
+
+    <span class=n>c1</span><span class=o>-&gt;</span><span class=n>Send</span><span class=p>(</span><span class=s>&quot;吃过饭了吗&quot;</span><span class=p>);</span>
+    <span class=n>c2</span><span class=o>-&gt;</span><span class=n>Send</span><span class=p>(</span><span class=s>&quot;没有呢，你打算请客？&quot;</span><span class=p>);</span>
+
+    <span class=k>delete</span> <span class=n>c2</span><span class=p>;</span>
+    <span class=k>delete</span> <span class=n>c1</span><span class=p>;</span>
+    <span class=k>delete</span> <span class=n>m</span><span class=p>;</span>
+    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>}</span>
+</code></pre></div> <br> <br> </div> <footer class="container-fluid wm-page-content"><p>Copyright &copy; 2020 - 2020 张磊</p> <p>Documentation built with <a href=http://www.mkdocs.org/ >MkDocs</a> using <a href=https://github.com/gristlabs/mkdocs-windmill>Windmill</a> theme by Grist Labs.</p> </footer> </body> </html>
