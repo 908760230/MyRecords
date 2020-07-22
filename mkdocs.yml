@@ -98,17 +98,12 @@ nav:
     - 21-享元模式:            DesignPattern/21-享元模式.md
     - 22-解释器模式:          DesignPattern/22-解释器模式.md
     - 23-访问者模式:          DesignPattern/23-访问者模式.md
-
   - 数据结构:
     - AVL树:                 DataStructure/AVL树.md
   - C++:
-    - 关键字:volatile:       C++/关键字:volatile.md
+    - 关键字volatile:        C++/关键字volatile.md
     - C++11线程中的几种锁:    C++/C++11线程中的几种锁.md
     - decltype关键字:        C++/decltype关键字.md
-  - Lua:
-    - 开始:                 　Lua/index.md
-  - Libevent:
-    - 开始:                 　Libevent/index.md
     
   
 
