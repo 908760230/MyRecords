@@ -5,7 +5,7 @@ theme: windmill
 # Plugins
 plugins:
   - search:
-      prebuild_index: true
+      #prebuild_index: true
       lang:
         - en
         
