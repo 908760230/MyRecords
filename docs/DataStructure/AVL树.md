@@ -1,5 +1,10 @@
-代码：
+# 代码：
 
+
+
+
+
+```c++
 #include <iostream>
 #include <algorithm>
 using namespace std;
@@ -197,3 +202,5 @@ int main() {
 	t.PrintBinTree();
 	cout << endl;
 }
+```
+

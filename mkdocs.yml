@@ -99,7 +99,7 @@ nav:
     - 22-解释器模式:          DesignPattern/22-解释器模式.md
     - 23-访问者模式:          DesignPattern/23-访问者模式.md
   - 数据结构(DataStructure):
-    - AVL树:                 AVL树.md
+    - AVL树:                 DataStructure/AVL树.md
     #- AVL树:                 DataStructure/
     
   

@@ -2,16 +2,9 @@
 
 该博客的地址是(https://908760230.github.io/MyRecords)
 
-## Commandsddd
+## 分类
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
-
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+* `设计模式`                        - 自己写的设计模式笔记
+* `数据结构`                        - 目前只有AVL树
+* `mkdocs总结`                     - 我遇到的mkdocs各种错误总结.
+* `C++`                            - 一些基础或者容易忘记的C++知识.
