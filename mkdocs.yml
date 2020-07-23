@@ -100,7 +100,16 @@ nav:
     - 23-访问者模式:          DesignPattern/23-访问者模式.md
   - 数据结构(DataStructure):
     - AVL树:                 DataStructure/AVL树.md
-    #- AVL树:                 DataStructure/
+  - C++:
+    - 关键字decltype:         C++/关键字decltype.md
+    - 关键字volatile:         C++/关键字volatile.md
+    - C++11线程中的几种锁:      C++/C++11线程中的几种锁.md
+  - Libevent:
+    - 开始:                   Libevent/index.md
+  - Lua:
+    - 开始:                   Lua/index.md
+  - mkdcos错误总结:
+    - 无法build:              mkdocs/无法build的原因.md
     
   
 
