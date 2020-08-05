@@ -110,6 +110,9 @@ nav:
     - 开始:                   Lua/index.md
   - mkdcos错误总结:
     - 无法build:              mkdocs/无法build的原因.md
+  - NoahGameFrame:
+    - NFHeaderFiles:
+      - NFGUID:              NoahGameFrame/NFHeaderFiles/NFGUID.md
     
   
 
