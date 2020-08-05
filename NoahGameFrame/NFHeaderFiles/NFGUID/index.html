@@ -1,0 +1,259 @@
+<!DOCTYPE html><html lang=en> <head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" href=../../../img/favicon.ico><meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"><title>NFGUID - 记录</title><link href=../../../css/bootstrap-3.3.7.min.css rel=stylesheet><link href=../../../css/font-awesome-4.7.0.css rel=stylesheet><link href=../../../css/base.css rel=stylesheet><link rel=stylesheet href=../../../css/highlight.css><!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries --><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]--><script src=../../../js/jquery-3.2.1.min.js></script><script src=../../../js/bootstrap-3.3.7.min.js></script><script src=../../../js/highlight.pack.js></script><base target=_top><script>
+      var base_url = '../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "NFGUID \u5934\u6587\u4ef6\u4ee3\u7801\u89e3\u6790", url: "#_top", children: [
+              {title: "\u4ee3\u7801", url: "#_1" },
+              {title: "\u56db\u4e2a\u6784\u9020\u51fd\u6570", url: "#_2" },
+              {title: "FromString\u51fd\u6570", url: "#fromstring" },
+              {title: "CreateID\u51fd\u6570", url: "#createid" },
+          ]},
+        ];
+
+    </script><script src=../../../js/base.js></script></head> <body> <script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script> <div class="container-fluid wm-page-content"> <a name=_top></a> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class=wm-article-nav> <a href=../../../mkdocs/%E6%97%A0%E6%B3%95build%E7%9A%84%E5%8E%9F%E5%9B%A0/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../../../mkdocs/%E6%97%A0%E6%B3%95build%E7%9A%84%E5%8E%9F%E5%9B%A0/ class="btn btn-xs btn-link"> 无法build </a> </div> </div> <h1 id=nfguid>NFGUID 头文件代码解析<a class=headerlink href=#nfguid title="Permanent link">&para;</a></h1> <h2 id=_1>代码<a class=headerlink href=#_1 title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=cp>#ifndef NF_IDENTID_H</span>
+<span class=cp>#define NF_IDENTID_H</span>
+
+<span class=cp>#include</span> <span class=cpf>&quot;NFPlatform.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;stdlib.h&gt;</span><span class=cp></span>
+
+<span class=k>class</span> <span class=nc>NFGUID</span>
+<span class=p>{</span>
+<span class=k>private</span><span class=o>:</span>
+    <span class=k>static</span> <span class=n>NFINT64</span> <span class=n>nInstanceID</span><span class=p>;</span>
+    <span class=k>static</span> <span class=n>NFINT64</span> <span class=n>nGUIDIndex</span><span class=p>;</span>
+
+<span class=k>public</span><span class=o>:</span>
+
+    <span class=n>NFINT64</span> <span class=n>nData64</span><span class=p>;</span>
+    <span class=n>NFINT64</span> <span class=n>nHead64</span><span class=p>;</span>
+
+    <span class=k>static</span> <span class=kt>void</span> <span class=nf>SetInstanceID</span><span class=p>(</span><span class=n>NFINT64</span> <span class=n>id</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>nInstanceID</span> <span class=o>=</span> <span class=n>id</span><span class=p>;</span>
+        <span class=n>nGUIDIndex</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=n>NFGUID</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=n>nData64</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+        <span class=n>nHead64</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=n>NFGUID</span><span class=p>(</span><span class=n>NFINT64</span> <span class=n>nHeadData</span><span class=p>,</span> <span class=n>NFINT64</span> <span class=n>nData</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>nHead64</span> <span class=o>=</span> <span class=n>nHeadData</span><span class=p>;</span>
+        <span class=n>nData64</span> <span class=o>=</span> <span class=n>nData</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=n>NFGUID</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span><span class=o>&amp;</span> <span class=n>xData</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>nHead64</span> <span class=o>=</span> <span class=n>xData</span><span class=p>.</span><span class=n>nHead64</span><span class=p>;</span>
+        <span class=n>nData64</span> <span class=o>=</span> <span class=n>xData</span><span class=p>.</span><span class=n>nData64</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=n>NFGUID</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strID</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>FromString</span><span class=p>(</span><span class=n>strID</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=k>static</span> <span class=n>NFGUID</span> <span class=n>CreateID</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=kt>int64_t</span> <span class=n>value</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+        <span class=kt>uint64_t</span> <span class=n>time</span> <span class=o>=</span> <span class=n>std</span><span class=o>::</span><span class=n>chrono</span><span class=o>::</span><span class=n>duration_cast</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>chrono</span><span class=o>::</span><span class=n>milliseconds</span><span class=o>&gt;</span><span class=p>(</span><span class=n>std</span><span class=o>::</span><span class=n>chrono</span><span class=o>::</span><span class=n>system_clock</span><span class=o>::</span><span class=n>now</span><span class=p>().</span><span class=n>time_since_epoch</span><span class=p>()).</span><span class=n>count</span><span class=p>();</span>
+
+
+        <span class=c1>//value = time &lt;&lt; 16;</span>
+        <span class=n>value</span> <span class=o>=</span> <span class=n>time</span> <span class=o>*</span> <span class=mi>1000000</span><span class=p>;</span>
+
+
+        <span class=c1>//value |= nGUIDIndex++;</span>
+        <span class=n>value</span> <span class=o>+=</span> <span class=n>nGUIDIndex</span><span class=o>++</span><span class=p>;</span>
+
+        <span class=c1>//if (sequence_ == 0x7FFF)</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>nGUIDIndex</span> <span class=o>==</span> <span class=mi>999999</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>nGUIDIndex</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=n>NFGUID</span> <span class=n>xID</span><span class=p>;</span>
+        <span class=n>xID</span><span class=p>.</span><span class=n>nHead64</span> <span class=o>=</span> <span class=n>nInstanceID</span><span class=p>;</span>
+        <span class=n>xID</span><span class=p>.</span><span class=n>nData64</span> <span class=o>=</span> <span class=n>value</span><span class=p>;</span>
+
+        <span class=k>return</span> <span class=n>xID</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=n>NFGUID</span><span class=o>&amp;</span> <span class=k>operator</span><span class=o>=</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span><span class=o>&amp;</span> <span class=n>xData</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>nHead64</span> <span class=o>=</span> <span class=n>xData</span><span class=p>.</span><span class=n>nHead64</span><span class=p>;</span>
+        <span class=n>nData64</span> <span class=o>=</span> <span class=n>xData</span><span class=p>.</span><span class=n>nData64</span><span class=p>;</span>
+
+        <span class=k>return</span> <span class=o>*</span><span class=k>this</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=n>NFGUID</span><span class=o>&amp;</span> <span class=k>operator</span><span class=o>=</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strID</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>FromString</span><span class=p>(</span><span class=n>strID</span><span class=p>);</span>
+
+        <span class=k>return</span> <span class=o>*</span><span class=k>this</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>const</span> <span class=n>NFINT64</span> <span class=n>GetData</span><span class=p>()</span> <span class=k>const</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>nData64</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>const</span> <span class=n>NFINT64</span> <span class=n>GetHead</span><span class=p>()</span> <span class=k>const</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>nHead64</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=kt>void</span> <span class=n>SetData</span><span class=p>(</span><span class=k>const</span> <span class=n>NFINT64</span> <span class=n>nData</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>nData64</span> <span class=o>=</span> <span class=n>nData</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=kt>void</span> <span class=n>SetHead</span><span class=p>(</span><span class=k>const</span> <span class=n>NFINT64</span> <span class=n>nData</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>nHead64</span> <span class=o>=</span> <span class=n>nData</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=kt>bool</span> <span class=n>IsNull</span><span class=p>()</span> <span class=k>const</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=mi>0</span> <span class=o>==</span> <span class=n>nData64</span> <span class=o>&amp;&amp;</span> <span class=mi>0</span> <span class=o>==</span> <span class=n>nHead64</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=kt>bool</span> <span class=k>operator</span> <span class=o>==</span> <span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span><span class=o>&amp;</span> <span class=n>id</span><span class=p>)</span> <span class=k>const</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=k>this</span><span class=o>-&gt;</span><span class=n>nData64</span> <span class=o>==</span> <span class=n>id</span><span class=p>.</span><span class=n>nData64</span> <span class=o>&amp;&amp;</span> <span class=k>this</span><span class=o>-&gt;</span><span class=n>nHead64</span> <span class=o>==</span> <span class=n>id</span><span class=p>.</span><span class=n>nHead64</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=kt>bool</span> <span class=k>operator</span> <span class=o>!=</span> <span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span><span class=o>&amp;</span> <span class=n>id</span><span class=p>)</span> <span class=k>const</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=k>this</span><span class=o>-&gt;</span><span class=n>nData64</span> <span class=o>!=</span> <span class=n>id</span><span class=p>.</span><span class=n>nData64</span> <span class=o>||</span> <span class=k>this</span><span class=o>-&gt;</span><span class=n>nHead64</span> <span class=o>!=</span> <span class=n>id</span><span class=p>.</span><span class=n>nHead64</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=kt>bool</span> <span class=k>operator</span> <span class=o>&lt;</span> <span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span><span class=o>&amp;</span> <span class=n>id</span><span class=p>)</span> <span class=k>const</span>
+    <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=k>this</span><span class=o>-&gt;</span><span class=n>nHead64</span> <span class=o>==</span> <span class=n>id</span><span class=p>.</span><span class=n>nHead64</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=k>this</span><span class=o>-&gt;</span><span class=n>nData64</span> <span class=o>&lt;</span> <span class=n>id</span><span class=p>.</span><span class=n>nData64</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=k>return</span> <span class=k>this</span><span class=o>-&gt;</span><span class=n>nHead64</span> <span class=o>&lt;</span> <span class=n>id</span><span class=p>.</span><span class=n>nHead64</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>ToString</span><span class=p>()</span> <span class=k>const</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>lexical_cast</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&gt;</span><span class=p>(</span><span class=n>nHead64</span><span class=p>)</span> <span class=o>+</span> <span class=s>&quot;-&quot;</span> <span class=o>+</span> <span class=n>lexical_cast</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&gt;</span><span class=p>(</span><span class=n>nData64</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=kt>bool</span> <span class=n>FromString</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strID</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=kt>size_t</span> <span class=n>nStrLength</span> <span class=o>=</span> <span class=n>strID</span><span class=p>.</span><span class=n>length</span><span class=p>();</span>
+        <span class=kt>size_t</span> <span class=n>nPos</span> <span class=o>=</span> <span class=n>strID</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=sc>&#39;-&#39;</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>nPos</span> <span class=o>==</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>::</span><span class=n>npos</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>strHead</span> <span class=o>=</span> <span class=n>strID</span><span class=p>.</span><span class=n>substr</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=n>nPos</span><span class=p>);</span>
+        <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>strData</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>nPos</span> <span class=o>+</span> <span class=mi>1</span> <span class=o>&lt;</span> <span class=n>nStrLength</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>strData</span> <span class=o>=</span> <span class=n>strID</span><span class=p>.</span><span class=n>substr</span><span class=p>(</span><span class=n>nPos</span> <span class=o>+</span> <span class=mi>1</span><span class=p>,</span> <span class=n>nStrLength</span> <span class=o>-</span> <span class=n>nPos</span><span class=p>);</span>
+        <span class=p>}</span>
+
+        <span class=k>try</span>
+        <span class=p>{</span>
+            <span class=n>nHead64</span> <span class=o>=</span> <span class=n>lexical_cast</span><span class=o>&lt;</span><span class=n>NFINT64</span><span class=o>&gt;</span><span class=p>(</span><span class=n>strHead</span><span class=p>);</span>
+            <span class=n>nData64</span> <span class=o>=</span> <span class=n>lexical_cast</span><span class=o>&lt;</span><span class=n>NFINT64</span><span class=o>&gt;</span><span class=p>(</span><span class=n>strData</span><span class=p>);</span>
+
+            <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+        <span class=p>}</span>
+        <span class=k>catch</span> <span class=p>(...)</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+<span class=p>};</span>
+<span class=cp>#endif</span>
+</code></pre></div> <h2 id=_2>四个构造函数<a class=headerlink href=#_2 title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=n>NFGUID</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>nData64</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=n>nHead64</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>}</span>
+<span class=n>NFGUID</span><span class=p>(</span><span class=n>NFINT64</span> <span class=n>nHeadData</span><span class=p>,</span> <span class=n>NFINT64</span> <span class=n>nData</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>nHead64</span> <span class=o>=</span> <span class=n>nHeadData</span><span class=p>;</span>
+    <span class=n>nData64</span> <span class=o>=</span> <span class=n>nData</span><span class=p>;</span>
+<span class=p>}</span>
+<span class=n>NFGUID</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span><span class=o>&amp;</span> <span class=n>xData</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>nHead64</span> <span class=o>=</span> <span class=n>xData</span><span class=p>.</span><span class=n>nHead64</span><span class=p>;</span>
+    <span class=n>nData64</span> <span class=o>=</span> <span class=n>xData</span><span class=p>.</span><span class=n>nData64</span><span class=p>;</span>
+<span class=p>}</span>
+<span class=n>NFGUID</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strID</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>FromString</span><span class=p>(</span><span class=n>strID</span><span class=p>);</span>
+<span class=p>}</span>
+</code></pre></div> <p>四个构造函数，其中最后一个构造函数是从字符串中得到nHead64 和 nData64的值。</p> <h2 id=fromstring>FromString函数<a class=headerlink href=#fromstring title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code>bool FromString(const std::string&amp; strID)
+{
+    size_t nStrLength = strID.length();
+    size_t nPos = strID.find(&#39;-&#39;);
+    if (nPos == std::string::npos)
+    {
+        return false;
+     }
+
+     std::string strHead = strID.substr(0, nPos);
+     std::string strData = &quot;&quot;;
+     if (nPos + 1 &lt; nStrLength)
+     {
+         strData = strID.substr(nPos + 1, nStrLength - nPos);
+     }
+
+     try
+     {
+        nHead64 = lexical_cast&lt;NFINT64&gt;(strHead);
+        nData64 = lexical_cast&lt;NFINT64&gt;(strData);
+
+        return true;
+     }catch (...){
+        return false;
+     }
+}
+</code></pre></div> <p>在函数对字符串的解析中可以看出 该字符串由 nHead64-nData64 组成，其中 - 字符起到分割作用。</p> <p>lexical_cast 是万能类型转换器模板函数，在FromString 中将 string 转化为 NFINT64(即 int64)</p> <h2 id=createid>CreateID函数<a class=headerlink href=#createid title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=k>static</span> <span class=n>NFGUID</span> <span class=nf>CreateID</span><span class=p>()</span>
+<span class=p>{</span>
+        <span class=kt>int64_t</span> <span class=n>value</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+        <span class=c1>//  返回 自1970 1/1 8:00  开始  毫秒级别的刻度计数</span>
+        <span class=kt>uint64_t</span> <span class=n>time</span> <span class=o>=</span> <span class=n>std</span><span class=o>::</span><span class=n>chrono</span><span class=o>::</span><span class=n>duration_cast</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>chrono</span><span class=o>::</span><span class=n>milliseconds</span><span class=o>&gt;</span><span class=p>(</span><span class=n>std</span><span class=o>::</span><span class=n>chrono</span><span class=o>::</span><span class=n>system_clock</span><span class=o>::</span><span class=n>now</span><span class=p>().</span><span class=n>time_since_epoch</span><span class=p>()).</span><span class=n>count</span><span class=p>();</span>
+
+        <span class=c1>// 转换到 ns (纳秒) 级别</span>
+        <span class=c1>//value = time &lt;&lt; 16;</span>
+        <span class=n>value</span> <span class=o>=</span> <span class=n>time</span> <span class=o>*</span> <span class=mi>1000000</span><span class=p>;</span>
+
+
+        <span class=c1>//value |= nGUIDIndex++;</span>
+        <span class=n>value</span> <span class=o>+=</span> <span class=n>nGUIDIndex</span><span class=o>++</span><span class=p>;</span>
+
+        <span class=c1>//if (sequence_ == 0x7FFF)</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>nGUIDIndex</span> <span class=o>==</span> <span class=mi>999999</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>nGUIDIndex</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=n>NFGUID</span> <span class=n>xID</span><span class=p>;</span>
+        <span class=n>xID</span><span class=p>.</span><span class=n>nHead64</span> <span class=o>=</span> <span class=n>nInstanceID</span><span class=p>;</span>
+        <span class=n>xID</span><span class=p>.</span><span class=n>nData64</span> <span class=o>=</span> <span class=n>value</span><span class=p>;</span>
+
+        <span class=k>return</span> <span class=n>xID</span><span class=p>;</span>
+<span class=p>}</span>
+</code></pre></div> <br> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class=wm-article-nav> <a href=../../../mkdocs/%E6%97%A0%E6%B3%95build%E7%9A%84%E5%8E%9F%E5%9B%A0/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../../../mkdocs/%E6%97%A0%E6%B3%95build%E7%9A%84%E5%8E%9F%E5%9B%A0/ class="btn btn-xs btn-link"> 无法build </a> </div> </div> <br> </div> <footer class="container-fluid wm-page-content"><p>Copyright &copy; 2020 - 2020 张磊</p> <p>Documentation built with <a href=http://www.mkdocs.org/ >MkDocs</a> using <a href=https://github.com/gristlabs/mkdocs-windmill>Windmill</a> theme by Grist Labs.</p> </footer> </body> </html>
