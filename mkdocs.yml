@@ -111,8 +111,14 @@ nav:
   - mkdcos错误总结:
     - 无法build:              mkdocs/无法build的原因.md
   - NoahGameFrame:
+    - NFCore:
+      - NFDataList:          NoahGameFrame/NFCore/NFDataList_h.md
+      - NFMemoryCounter_h:   NoahGameFrame/NFCore/NFMemoryCounter_h.md
     - NFHeaderFiles:
       - NFGUID:              NoahGameFrame/NFHeaderFiles/NFGUID_h.md
+      - NFIModule:           NoahGameFrame/NFHeaderFiles/NFIModule_h.md
+      - NFIPlugin:           NoahGameFrame/NFHeaderFiles/NFIPlugin_h.md
+      - NFIPluginManager:    NoahGameFrame/NFHeaderFiles/NFIPluginManager_h.md
     
   
 
