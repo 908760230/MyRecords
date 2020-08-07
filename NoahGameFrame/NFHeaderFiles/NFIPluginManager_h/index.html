@@ -1,0 +1,306 @@
+<!DOCTYPE html><html lang=en> <head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" href=../../../img/favicon.ico><meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"><title>NFIPluginManager - 记录</title><link href=../../../css/bootstrap-3.3.7.min.css rel=stylesheet><link href=../../../css/font-awesome-4.7.0.css rel=stylesheet><link href=../../../css/base.css rel=stylesheet><link rel=stylesheet href=../../../css/highlight.css><!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries --><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]--><script src=../../../js/jquery-3.2.1.min.js></script><script src=../../../js/bootstrap-3.3.7.min.js></script><script src=../../../js/highlight.pack.js></script><base target=_top><script>
+      var base_url = '../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "NFIPluginManager \u5934\u6587\u4ef6\u89e3\u6790", url: "#_top", children: [
+              {title: "TIsDerived", url: "#tisderived" },
+              {title: "NFReplaceContent", url: "#nfreplacecontent" },
+              {title: "NFIPluginManager", url: "#nfipluginmanager_1" },
+              {title: "\u5b8c\u6574\u4ee3\u7801", url: "#_1" },
+          ]},
+        ];
+
+    </script><script src=../../../js/base.js></script></head> <body> <script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script> <div class="container-fluid wm-page-content"> <a name=_top></a> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class=wm-article-nav> <a href=../NFIPlugin_h/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../NFIPlugin_h/ class="btn btn-xs btn-link"> NFIPlugin </a> </div> </div> <h1 id=nfipluginmanager>NFIPluginManager 头文件解析<a class=headerlink href=#nfipluginmanager title="Permanent link">&para;</a></h1> <p>是所有 NFPluginManager 的父类。</p> <h2 id=tisderived>TIsDerived<a class=headerlink href=#tisderived title="Permanent link">&para;</a></h2> <p>模板元编程，利用编译期多态的性质来判断两个类是否具备继承关系。</p> <div class=highlight><pre><span></span><code><span class=k>template</span><span class=o>&lt;</span><span class=k>typename</span> <span class=n>DerivedType</span><span class=p>,</span> <span class=k>typename</span> <span class=n>BaseType</span><span class=o>&gt;</span>
+<span class=k>class</span> <span class=nc>TIsDerived</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=k>static</span> <span class=kt>int</span> <span class=n>AnyFunction</span><span class=p>(</span><span class=n>BaseType</span><span class=o>*</span> <span class=n>base</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=mi>1</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>static</span>  <span class=kt>char</span> <span class=n>AnyFunction</span><span class=p>(</span><span class=kt>void</span><span class=o>*</span> <span class=n>t2</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>enum</span>
+    <span class=p>{</span>
+        <span class=n>Result</span> <span class=o>=</span> <span class=p>(</span><span class=k>sizeof</span><span class=p>(</span><span class=kt>int</span><span class=p>)</span> <span class=o>==</span> <span class=k>sizeof</span><span class=p>(</span><span class=n>AnyFunction</span><span class=p>((</span><span class=n>DerivedType</span><span class=o>*</span><span class=p>)</span><span class=nb>NULL</span><span class=p>))),</span>
+    <span class=p>};</span>
+<span class=p>};</span>
+</code></pre></div> <p>重载了 AnyFunction， 传入 DerivedType* 类型的空指针，根据 AnyFunction 返回值类型的大小 来判断两个类型之间的关系。 如果有继承关系，Result的值为1， 否则为0；</p> <h2 id=nfreplacecontent>NFReplaceContent<a class=headerlink href=#nfreplacecontent title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=k>class</span> <span class=nc>NFReplaceContent</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>NFReplaceContent</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>content</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>newValue</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>this</span><span class=o>-&gt;</span><span class=n>content</span> <span class=o>=</span> <span class=n>content</span><span class=p>;</span>
+        <span class=k>this</span><span class=o>-&gt;</span><span class=n>newValue</span> <span class=o>=</span> <span class=n>newValue</span><span class=p>;</span>
+    <span class=p>}</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>content</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>newValue</span><span class=p>;</span>
+<span class=p>};</span>
+</code></pre></div> <p>暂时不清楚 这么写的用意是什么</p> <h2 id=nfipluginmanager_1>NFIPluginManager<a class=headerlink href=#nfipluginmanager_1 title="Permanent link">&para;</a></h2> <p>用虚函数定义了基本的接口。</p> <div class=highlight><pre><span></span><code><span class=k>template</span> <span class=o>&lt;</span><span class=k>typename</span> <span class=n>T</span><span class=o>&gt;</span>
+    <span class=n>T</span><span class=o>*</span> <span class=n>FindModule</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=n>NFIModule</span><span class=o>*</span> <span class=n>pLogicModule</span> <span class=o>=</span> <span class=n>FindModule</span><span class=p>(</span><span class=k>typeid</span><span class=p>(</span><span class=n>T</span><span class=p>).</span><span class=n>name</span><span class=p>());</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>pLogicModule</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>TIsDerived</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>NFIModule</span><span class=o>&gt;::</span><span class=n>Result</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+            <span class=p>}</span>
+            <span class=c1>//TODO OSX上dynamic_cast返回了NULL</span>
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_APPLE</span>
+            <span class=n>T</span><span class=o>*</span> <span class=n>pT</span> <span class=o>=</span> <span class=p>(</span><span class=n>T</span><span class=o>*</span><span class=p>)</span><span class=n>pLogicModule</span><span class=p>;</span>
+<span class=cp>#else</span>
+            <span class=n>T</span><span class=o>*</span> <span class=n>pT</span> <span class=o>=</span> <span class=k>dynamic_cast</span><span class=o>&lt;</span><span class=n>T</span><span class=o>*&gt;</span><span class=p>(</span><span class=n>pLogicModule</span><span class=p>);</span>
+<span class=cp>#endif</span>
+            <span class=n>assert</span><span class=p>(</span><span class=nb>NULL</span> <span class=o>!=</span> <span class=n>pT</span><span class=p>);</span>
+
+            <span class=k>return</span> <span class=n>pT</span><span class=p>;</span>
+        <span class=p>}</span>
+        <span class=n>assert</span><span class=p>(</span><span class=nb>NULL</span><span class=p>);</span>
+        <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>template</span> <span class=o>&lt;</span><span class=k>typename</span> <span class=n>T</span><span class=o>&gt;</span>
+    <span class=kt>void</span> <span class=n>ReplaceModule</span><span class=p>(</span><span class=n>NFIModule</span><span class=o>*</span> <span class=n>pModule</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>NFIModule</span><span class=o>*</span> <span class=n>pLogicModule</span> <span class=o>=</span> <span class=n>FindModule</span><span class=p>(</span><span class=k>typeid</span><span class=p>(</span><span class=n>T</span><span class=p>).</span><span class=n>name</span><span class=p>());</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>pLogicModule</span><span class=p>)</span>
+
+        <span class=p>{</span>
+            <span class=n>RemoveModule</span><span class=p>(</span><span class=k>typeid</span><span class=p>(</span><span class=n>T</span><span class=p>).</span><span class=n>name</span><span class=p>());</span>
+        <span class=p>}</span>
+
+        <span class=c1>// name() 返回值具有多余字符， 已提交issue</span>
+        <span class=n>AddModule</span><span class=p>(</span><span class=k>typeid</span><span class=p>(</span><span class=n>T</span><span class=p>).</span><span class=n>name</span><span class=p>(),</span> <span class=n>pModule</span><span class=p>);</span>
+    <span class=p>};</span>
+</code></pre></div> <p>两个模板函数，</p> <h2 id=_1>完整代码<a class=headerlink href=#_1 title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=cp>#ifndef NFI_PLUGIN_MANAGER_H</span>
+<span class=cp>#define NFI_PLUGIN_MANAGER_H</span>
+
+<span class=cp>#include</span> <span class=cpf>&lt;functional&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;list&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;vector&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFPlatform.h&quot;</span><span class=cp></span>
+
+<span class=k>class</span> <span class=nc>NFIPlugin</span><span class=p>;</span>
+<span class=k>class</span> <span class=nc>NFIModule</span><span class=p>;</span>
+<span class=k>class</span> <span class=nc>NFIPluginManager</span><span class=p>;</span>
+
+<span class=k>typedef</span> <span class=n>std</span><span class=o>::</span><span class=n>function</span><span class=o>&lt;</span><span class=kt>bool</span> <span class=p>(</span><span class=n>NFIPluginManager</span><span class=o>*</span> <span class=n>p</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strFileName</span><span class=p>,</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strContent</span><span class=p>)</span><span class=o>&gt;</span> <span class=n>GET_FILECONTENT_FUNCTOR</span><span class=p>;</span>
+
+<span class=k>template</span><span class=o>&lt;</span><span class=k>typename</span> <span class=n>DerivedType</span><span class=p>,</span> <span class=k>typename</span> <span class=n>BaseType</span><span class=o>&gt;</span>
+<span class=k>class</span> <span class=nc>TIsDerived</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=k>static</span> <span class=kt>int</span> <span class=n>AnyFunction</span><span class=p>(</span><span class=n>BaseType</span><span class=o>*</span> <span class=n>base</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=mi>1</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>static</span>  <span class=kt>char</span> <span class=n>AnyFunction</span><span class=p>(</span><span class=kt>void</span><span class=o>*</span> <span class=n>t2</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>enum</span>
+    <span class=p>{</span>
+        <span class=n>Result</span> <span class=o>=</span> <span class=p>(</span><span class=k>sizeof</span><span class=p>(</span><span class=kt>int</span><span class=p>)</span> <span class=o>==</span> <span class=k>sizeof</span><span class=p>(</span><span class=n>AnyFunction</span><span class=p>((</span><span class=n>DerivedType</span><span class=o>*</span><span class=p>)</span><span class=nb>NULL</span><span class=p>))),</span>
+    <span class=p>};</span>
+<span class=p>};</span>
+
+<span class=k>class</span> <span class=nc>NFReplaceContent</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>NFReplaceContent</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>content</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>newValue</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>this</span><span class=o>-&gt;</span><span class=n>content</span> <span class=o>=</span> <span class=n>content</span><span class=p>;</span>
+        <span class=k>this</span><span class=o>-&gt;</span><span class=n>newValue</span> <span class=o>=</span> <span class=n>newValue</span><span class=p>;</span>
+    <span class=p>}</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>content</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>newValue</span><span class=p>;</span>
+<span class=p>};</span>
+
+<span class=cp>#define FIND_MODULE(classBaseName, className)  \</span>
+<span class=cp>    assert((TIsDerived&lt;classBaseName, NFIModule&gt;::Result));</span>
+
+<span class=k>class</span> <span class=nc>NFIPluginManager</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>NFIPluginManager</span><span class=p>()</span>
+    <span class=p>{</span>
+
+    <span class=p>}</span>
+
+    <span class=c1>/////////////////////</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>LoadPluginConfig</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>LoadPlugin</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>Awake</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>Init</span><span class=p>()</span>
+    <span class=p>{</span>
+
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>AfterInit</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>CheckConfig</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>ReadyExecute</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>Execute</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>BeforeShut</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>Shut</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>Finalize</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>OnReloadPlugin</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=c1>/////////////////////</span>
+
+    <span class=k>template</span> <span class=o>&lt;</span><span class=k>typename</span> <span class=n>T</span><span class=o>&gt;</span>
+    <span class=n>T</span><span class=o>*</span> <span class=n>FindModule</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=n>NFIModule</span><span class=o>*</span> <span class=n>pLogicModule</span> <span class=o>=</span> <span class=n>FindModule</span><span class=p>(</span><span class=k>typeid</span><span class=p>(</span><span class=n>T</span><span class=p>).</span><span class=n>name</span><span class=p>());</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>pLogicModule</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>TIsDerived</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>NFIModule</span><span class=o>&gt;::</span><span class=n>Result</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+            <span class=p>}</span>
+            <span class=c1>//TODO OSX上dynamic_cast返回了NULL</span>
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_APPLE</span>
+            <span class=n>T</span><span class=o>*</span> <span class=n>pT</span> <span class=o>=</span> <span class=p>(</span><span class=n>T</span><span class=o>*</span><span class=p>)</span><span class=n>pLogicModule</span><span class=p>;</span>
+<span class=cp>#else</span>
+            <span class=n>T</span><span class=o>*</span> <span class=n>pT</span> <span class=o>=</span> <span class=k>dynamic_cast</span><span class=o>&lt;</span><span class=n>T</span><span class=o>*&gt;</span><span class=p>(</span><span class=n>pLogicModule</span><span class=p>);</span>
+<span class=cp>#endif</span>
+            <span class=n>assert</span><span class=p>(</span><span class=nb>NULL</span> <span class=o>!=</span> <span class=n>pT</span><span class=p>);</span>
+
+            <span class=k>return</span> <span class=n>pT</span><span class=p>;</span>
+        <span class=p>}</span>
+        <span class=n>assert</span><span class=p>(</span><span class=nb>NULL</span><span class=p>);</span>
+        <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>template</span> <span class=o>&lt;</span><span class=k>typename</span> <span class=n>T</span><span class=o>&gt;</span>
+    <span class=kt>void</span> <span class=n>ReplaceModule</span><span class=p>(</span><span class=n>NFIModule</span><span class=o>*</span> <span class=n>pModule</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>NFIModule</span><span class=o>*</span> <span class=n>pLogicModule</span> <span class=o>=</span> <span class=n>FindModule</span><span class=p>(</span><span class=k>typeid</span><span class=p>(</span><span class=n>T</span><span class=p>).</span><span class=n>name</span><span class=p>());</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>pLogicModule</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>RemoveModule</span><span class=p>(</span><span class=k>typeid</span><span class=p>(</span><span class=n>T</span><span class=p>).</span><span class=n>name</span><span class=p>());</span>
+        <span class=p>}</span>
+
+
+        <span class=n>AddModule</span><span class=p>(</span><span class=k>typeid</span><span class=p>(</span><span class=n>T</span><span class=p>).</span><span class=n>name</span><span class=p>(),</span> <span class=n>pModule</span><span class=p>);</span>
+    <span class=p>};</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>ReLoadPlugin</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPluginDLLName</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>Registered</span><span class=p>(</span><span class=n>NFIPlugin</span><span class=o>*</span> <span class=n>plugin</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>UnRegistered</span><span class=p>(</span><span class=n>NFIPlugin</span><span class=o>*</span> <span class=n>plugin</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=n>NFIPlugin</span><span class=o>*</span> <span class=nf>FindPlugin</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPluginName</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>AddModule</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strModuleName</span><span class=p>,</span> <span class=n>NFIModule</span><span class=o>*</span> <span class=n>pModule</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>AddTestModule</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strModuleName</span><span class=p>,</span> <span class=n>NFIModule</span><span class=o>*</span> <span class=n>pModule</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>RemoveModule</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strModuleName</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=n>NFIModule</span><span class=o>*</span> <span class=nf>FindModule</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strModuleName</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=n>NFIModule</span><span class=o>*</span> <span class=nf>FindTestModule</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strModuleName</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=n>std</span><span class=o>::</span><span class=n>list</span><span class=o>&lt;</span><span class=n>NFIModule</span><span class=o>*&gt;</span> <span class=n>Modules</span><span class=p>()</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=n>std</span><span class=o>::</span><span class=n>list</span><span class=o>&lt;</span><span class=n>NFIModule</span><span class=o>*&gt;</span> <span class=n>TestModules</span><span class=p>()</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>int</span> <span class=nf>GetAppID</span><span class=p>()</span> <span class=k>const</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetAppID</span><span class=p>(</span><span class=k>const</span> <span class=kt>int</span> <span class=n>nAppID</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>IsRunningDocker</span><span class=p>()</span> <span class=k>const</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetRunningDocker</span><span class=p>(</span><span class=kt>bool</span> <span class=n>bDocker</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>IsStaticPlugin</span><span class=p>()</span> <span class=k>const</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=n>NFINT64</span> <span class=nf>GetInitTime</span><span class=p>()</span> <span class=k>const</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=n>NFINT64</span> <span class=nf>GetNowTime</span><span class=p>()</span> <span class=k>const</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>GetConfigPath</span><span class=p>()</span> <span class=k>const</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetConfigPath</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>strPath</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetConfigName</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strFileName</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> 
+    <span class=k>virtual</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>GetConfigName</span><span class=p>()</span> <span class=k>const</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>GetAppName</span><span class=p>()</span> <span class=k>const</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetAppName</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strAppName</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>GetLogConfigName</span><span class=p>()</span> <span class=k>const</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetLogConfigName</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strName</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=n>NFIPlugin</span><span class=o>*</span> <span class=nf>GetCurrentPlugin</span><span class=p>()</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=n>NFIModule</span><span class=o>*</span> <span class=nf>GetCurrentModule</span><span class=p>()</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetCurrentPlugin</span><span class=p>(</span><span class=n>NFIPlugin</span><span class=o>*</span> <span class=n>pPlugin</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetCurrentModule</span><span class=p>(</span><span class=n>NFIModule</span><span class=o>*</span> <span class=n>pModule</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>int</span> <span class=nf>GetAppCPUCount</span><span class=p>()</span> <span class=k>const</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetAppCPUCount</span><span class=p>(</span><span class=k>const</span> <span class=kt>int</span> <span class=n>count</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetGetFileContentFunctor</span><span class=p>(</span><span class=n>GET_FILECONTENT_FUNCTOR</span> <span class=n>fun</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>GetFileContent</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span><span class=n>strFileName</span><span class=p>,</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span><span class=n>strContent</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>AddFileReplaceContent</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>fileName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>content</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>newValue</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>NFReplaceContent</span><span class=o>&gt;</span> <span class=n>GetFileReplaceContents</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>fileName</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>};</span>
+
+<span class=cp>#endif</span>
+</code></pre></div> <br> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class=wm-article-nav> <a href=../NFIPlugin_h/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../NFIPlugin_h/ class="btn btn-xs btn-link"> NFIPlugin </a> </div> </div> <br> </div> <footer class="container-fluid wm-page-content"><p>Copyright &copy; 2020 - 2020 张磊</p> <p>Documentation built with <a href=http://www.mkdocs.org/ >MkDocs</a> using <a href=https://github.com/gristlabs/mkdocs-windmill>Windmill</a> theme by Grist Labs.</p> </footer> </body> </html>
