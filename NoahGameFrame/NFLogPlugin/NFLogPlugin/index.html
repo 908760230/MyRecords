@@ -1,0 +1,90 @@
+<!DOCTYPE html><html lang=en> <head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" href=../../../img/favicon.ico><meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"><title>NFLogPlugin - 记录</title><link href=../../../css/bootstrap-3.3.7.min.css rel=stylesheet><link href=../../../css/font-awesome-4.7.0.css rel=stylesheet><link href=../../../css/base.css rel=stylesheet><link rel=stylesheet href=../../../css/highlight.css><!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries --><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]--><script src=../../../js/jquery-3.2.1.min.js></script><script src=../../../js/bootstrap-3.3.7.min.js></script><script src=../../../js/highlight.pack.js></script><base target=_top><script>
+      var base_url = '../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "NFLogPlugin \u89e3\u6790", url: "#_top", children: [
+              {title: "NFLogPlugin.h", url: "#nflogpluginh" },
+              {title: "NFLogPlugin.cpp", url: "#nflogplugincpp" },
+          ]},
+        ];
+
+    </script><script src=../../../js/base.js></script></head> <body> <script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script> <div class="container-fluid wm-page-content"> <a name=_top></a> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../../../vs2019%E5%B0%8F%E7%9F%A5%E8%AF%86/%E8%B0%83%E8%AF%95%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../../../vs2019%E5%B0%8F%E7%9F%A5%E8%AF%86/%E8%B0%83%E8%AF%95%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/ class="btn btn-xs btn-link"> 调试文件路径 </a> </div> <div class=wm-article-nav> <a href=../NFLogModule/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../NFLogModule/ class="btn btn-xs btn-link"> NFLogModule </a> </div> </div> <h1 id=nflogplugin>NFLogPlugin 解析<a class=headerlink href=#nflogplugin title="Permanent link">&para;</a></h1> <h2 id=nflogpluginh>NFLogPlugin.h<a class=headerlink href=#nflogpluginh title="Permanent link">&para;</a></h2> <p><div class=highlight><pre><span></span><code><span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFPluginModule/NFIPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFPluginModule/NFIPluginManager.h&quot;</span><span class=cp></span>
+
+<span class=c1>//////////////////////////////////////////////////////////////////////////</span>
+<span class=k>class</span> <span class=nc>NFLogPlugin</span> <span class=o>:</span> <span class=k>public</span> <span class=n>NFIPlugin</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>NFLogPlugin</span><span class=p>(</span><span class=n>NFIPluginManager</span><span class=o>*</span> <span class=n>p</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>pPluginManager</span> <span class=o>=</span> <span class=n>p</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=k>const</span> <span class=kt>int</span> <span class=n>GetPluginVersion</span><span class=p>();</span>
+
+    <span class=k>virtual</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>GetPluginName</span><span class=p>();</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>Install</span><span class=p>();</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>Uninstall</span><span class=p>();</span>
+<span class=p>};</span>
+</code></pre></div> 对 继承自NFIPlugin的接口进行重写。</p> <h2 id=nflogplugincpp>NFLogPlugin.cpp<a class=headerlink href=#nflogplugincpp title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=cp>#include</span> <span class=cpf>&quot;NFLogPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFLogModule.h&quot;</span><span class=cp></span>
+
+<span class=cp>#ifdef NF_DYNAMIC_PLUGIN</span>
+
+<span class=n>NF_EXPORT</span> <span class=kt>void</span> <span class=nf>DllStartPlugin</span><span class=p>(</span><span class=n>NFIPluginManager</span><span class=o>*</span> <span class=n>pm</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=n>pm</span><span class=p>,</span> <span class=n>NFLogPlugin</span><span class=p>)</span>
+<span class=p>};</span>
+
+<span class=n>NF_EXPORT</span> <span class=kt>void</span> <span class=nf>DllStopPlugin</span><span class=p>(</span><span class=n>NFIPluginManager</span><span class=o>*</span> <span class=n>pm</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>DESTROY_PLUGIN</span><span class=p>(</span><span class=n>pm</span><span class=p>,</span> <span class=n>NFLogPlugin</span><span class=p>)</span>
+<span class=p>};</span>
+
+<span class=cp>#endif</span>
+
+<span class=c1>//////////////////////////////////////////////////////////////////////////</span>
+
+<span class=k>const</span> <span class=kt>int</span> <span class=n>NFLogPlugin</span><span class=o>::</span><span class=n>GetPluginVersion</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>NFLogPlugin</span><span class=o>::</span><span class=n>GetPluginName</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=k>return</span> <span class=n>GET_CLASS_NAME</span><span class=p>(</span><span class=n>NFLogPlugin</span><span class=p>);</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFLogPlugin</span><span class=o>::</span><span class=n>Install</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>REGISTER_MODULE</span><span class=p>(</span><span class=n>pPluginManager</span><span class=p>,</span> <span class=n>NFILogModule</span><span class=p>,</span> <span class=n>NFLogModule</span><span class=p>)</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFLogPlugin</span><span class=o>::</span><span class=n>Uninstall</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>UNREGISTER_MODULE</span><span class=p>(</span><span class=n>pPluginManager</span><span class=p>,</span> <span class=n>NFILogModule</span><span class=p>,</span> <span class=n>NFLogModule</span><span class=p>)</span>
+<span class=p>}</span>
+</code></pre></div> <h3 id=get_class_name>GET_CLASS_NAME<a class=headerlink href=#get_class_name title="Permanent link">&para;</a></h3> <p>可以在 NFPlatform 头文件 看到 GET_CLASS_NAME 宏定义。 <div class=highlight><pre><span></span><code><span class=cp>#define GET_CLASS_NAME(className) (#className)</span>
+</code></pre></div> 通过 宏 将className 转化成字符串</p> <h3 id=register_module-unregister_module>REGISTER_MODULE 和 UNREGISTER_MODULE<a class=headerlink href=#register_module-unregister_module title="Permanent link">&para;</a></h3> <div class=highlight><pre><span></span><code><span class=cp>#define REGISTER_MODULE(pManager, classBaseName, className)  \</span>
+<span class=cp>    assert((TIsDerived&lt;classBaseName, NFIModule&gt;::Result)); \</span>
+<span class=cp>    assert((TIsDerived&lt;className, classBaseName&gt;::Result)); \</span>
+<span class=cp>    NFIModule* pRegisterModule##className= new className(pManager); \</span>
+<span class=cp>    pRegisterModule##className-&gt;strName = (#className); \</span>
+<span class=cp>    pManager-&gt;AddModule( #classBaseName, pRegisterModule##className );\</span>
+<span class=cp>    this-&gt;AddElement( #classBaseName, pRegisterModule##className );</span>
+
+
+<span class=cp>#define UNREGISTER_MODULE(pManager, classBaseName, className) \</span>
+<span class=cp>    NFIModule* pUnRegisterModule##className = dynamic_cast&lt;NFIModule*&gt;( pManager-&gt;FindModule( #classBaseName )); \</span>
+<span class=cp>    pManager-&gt;RemoveModule( #classBaseName ); \</span>
+<span class=cp>    this-&gt;RemoveElement( #classBaseName ); \</span>
+<span class=cp>    delete pUnRegisterModule##className;</span>
+</code></pre></div> <p>在NFPluginManager 里对 mModuleInstanceMap 进行 添加 or 删除 module。 因为 NFLogModule 继承与 NFIModule 所以 会将 NFILogModule字符串为key NFLogModule对象指针为value，存入到 NFIModule 的map 里面。</p> <br> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../../../vs2019%E5%B0%8F%E7%9F%A5%E8%AF%86/%E8%B0%83%E8%AF%95%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../../../vs2019%E5%B0%8F%E7%9F%A5%E8%AF%86/%E8%B0%83%E8%AF%95%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84/ class="btn btn-xs btn-link"> 调试文件路径 </a> </div> <div class=wm-article-nav> <a href=../NFLogModule/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../NFLogModule/ class="btn btn-xs btn-link"> NFLogModule </a> </div> </div> <br> </div> <footer class="container-fluid wm-page-content"><p>Copyright &copy; 2020 - 2020 张磊</p> <p>Documentation built with <a href=http://www.mkdocs.org/ >MkDocs</a> using <a href=https://github.com/gristlabs/mkdocs-windmill>Windmill</a> theme by Grist Labs.</p> </footer> </body> </html>

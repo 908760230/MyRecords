@@ -1,0 +1,264 @@
+<!DOCTYPE html><html lang=en> <head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" href=../../../img/favicon.ico><meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"><title>NFLogModule - 记录</title><link href=../../../css/bootstrap-3.3.7.min.css rel=stylesheet><link href=../../../css/font-awesome-4.7.0.css rel=stylesheet><link href=../../../css/base.css rel=stylesheet><link rel=stylesheet href=../../../css/highlight.css><!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries --><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]--><script src=../../../js/jquery-3.2.1.min.js></script><script src=../../../js/bootstrap-3.3.7.min.js></script><script src=../../../js/highlight.pack.js></script><base target=_top><script>
+      var base_url = '../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "NFLogModule \u89e3\u6790", url: "#_top", children: [
+              {title: "NFLogModule.h", url: "#nflogmoduleh" },
+              {title: "NFLogModule.cpp", url: "#nflogmodulecpp" },
+          ]},
+        ];
+
+    </script><script src=../../../js/base.js></script></head> <body> <script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script> <div class="container-fluid wm-page-content"> <a name=_top></a> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../NFLogPlugin/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../NFLogPlugin/ class="btn btn-xs btn-link"> NFLogPlugin </a> </div> <div class=wm-article-nav> <a href=../dllmain/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../dllmain/ class="btn btn-xs btn-link"> dllmain </a> </div> </div> <h1 id=nflogmodule>NFLogModule 解析<a class=headerlink href=#nflogmodule title="Permanent link">&para;</a></h1> <h2 id=nflogmoduleh>NFLogModule.h<a class=headerlink href=#nflogmoduleh title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=cp>#ifndef NF_LOG_MODULE_H</span>
+<span class=cp>#define NF_LOG_MODULE_H</span>
+
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFPluginModule/NFILogModule.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFCore/NFPerformance.hpp&quot;</span><span class=cp></span>
+
+<span class=k>class</span> <span class=nc>NFLogModule</span>
+    <span class=o>:</span> <span class=k>public</span> <span class=n>NFILogModule</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+
+    <span class=n>NFLogModule</span><span class=p>(</span><span class=n>NFIPluginManager</span><span class=o>*</span> <span class=n>p</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=o>~</span><span class=n>NFLogModule</span><span class=p>()</span> <span class=p>{}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>Awake</span><span class=p>();</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Init</span><span class=p>();</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Shut</span><span class=p>();</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>BeforeShut</span><span class=p>();</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>AfterInit</span><span class=p>();</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Execute</span><span class=p>();</span>
+
+    <span class=c1>///////////////////////////////////////////////////////////////////////</span>
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>LogStack</span><span class=p>();</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogElement</span><span class=p>(</span><span class=k>const</span> <span class=n>NF_LOG_LEVEL</span> <span class=n>nll</span><span class=p>,</span> <span class=k>const</span> <span class=n>NFGUID</span> <span class=n>ident</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strElement</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strDesc</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogProperty</span><span class=p>(</span><span class=k>const</span> <span class=n>NF_LOG_LEVEL</span> <span class=n>nll</span><span class=p>,</span> <span class=k>const</span> <span class=n>NFGUID</span> <span class=n>ident</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strProperty</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strDesc</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogRecord</span><span class=p>(</span><span class=k>const</span> <span class=n>NF_LOG_LEVEL</span> <span class=n>nll</span><span class=p>,</span> <span class=k>const</span> <span class=n>NFGUID</span> <span class=n>ident</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strRecord</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strDesc</span><span class=p>,</span> <span class=k>const</span> <span class=kt>int</span> <span class=n>nRow</span><span class=p>,</span> <span class=k>const</span> <span class=kt>int</span> <span class=n>nCol</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogRecord</span><span class=p>(</span><span class=k>const</span> <span class=n>NF_LOG_LEVEL</span> <span class=n>nll</span><span class=p>,</span> <span class=k>const</span> <span class=n>NFGUID</span> <span class=n>ident</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strRecord</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strDesc</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogObject</span><span class=p>(</span><span class=k>const</span> <span class=n>NF_LOG_LEVEL</span> <span class=n>nll</span><span class=p>,</span> <span class=k>const</span> <span class=n>NFGUID</span> <span class=n>ident</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strDesc</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogDebug</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strLog</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogInfo</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strLog</span><span class=p>,</span> <span class=k>const</span>  <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogWarning</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strLog</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogError</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strLog</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogFatal</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strLog</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogDebug</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>ostringstream</span><span class=o>&amp;</span> <span class=n>stream</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogInfo</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>ostringstream</span><span class=o>&amp;</span> <span class=n>stream</span><span class=p>,</span> <span class=k>const</span>  <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogWarning</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>ostringstream</span><span class=o>&amp;</span> <span class=n>stream</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogError</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>ostringstream</span><span class=o>&amp;</span> <span class=n>stream</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogFatal</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>ostringstream</span><span class=o>&amp;</span> <span class=n>stream</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogDebug</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>ident</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strLog</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogInfo</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>ident</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strLog</span><span class=p>,</span> <span class=k>const</span>  <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogWarning</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>ident</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strLog</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogError</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>ident</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strLog</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogFatal</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>ident</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strLog</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogDebug</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>ident</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>ostringstream</span><span class=o>&amp;</span> <span class=n>stream</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogInfo</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>ident</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>ostringstream</span><span class=o>&amp;</span> <span class=n>stream</span><span class=p>,</span> <span class=k>const</span>  <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogWarning</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>ident</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>ostringstream</span><span class=o>&amp;</span> <span class=n>stream</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogError</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>ident</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>ostringstream</span><span class=o>&amp;</span> <span class=n>stream</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogFatal</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>ident</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>ostringstream</span><span class=o>&amp;</span> <span class=n>stream</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LogDebugFunctionDump</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>ident</span><span class=p>,</span> <span class=k>const</span> <span class=kt>int</span> <span class=n>nMsg</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strArg</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>func</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>,</span> <span class=k>const</span> <span class=kt>int</span> <span class=n>line</span> <span class=o>=</span> <span class=mi>0</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>ChangeLogLevel</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strLevel</span><span class=p>);</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetHooker</span><span class=p>(</span><span class=n>LOG_HOOKER_FUNCTOR_PTR</span> <span class=n>hooker</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>StackTrace</span><span class=p>();</span>
+
+<span class=k>protected</span><span class=o>:</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>Log</span><span class=p>(</span><span class=k>const</span> <span class=n>NF_LOG_LEVEL</span> <span class=n>nll</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>format</span><span class=p>,</span> <span class=p>...);</span>
+
+    <span class=k>static</span> <span class=kt>bool</span> <span class=nf>CheckLogFileExist</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>filename</span><span class=p>);</span>
+    <span class=k>static</span> <span class=kt>void</span> <span class=nf>rolloutHandler</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>filename</span><span class=p>,</span> <span class=n>std</span><span class=o>::</span><span class=kt>size_t</span> <span class=n>size</span><span class=p>);</span>
+
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>GetConfigPath</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>fileName</span><span class=p>);</span>
+
+<span class=k>private</span><span class=o>:</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>mstrLocalStream</span><span class=p>;</span>
+    <span class=n>LOG_HOOKER_FUNCTOR_PTR</span> <span class=n>mLogHooker</span><span class=p>;</span>
+    <span class=k>static</span> <span class=kt>unsigned</span> <span class=kt>int</span> <span class=n>idx</span><span class=p>;</span>
+    <span class=kt>uint64_t</span> <span class=n>mnLogCountTotal</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>list</span><span class=o>&lt;</span><span class=n>NFPerformance</span><span class=o>&gt;</span> <span class=n>mxPerformanceList</span><span class=p>;</span>
+<span class=p>};</span>
+</code></pre></div> <h2 id=nflogmodulecpp>NFLogModule.cpp<a class=headerlink href=#nflogmodulecpp title="Permanent link">&para;</a></h2> <h3 id=_1>构造函数<a class=headerlink href=#_1 title="Permanent link">&para;</a></h3> <p>保存了 NFIPluginManager的指针，设置日志库。</p> <p><strong>StrictLogFileSizeCheck</strong> ： 确保每次记录的时候都会检查日志文件的大小。</p> <p><strong>DisableApplicationAbortOnFatalLog</strong> ： 防止Fatal级别日志中断程序。 <div class=highlight><pre><span></span><code><span class=n>NFLogModule</span><span class=o>::</span><span class=n>NFLogModule</span><span class=p>(</span><span class=n>NFIPluginManager</span><span class=o>*</span> <span class=n>p</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>pPluginManager</span> <span class=o>=</span> <span class=n>p</span><span class=p>;</span>
+
+    <span class=n>el</span><span class=o>::</span><span class=n>Loggers</span><span class=o>::</span><span class=n>addFlag</span><span class=p>(</span><span class=n>el</span><span class=o>::</span><span class=n>LoggingFlag</span><span class=o>::</span><span class=n>StrictLogFileSizeCheck</span><span class=p>);</span>
+    <span class=n>el</span><span class=o>::</span><span class=n>Loggers</span><span class=o>::</span><span class=n>addFlag</span><span class=p>(</span><span class=n>el</span><span class=o>::</span><span class=n>LoggingFlag</span><span class=o>::</span><span class=n>DisableApplicationAbortOnFatalLog</span><span class=p>);</span>
+<span class=p>}</span>
+</code></pre></div></p> <h3 id=awake>awake<a class=headerlink href=#awake title="Permanent link">&para;</a></h3> <p><div class=highlight><pre><span></span><code><span class=kt>bool</span> <span class=n>NFLogModule</span><span class=o>::</span><span class=n>Awake</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>mnLogCountTotal</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=c1>//这个会是空串</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>strLogConfigName</span> <span class=o>=</span> <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>GetLogConfigName</span><span class=p>();</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>strLogConfigName</span><span class=p>.</span><span class=n>empty</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=n>strLogConfigName</span> <span class=o>=</span> <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>GetAppName</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=c1>// 获取log配置文件</span>
+    <span class=n>string</span> <span class=n>strAppLogName</span> <span class=o>=</span> <span class=n>GetConfigPath</span><span class=p>(</span><span class=n>strLogConfigName</span><span class=p>);</span>
+
+    <span class=n>el</span><span class=o>::</span><span class=n>Configurations</span> <span class=n>conf</span><span class=p>(</span><span class=n>strAppLogName</span><span class=p>);</span>
+
+    <span class=n>el</span><span class=o>::</span><span class=n>Configuration</span><span class=o>*</span> <span class=n>pConfiguration</span> <span class=o>=</span> <span class=n>conf</span><span class=p>.</span><span class=n>get</span><span class=p>(</span><span class=n>el</span><span class=o>::</span><span class=n>Level</span><span class=o>::</span><span class=n>Debug</span><span class=p>,</span> <span class=n>el</span><span class=o>::</span><span class=n>ConfigurationType</span><span class=o>::</span><span class=n>Filename</span><span class=p>);</span>
+    <span class=c1>// 如果没有获取到 DBServer 或者 GamerServer 等 的配置文件 就加载默认的配置文件</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>pConfiguration</span> <span class=o>==</span> <span class=k>nullptr</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>conf</span> <span class=o>=</span> <span class=n>el</span><span class=o>::</span><span class=n>Configurations</span><span class=p>(</span><span class=n>GetConfigPath</span><span class=p>(</span><span class=s>&quot;Default&quot;</span><span class=p>));</span>
+        <span class=n>pConfiguration</span> <span class=o>=</span> <span class=n>conf</span><span class=p>.</span><span class=n>get</span><span class=p>(</span><span class=n>el</span><span class=o>::</span><span class=n>Level</span><span class=o>::</span><span class=n>Debug</span><span class=p>,</span> <span class=n>el</span><span class=o>::</span><span class=n>ConfigurationType</span><span class=o>::</span><span class=n>Filename</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strFileName</span> <span class=o>=</span> <span class=n>pConfiguration</span><span class=o>-&gt;</span><span class=n>value</span><span class=p>();</span>
+    <span class=n>pConfiguration</span><span class=o>-&gt;</span><span class=n>setValue</span><span class=p>(</span><span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>GetConfigPath</span><span class=p>()</span> <span class=o>+</span> <span class=n>strFileName</span><span class=p>);</span>
+
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;LogConfig: &quot;</span> <span class=o>&lt;&lt;</span> <span class=n>strAppLogName</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+
+    <span class=n>el</span><span class=o>::</span><span class=n>Loggers</span><span class=o>::</span><span class=n>reconfigureAllLoggers</span><span class=p>(</span><span class=n>conf</span><span class=p>);</span>
+    <span class=n>el</span><span class=o>::</span><span class=n>Helpers</span><span class=o>::</span><span class=n>installPreRollOutCallback</span><span class=p>(</span><span class=n>rolloutHandler</span><span class=p>);</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+</code></pre></div> 目前 我看到的是GetLogConfigName() 返回的是空串。</p> <p>setValue 重新设置日志文件为 “logs\master_server_debug_%datetime{%Y%M%d}.log”（假如当前是MasterServer） <div class=highlight><pre><span></span><code><span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>NFLogModule</span><span class=o>::</span><span class=n>GetConfigPath</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>fileName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>strAppLogName</span><span class=p>;</span>
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_WIN</span>
+<span class=cp>#ifdef NF_DEBUG_MODE</span>
+    <span class=n>strAppLogName</span> <span class=o>=</span> <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>GetConfigPath</span><span class=p>()</span> <span class=o>+</span> <span class=s>&quot;NFDataCfg/Debug/logconfig/&quot;</span> <span class=o>+</span> <span class=n>fileName</span> <span class=o>+</span> <span class=s>&quot;_win.conf&quot;</span><span class=p>;</span>
+<span class=cp>#else</span>
+    <span class=n>strAppLogName</span> <span class=o>=</span> <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>GetConfigPath</span><span class=p>()</span> <span class=o>+</span> <span class=s>&quot;NFDataCfg/Release/logconfig/&quot;</span> <span class=o>+</span> <span class=n>fileName</span> <span class=o>+</span> <span class=s>&quot;_win.conf&quot;</span><span class=p>;</span>
+<span class=cp>#endif</span>
+
+<span class=cp>#else</span>
+<span class=cp>#ifdef NF_DEBUG_MODE</span>
+    <span class=n>strAppLogName</span> <span class=o>=</span> <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>GetConfigPath</span><span class=p>()</span> <span class=o>+</span> <span class=s>&quot;NFDataCfg/Debug/logconfig/&quot;</span> <span class=o>+</span> <span class=n>fileName</span> <span class=o>+</span> <span class=s>&quot;.conf&quot;</span><span class=p>;</span>
+<span class=cp>#else</span>
+    <span class=n>strAppLogName</span> <span class=o>=</span> <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>GetConfigPath</span><span class=p>()</span> <span class=o>+</span> <span class=s>&quot;NFDataCfg/Release/logconfig/&quot;</span> <span class=o>+</span> <span class=n>fileName</span> <span class=o>+</span> <span class=s>&quot;.conf&quot;</span><span class=p>;</span>
+<span class=cp>#endif</span>
+<span class=cp>#endif</span>
+
+    <span class=k>return</span> <span class=n>strAppLogName</span><span class=p>;</span>
+<span class=p>}</span>
+</code></pre></div></p> <p>假如 fileName 是 MasterServe 那么返回的字符串是 “../NFDataCfg/Debug/logconfig/MasterServer_win.conf”</p> <h3 id=log>Log函数<a class=headerlink href=#log title="Permanent link">&para;</a></h3> <p><div class=highlight><pre><span></span><code><span class=kt>bool</span> <span class=n>NFLogModule</span><span class=o>::</span><span class=n>Log</span><span class=p>(</span><span class=k>const</span> <span class=n>NF_LOG_LEVEL</span> <span class=n>nll</span><span class=p>,</span> <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>format</span><span class=p>,</span> <span class=p>...)</span>
+<span class=p>{</span>
+    <span class=c1>//日志记录的总数加一</span>
+    <span class=n>mnLogCountTotal</span><span class=o>++</span><span class=p>;</span>
+
+    <span class=kt>char</span> <span class=n>szBuffer</span><span class=p>[</span><span class=mi>1024</span> <span class=o>*</span> <span class=mi>10</span><span class=p>]</span> <span class=o>=</span> <span class=p>{</span><span class=mi>0</span><span class=p>};</span>
+
+    <span class=kt>va_list</span> <span class=n>args</span><span class=p>;</span>
+    <span class=n>va_start</span><span class=p>(</span><span class=n>args</span><span class=p>,</span> <span class=n>format</span><span class=p>);</span>
+    <span class=n>vsnprintf</span><span class=p>(</span><span class=n>szBuffer</span><span class=p>,</span> <span class=k>sizeof</span><span class=p>(</span><span class=n>szBuffer</span><span class=p>)</span> <span class=o>-</span> <span class=mi>1</span><span class=p>,</span> <span class=n>format</span><span class=p>,</span> <span class=n>args</span><span class=p>);</span>
+    <span class=n>va_end</span><span class=p>(</span><span class=n>args</span><span class=p>);</span>
+
+    <span class=n>mstrLocalStream</span><span class=p>.</span><span class=n>clear</span><span class=p>();</span>
+
+    <span class=n>mstrLocalStream</span><span class=p>.</span><span class=n>append</span><span class=p>(</span><span class=n>std</span><span class=o>::</span><span class=n>to_string</span><span class=p>(</span><span class=n>mnLogCountTotal</span><span class=p>));</span>
+    <span class=n>mstrLocalStream</span><span class=p>.</span><span class=n>append</span><span class=p>(</span><span class=s>&quot; | &quot;</span><span class=p>);</span>
+    <span class=n>mstrLocalStream</span><span class=p>.</span><span class=n>append</span><span class=p>(</span><span class=n>std</span><span class=o>::</span><span class=n>to_string</span><span class=p>(</span><span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>GetAppID</span><span class=p>()));</span>
+    <span class=n>mstrLocalStream</span><span class=p>.</span><span class=n>append</span><span class=p>(</span><span class=s>&quot; | &quot;</span><span class=p>);</span>
+    <span class=n>mstrLocalStream</span><span class=p>.</span><span class=n>append</span><span class=p>(</span><span class=n>szBuffer</span><span class=p>);</span>
+
+    <span class=k>if</span> <span class=p>(</span><span class=n>mLogHooker</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>mLogHooker</span><span class=p>.</span><span class=n>get</span><span class=p>()</span><span class=o>-&gt;</span><span class=k>operator</span><span class=p>()(</span><span class=n>nll</span><span class=p>,</span> <span class=n>mstrLocalStream</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=k>switch</span> <span class=p>(</span><span class=n>nll</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>case</span> <span class=n>NFILogModule</span><span class=o>::</span><span class=nl>NLL_DEBUG_NORMAL</span><span class=p>:</span>
+            <span class=p>{</span>
+                <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=n>termcolor</span><span class=o>::</span><span class=n>green</span><span class=p>;</span>
+                <span class=n>LOG</span><span class=p>(</span><span class=n>DEBUG</span><span class=p>)</span> <span class=o>&lt;&lt;</span> <span class=n>mstrLocalStream</span><span class=p>;</span>
+            <span class=p>}</span>
+            <span class=k>break</span><span class=p>;</span>
+        <span class=k>case</span> <span class=n>NFILogModule</span><span class=o>::</span><span class=nl>NLL_INFO_NORMAL</span><span class=p>:</span>
+            <span class=p>{</span>
+                <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=n>termcolor</span><span class=o>::</span><span class=n>green</span><span class=p>;</span>
+                <span class=n>LOG</span><span class=p>(</span><span class=n>INFO</span><span class=p>)</span> <span class=o>&lt;&lt;</span> <span class=n>mstrLocalStream</span><span class=p>;</span>
+            <span class=p>}</span>   
+            <span class=k>break</span><span class=p>;</span>
+        <span class=k>case</span> <span class=n>NFILogModule</span><span class=o>::</span><span class=nl>NLL_WARING_NORMAL</span><span class=p>:</span>
+            <span class=p>{</span>
+                <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=n>termcolor</span><span class=o>::</span><span class=n>yellow</span><span class=p>;</span>
+                <span class=n>LOG</span><span class=p>(</span><span class=n>WARNING</span><span class=p>)</span> <span class=o>&lt;&lt;</span> <span class=n>mstrLocalStream</span><span class=p>;</span>
+            <span class=p>}</span>
+            <span class=k>break</span><span class=p>;</span>
+        <span class=k>case</span> <span class=n>NFILogModule</span><span class=o>::</span><span class=nl>NLL_ERROR_NORMAL</span><span class=p>:</span>
+            <span class=p>{</span>
+                <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=n>termcolor</span><span class=o>::</span><span class=n>red</span><span class=p>;</span>
+                <span class=n>LOG</span><span class=p>(</span><span class=n>ERROR</span><span class=p>)</span> <span class=o>&lt;&lt;</span> <span class=n>mstrLocalStream</span><span class=p>;</span>
+                <span class=c1>//LogStack();</span>
+            <span class=p>}</span>
+            <span class=k>break</span><span class=p>;</span>
+        <span class=k>case</span> <span class=n>NFILogModule</span><span class=o>::</span><span class=nl>NLL_FATAL_NORMAL</span><span class=p>:</span>
+            <span class=p>{</span>
+                <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=n>termcolor</span><span class=o>::</span><span class=n>red</span><span class=p>;</span>
+                <span class=n>LOG</span><span class=p>(</span><span class=n>FATAL</span><span class=p>)</span> <span class=o>&lt;&lt;</span> <span class=n>mstrLocalStream</span><span class=p>;</span>
+            <span class=p>}</span>
+            <span class=k>break</span><span class=p>;</span>
+        <span class=k>default</span><span class=o>:</span>
+            <span class=p>{</span>
+                <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=n>termcolor</span><span class=o>::</span><span class=n>green</span><span class=p>;</span>
+                <span class=n>LOG</span><span class=p>(</span><span class=n>INFO</span><span class=p>)</span> <span class=o>&lt;&lt;</span> <span class=n>mstrLocalStream</span><span class=p>;</span>
+            <span class=p>}</span>
+            <span class=k>break</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span><span class=o>&lt;&lt;</span><span class=n>termcolor</span><span class=o>::</span><span class=n>reset</span><span class=p>;</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+</code></pre></div> 将参数保存到mstrLocalStream字符串中 根据log的级别 改变字体的颜色进行log输出。</p> <h3 id=logstack>LogStack 函数<a class=headerlink href=#logstack title="Permanent link">&para;</a></h3> <p><div class=highlight><pre><span></span><code><span class=kt>void</span> <span class=n>NFLogModule</span><span class=o>::</span><span class=n>LogStack</span><span class=p>()</span>
+<span class=p>{</span>
+
+    <span class=c1>//To Add</span>
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_WIN</span>
+    <span class=kt>time_t</span> <span class=n>t</span> <span class=o>=</span> <span class=n>time</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+    <span class=kt>char</span> <span class=n>szDmupName</span><span class=p>[</span><span class=n>MAX_PATH</span><span class=p>];</span>
+    <span class=n>tm</span><span class=o>*</span> <span class=n>ptm</span> <span class=o>=</span> <span class=n>localtime</span><span class=p>(</span><span class=o>&amp;</span><span class=n>t</span><span class=p>);</span>
+
+    <span class=n>sprintf</span><span class=p>(</span><span class=n>szDmupName</span><span class=p>,</span> <span class=s>&quot;%d_%d_%d_%d_%d_%d.dmp&quot;</span><span class=p>,</span>  <span class=n>ptm</span><span class=o>-&gt;</span><span class=n>tm_year</span> <span class=o>+</span> <span class=mi>1900</span><span class=p>,</span> <span class=n>ptm</span><span class=o>-&gt;</span><span class=n>tm_mon</span><span class=p>,</span> <span class=n>ptm</span><span class=o>-&gt;</span><span class=n>tm_mday</span><span class=p>,</span> <span class=n>ptm</span><span class=o>-&gt;</span><span class=n>tm_hour</span><span class=p>,</span> <span class=n>ptm</span><span class=o>-&gt;</span><span class=n>tm_min</span><span class=p>,</span> <span class=n>ptm</span><span class=o>-&gt;</span><span class=n>tm_sec</span><span class=p>);</span>
+
+    <span class=n>HANDLE</span> <span class=n>hDumpFile</span> <span class=o>=</span> <span class=n>CreateFileA</span><span class=p>(</span><span class=n>szDmupName</span><span class=p>,</span> <span class=n>GENERIC_WRITE</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=n>CREATE_ALWAYS</span><span class=p>,</span> <span class=n>FILE_ATTRIBUTE_NORMAL</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>);</span>
+
+
+    <span class=n>MINIDUMP_EXCEPTION_INFORMATION</span> <span class=n>dumpInfo</span><span class=p>;</span>
+    <span class=c1>//dumpInfo.ExceptionPointers = pException;</span>
+    <span class=n>dumpInfo</span><span class=p>.</span><span class=n>ThreadId</span> <span class=o>=</span> <span class=n>GetCurrentThreadId</span><span class=p>();</span>
+    <span class=n>dumpInfo</span><span class=p>.</span><span class=n>ClientPointers</span> <span class=o>=</span> <span class=n>TRUE</span><span class=p>;</span>
+
+
+    <span class=n>MiniDumpWriteDump</span><span class=p>(</span><span class=n>GetCurrentProcess</span><span class=p>(),</span> <span class=n>GetCurrentProcessId</span><span class=p>(),</span> <span class=n>hDumpFile</span><span class=p>,</span> <span class=n>MiniDumpNormal</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>dumpInfo</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>);</span>
+
+    <span class=n>CloseHandle</span><span class=p>(</span><span class=n>hDumpFile</span><span class=p>);</span>
+<span class=cp>#else</span>
+    <span class=kt>int</span> <span class=n>size</span> <span class=o>=</span> <span class=mi>16</span><span class=p>;</span>
+    <span class=kt>void</span> <span class=o>*</span> <span class=n>array</span><span class=p>[</span><span class=mi>16</span><span class=p>];</span>
+    <span class=kt>int</span> <span class=n>stack_num</span> <span class=o>=</span> <span class=n>backtrace</span><span class=p>(</span><span class=n>array</span><span class=p>,</span> <span class=n>size</span><span class=p>);</span>
+    <span class=kt>char</span> <span class=o>**</span> <span class=n>stacktrace</span> <span class=o>=</span> <span class=n>backtrace_symbols</span><span class=p>(</span><span class=n>array</span><span class=p>,</span> <span class=n>stack_num</span><span class=p>);</span>
+    <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>stack_num</span><span class=p>;</span> <span class=o>++</span><span class=n>i</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=c1>//printf(&quot;%s\n&quot;, stacktrace[i]);</span>
+
+        <span class=n>Log</span><span class=p>(</span><span class=n>NLL_FATAL_NORMAL</span><span class=p>,</span> <span class=s>&quot;%s&quot;</span><span class=p>,</span> <span class=n>stacktrace</span><span class=p>[</span><span class=n>i</span><span class=p>]);</span>
+    <span class=p>}</span>
+
+    <span class=n>free</span><span class=p>(</span><span class=n>stacktrace</span><span class=p>);</span>
+<span class=cp>#endif</span>
+
+<span class=p>}</span>
+</code></pre></div> 将时间 和线程信息 保存到Dump文件中</p> <br> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../NFLogPlugin/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../NFLogPlugin/ class="btn btn-xs btn-link"> NFLogPlugin </a> </div> <div class=wm-article-nav> <a href=../dllmain/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../dllmain/ class="btn btn-xs btn-link"> dllmain </a> </div> </div> <br> </div> <footer class="container-fluid wm-page-content"><p>Copyright &copy; 2020 - 2020 张磊</p> <p>Documentation built with <a href=http://www.mkdocs.org/ >MkDocs</a> using <a href=https://github.com/gristlabs/mkdocs-windmill>Windmill</a> theme by Grist Labs.</p> </footer> </body> </html>
