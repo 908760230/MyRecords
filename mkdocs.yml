@@ -119,6 +119,12 @@ nav:
       - NFIModule:           NoahGameFrame/NFHeaderFiles/NFIModule_h.md
       - NFIPlugin:           NoahGameFrame/NFHeaderFiles/NFIPlugin_h.md
       - NFIPluginManager:    NoahGameFrame/NFHeaderFiles/NFIPluginManager_h.md
+    - NFLogPlugin:
+      - dllmain:             NoahGameFrame/NFLogPlugin/dllmain.md
+      - NFLogModule:         NoahGameFrame/NFLogPlugin/NFLogModule.md
+      - NFLogPlugin:         NoahGameFrame/NFLogPlugin/NFLogPlugin.md
+  - vs2019小知识:
+    - 调试文件路径:            vs2019小知识/调试文件路径.md
     
   
 
