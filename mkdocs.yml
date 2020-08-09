@@ -112,8 +112,12 @@ nav:
     - 无法build:              mkdocs/无法build的原因.md
   - NoahGameFrame:
     - NFCore:
+      - NFConsistentHash_h:  NoahGameFrame/NFCore/NFConsistentHash_h.md
       - NFDataList:          NoahGameFrame/NFCore/NFDataList_h.md
+      - NFIProperty:         NoahGameFrame/NFCore/NFIProperty_h.md   
       - NFMemoryCounter_h:   NoahGameFrame/NFCore/NFMemoryCounter_h.md
+      - NFVector2:           NoahGameFrame/NFCore/NFVector2.md
+      - NFVector3:           NoahGameFrame/NFCore/NFVector3.md
     - NFHeaderFiles:
       - NFGUID:              NoahGameFrame/NFHeaderFiles/NFGUID_h.md
       - NFIModule:           NoahGameFrame/NFHeaderFiles/NFIModule_h.md
