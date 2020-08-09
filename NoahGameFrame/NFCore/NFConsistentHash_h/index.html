@@ -1,0 +1,246 @@
+<!DOCTYPE html><html lang=en> <head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" href=../../../img/favicon.ico><meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"><title>NFConsistentHash_h - 记录</title><link href=../../../css/bootstrap-3.3.7.min.css rel=stylesheet><link href=../../../css/font-awesome-4.7.0.css rel=stylesheet><link href=../../../css/base.css rel=stylesheet><link rel=stylesheet href=../../../css/highlight.css><!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries --><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]--><script src=../../../js/jquery-3.2.1.min.js></script><script src=../../../js/bootstrap-3.3.7.min.js></script><script src=../../../js/highlight.pack.js></script><base target=_top><script>
+      var base_url = '../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "NFConsistentHash", url: "#_top", children: [
+              {title: "\u7f3a\u70b9\uff1a", url: "#_1" },
+              {title: "Redis \u96c6\u7fa4\u5206\u69fd\u7684\u5b9e\u73b0", url: "#redis" },
+              {title: "NFVirtualNode", url: "#nfvirtualnode" },
+              {title: "NFHasher", url: "#nfhasher" },
+              {title: "NFConsistentHash", url: "#nfconsistenthash_1" },
+          ]},
+        ];
+
+    </script><script src=../../../js/base.js></script></head> <body> <script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script> <div class="container-fluid wm-page-content"> <a name=_top></a> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../NFDataList_h/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../NFDataList_h/ class="btn btn-xs btn-link"> NFDataList </a> </div> <div class=wm-article-nav> <a href=../../../mkdocs/%E6%97%A0%E6%B3%95build%E7%9A%84%E5%8E%9F%E5%9B%A0/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../../../mkdocs/%E6%97%A0%E6%B3%95build%E7%9A%84%E5%8E%9F%E5%9B%A0/ class="btn btn-xs btn-link"> 无法build </a> </div> </div> <h1 id=nfconsistenthash>NFConsistentHash<a class=headerlink href=#nfconsistenthash title="Permanent link">&para;</a></h1> <p>一致性哈希主要就是解决当机器减少或增加的时候，大面积的数据重新哈希的问题。</p> <h2 id=_1>缺点：<a class=headerlink href=#_1 title="Permanent link">&para;</a></h2> <p>一致性Hash算法在服务节点太少时，容易因为节点分部不均匀而造成数据倾斜（被缓存的对象大部分集中缓存在某一台服务器上）问题。比如只有 2 台机器，这 2 台机器离的很近，那么顺时针第一个机器节点上将存在大量的数据，第二个机器节点上数据会很少。</p> <p>为了避免出现数据倾斜问题，一致性 Hash 算法引入了虚拟节点的机制，也就是每个机器节点会进行多次哈希，最终每个机器节点在哈希环上会有多个虚拟节点存在，使用这种方式来大大削弱甚至避免数据倾斜问题。同时数据定位算法不变，只是多了一步虚拟节点到实际节点的映射。</p> <h2 id=redis>Redis 集群分槽的实现<a class=headerlink href=#redis title="Permanent link">&para;</a></h2> <p>Redis 集群并没有直接使用一致性哈希，而是使用了哈希槽 （slot） 的概念，Redis 没有直接使用哈希算法 hash()，而是使用了crc16校验算法。槽位其实就是一个个的空间的单位。其实哈希槽的本质和一致性哈希算法非常相似，不同点就是对于哈希空间的定义。一致性哈希的空间是一个圆环，节点分布是基于圆环的，无法很好的控制数据分布，可能会产生数据倾斜问题。而 Redis 的槽位空间是自定义分配的，类似于Windows盘分区的概念。这种分区是可以自定义大小，自定义位置的。Redis 集群包含了 16384 个哈希槽，每个 Key 经过计算后会落在一个具体的槽位上，而槽位具体在哪个机器上是用户自己根据自己机器的情况配置的，机器硬盘小的可以分配少一点槽位，硬盘大的可以分配多一点。如果节点硬盘都差不多则可以平均分配。所以哈希槽这种概念很好地解决了一致性哈希的弊端。</p> <p>另外在容错性和扩展性上与一致性哈希一样，都是对受影响的数据进行转移而不影响其它的数据。而哈希槽本质上是对槽位的转移，把故障节点负责的槽位转移到其他正常的节点上。扩展节点也是一样，把其他节点上的槽位转移到新的节点上。</p> <p>需要注意的是，对于槽位的转移和分派，Redis集群是不会自动进行的，而是需要人工配置的。所以Redis集群的高可用是依赖于节点的主从复制与主从间的自动故障转移。</p> <h2 id=nfvirtualnode>NFVirtualNode<a class=headerlink href=#nfvirtualnode title="Permanent link">&para;</a></h2> <p>定义了NFIVirtualNode的接口和索引。 <div class=highlight><pre><span></span><code><span class=k>class</span> <span class=nc>NFIVirtualNode</span> 
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+
+    <span class=n>NFIVirtualNode</span><span class=p>(</span><span class=k>const</span> <span class=kt>int</span> <span class=n>nVirID</span><span class=p>)</span>
+        <span class=o>:</span><span class=n>nVirtualIndex</span><span class=p>(</span><span class=n>nVirID</span><span class=p>)</span>
+    <span class=p>{</span>
+
+    <span class=p>}</span>
+
+    <span class=n>NFIVirtualNode</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=n>nVirtualIndex</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=o>~</span><span class=n>NFIVirtualNode</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=n>nVirtualIndex</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>GetDataStr</span><span class=p>()</span> <span class=k>const</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=s>&quot;&quot;</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>ToStr</span><span class=p>()</span> <span class=k>const</span> 
+    <span class=p>{</span>
+        <span class=n>std</span><span class=o>::</span><span class=n>ostringstream</span> <span class=n>strInfo</span><span class=p>;</span>
+        <span class=n>strInfo</span> <span class=o>&lt;&lt;</span> <span class=n>GetDataStr</span><span class=p>()</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;-&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>nVirtualIndex</span><span class=p>;</span>
+        <span class=k>return</span> <span class=n>strInfo</span><span class=p>.</span><span class=n>str</span><span class=p>();</span>
+    <span class=p>}</span>
+
+<span class=k>private</span><span class=o>:</span>
+    <span class=kt>int</span> <span class=n>nVirtualIndex</span><span class=p>;</span>
+<span class=p>};</span>
+
+
+
+<span class=k>template</span> <span class=o>&lt;</span><span class=k>typename</span> <span class=n>T</span><span class=o>&gt;</span>
+<span class=k>class</span> <span class=nc>NFVirtualNode</span> <span class=o>:</span> <span class=k>public</span> <span class=n>NFIVirtualNode</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>NFVirtualNode</span><span class=p>(</span><span class=k>const</span> <span class=n>T</span> <span class=n>tData</span><span class=p>,</span> <span class=k>const</span> <span class=kt>int</span> <span class=n>nVirID</span> <span class=p>)</span> <span class=o>:</span> <span class=n>NFIVirtualNode</span><span class=p>(</span><span class=n>nVirID</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>mxData</span> <span class=o>=</span> <span class=n>tData</span><span class=p>;</span>
+    <span class=p>}</span>
+    <span class=n>NFVirtualNode</span><span class=p>()</span>
+    <span class=p>{</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>GetDataStr</span><span class=p>()</span> <span class=k>const</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>lexical_cast</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&gt;</span><span class=p>(</span><span class=n>mxData</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=n>T</span> <span class=n>mxData</span><span class=p>;</span>
+<span class=p>};</span>
+</code></pre></div></p> <h2 id=nfhasher>NFHasher<a class=headerlink href=#nfhasher title="Permanent link">&para;</a></h2> <p>将字符串CRC32校验码当做哈希值</p> <div class=highlight><pre><span></span><code><span class=k>class</span> <span class=nc>NFIHasher</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=k>virtual</span> <span class=o>~</span><span class=n>NFIHasher</span><span class=p>(){}</span>
+    <span class=k>virtual</span> <span class=kt>uint32_t</span> <span class=n>GetHashValue</span><span class=p>(</span><span class=k>const</span> <span class=n>NFIVirtualNode</span><span class=o>&amp;</span> <span class=n>vNode</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>};</span>
+
+<span class=k>class</span> <span class=nc>NFHasher</span> <span class=o>:</span> <span class=k>public</span> <span class=n>NFIHasher</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=k>virtual</span> <span class=kt>uint32_t</span> <span class=n>GetHashValue</span><span class=p>(</span><span class=k>const</span> <span class=n>NFIVirtualNode</span><span class=o>&amp;</span> <span class=n>vNode</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>vnode</span> <span class=o>=</span> <span class=n>vNode</span><span class=p>.</span><span class=n>ToStr</span><span class=p>();</span>
+        <span class=k>return</span> <span class=n>NFrame</span><span class=o>::</span><span class=n>CRC32</span><span class=p>(</span><span class=n>vnode</span><span class=p>);</span>
+    <span class=p>}</span>
+<span class=p>};</span>
+</code></pre></div> <h2 id=nfconsistenthash_1>NFConsistentHash<a class=headerlink href=#nfconsistenthash_1 title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=k>template</span> <span class=o>&lt;</span><span class=k>typename</span> <span class=n>T</span><span class=o>&gt;</span>
+<span class=k>class</span> <span class=nc>NFIConsistentHash</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=k>virtual</span> <span class=n>std</span><span class=o>::</span><span class=kt>size_t</span> <span class=n>Size</span><span class=p>()</span> <span class=k>const</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Empty</span><span class=p>()</span> <span class=k>const</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>ClearAll</span><span class=p>()</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>Insert</span><span class=p>(</span><span class=k>const</span> <span class=n>T</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>Insert</span><span class=p>(</span><span class=k>const</span> <span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&amp;</span> <span class=n>xNode</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Exist</span><span class=p>(</span><span class=k>const</span> <span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&amp;</span> <span class=n>xInNode</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>Erase</span><span class=p>(</span><span class=k>const</span> <span class=n>T</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=n>std</span><span class=o>::</span><span class=kt>size_t</span> <span class=n>Erase</span><span class=p>(</span><span class=k>const</span> <span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&amp;</span> <span class=n>xNode</span><span class=p>)</span>  <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>GetSuitNodeRandom</span><span class=p>(</span><span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&amp;</span> <span class=n>node</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>GetSuitNodeConsistent</span><span class=p>(</span><span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&amp;</span> <span class=n>node</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>GetSuitNode</span><span class=p>(</span><span class=k>const</span> <span class=n>T</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>,</span> <span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&amp;</span> <span class=n>node</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=c1>//virtual bool GetSuitNode(const std::string&amp; str, NFVirtualNode&lt;T&gt;&amp; node) = 0;</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>GetSuitNode</span><span class=p>(</span><span class=kt>uint32_t</span> <span class=n>hashValue</span><span class=p>,</span> <span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&amp;</span> <span class=n>node</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>GetNodeList</span><span class=p>(</span><span class=n>std</span><span class=o>::</span><span class=n>list</span><span class=o>&lt;</span><span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&gt;&amp;</span> <span class=n>nodeList</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>};</span>
+
+<span class=k>template</span> <span class=o>&lt;</span><span class=k>typename</span> <span class=n>T</span><span class=o>&gt;</span>
+<span class=k>class</span> <span class=nc>NFConsistentHash</span> <span class=o>:</span> <span class=k>public</span> <span class=n>NFIConsistentHash</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>NFConsistentHash</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=n>m_pHasher</span> <span class=o>=</span> <span class=k>new</span> <span class=n>NFHasher</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=o>~</span><span class=n>NFConsistentHash</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>delete</span> <span class=n>m_pHasher</span><span class=p>;</span>
+        <span class=n>m_pHasher</span> <span class=o>=</span> <span class=nb>NULL</span><span class=p>;</span>
+    <span class=p>}</span>
+
+<span class=k>public</span><span class=o>:</span>
+    <span class=k>virtual</span> <span class=n>std</span><span class=o>::</span><span class=kt>size_t</span> <span class=n>Size</span><span class=p>()</span> <span class=k>const</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>mxNodes</span><span class=p>.</span><span class=n>size</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>Empty</span><span class=p>()</span> <span class=k>const</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>mxNodes</span><span class=p>.</span><span class=n>empty</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=n>ClearAll</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=n>mxNodes</span><span class=p>.</span><span class=n>clear</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=n>Insert</span><span class=p>(</span><span class=k>const</span> <span class=n>T</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=c1>// 一次性插入五百个 没看懂是为什么</span>
+        <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>mnNodeCount</span><span class=p>;</span> <span class=o>++</span><span class=n>i</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=n>vNode</span><span class=p>(</span><span class=n>name</span><span class=p>,</span> <span class=n>i</span><span class=p>);</span>
+            <span class=n>Insert</span><span class=p>(</span><span class=n>vNode</span><span class=p>);</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=n>Insert</span><span class=p>(</span><span class=k>const</span> <span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&amp;</span> <span class=n>xNode</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=kt>uint32_t</span> <span class=n>hash</span> <span class=o>=</span> <span class=n>m_pHasher</span><span class=o>-&gt;</span><span class=n>GetHashValue</span><span class=p>(</span><span class=n>xNode</span><span class=p>);</span>
+        <span class=k>auto</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mxNodes</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>hash</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>it</span> <span class=o>==</span> <span class=n>mxNodes</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=n>mxNodes</span><span class=p>.</span><span class=n>insert</span><span class=p>(</span><span class=k>typename</span> <span class=n>std</span><span class=o>::</span><span class=n>map</span><span class=o>&lt;</span><span class=kt>uint32_t</span><span class=p>,</span> <span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&gt;::</span><span class=n>value_type</span><span class=p>(</span><span class=n>hash</span><span class=p>,</span> <span class=n>xNode</span><span class=p>));</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>Exist</span><span class=p>(</span><span class=k>const</span> <span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&amp;</span> <span class=n>xInNode</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=kt>uint32_t</span> <span class=n>hash</span> <span class=o>=</span> <span class=n>m_pHasher</span><span class=o>-&gt;</span><span class=n>GetHashValue</span><span class=p>(</span><span class=n>xInNode</span><span class=p>);</span>
+        <span class=k>typename</span> <span class=n>std</span><span class=o>::</span><span class=n>map</span><span class=o>&lt;</span><span class=kt>uint32_t</span><span class=p>,</span> <span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&gt;::</span><span class=n>iterator</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mxNodes</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>hash</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>it</span> <span class=o>!=</span> <span class=n>mxNodes</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=n>Erase</span><span class=p>(</span><span class=k>const</span> <span class=n>T</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>mnNodeCount</span><span class=p>;</span> <span class=o>++</span><span class=n>i</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=n>vNode</span><span class=p>(</span><span class=n>name</span><span class=p>,</span> <span class=n>i</span><span class=p>);</span>
+            <span class=n>Erase</span><span class=p>(</span><span class=n>vNode</span><span class=p>);</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=n>std</span><span class=o>::</span><span class=kt>size_t</span> <span class=n>Erase</span><span class=p>(</span><span class=k>const</span> <span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&amp;</span> <span class=n>xNode</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=kt>uint32_t</span> <span class=n>hash</span> <span class=o>=</span> <span class=n>m_pHasher</span><span class=o>-&gt;</span><span class=n>GetHashValue</span><span class=p>(</span><span class=n>xNode</span><span class=p>);</span>
+        <span class=k>return</span> <span class=n>mxNodes</span><span class=p>.</span><span class=n>erase</span><span class=p>(</span><span class=n>hash</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>GetSuitNodeRandom</span><span class=p>(</span><span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&amp;</span> <span class=n>node</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=kt>int</span> <span class=n>nID</span> <span class=o>=</span> <span class=p>(</span><span class=kt>int</span><span class=p>)</span> <span class=n>std</span><span class=o>::</span><span class=n>chrono</span><span class=o>::</span><span class=n>duration_cast</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>chrono</span><span class=o>::</span><span class=n>milliseconds</span><span class=o>&gt;</span><span class=p>(</span><span class=n>std</span><span class=o>::</span><span class=n>chrono</span><span class=o>::</span><span class=n>system_clock</span><span class=o>::</span><span class=n>now</span><span class=p>().</span><span class=n>time_since_epoch</span><span class=p>()).</span><span class=n>count</span><span class=p>();</span>
+        <span class=k>return</span> <span class=nf>GetSuitNode</span><span class=p>(</span><span class=n>nID</span><span class=p>,</span> <span class=n>node</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>GetSuitNodeConsistent</span><span class=p>(</span><span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&amp;</span> <span class=n>node</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>GetSuitNode</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=n>node</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>GetSuitNode</span><span class=p>(</span><span class=k>const</span> <span class=n>T</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>,</span> <span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&amp;</span> <span class=n>node</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>str</span> <span class=o>=</span> <span class=n>lexical_cast</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&gt;</span><span class=p>(</span><span class=n>name</span><span class=p>);</span>
+        <span class=kt>uint32_t</span> <span class=n>nCRC32</span> <span class=o>=</span> <span class=n>NFrame</span><span class=o>::</span><span class=n>CRC32</span><span class=p>(</span><span class=n>str</span><span class=p>);</span>
+        <span class=k>return</span> <span class=nf>GetSuitNode</span><span class=p>(</span><span class=n>nCRC32</span><span class=p>,</span> <span class=n>node</span><span class=p>);</span>
+    <span class=p>}</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>GetSuitNode</span><span class=p>(</span><span class=kt>uint32_t</span> <span class=n>hashValue</span><span class=p>,</span> <span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&amp;</span> <span class=n>node</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>if</span><span class=p>(</span><span class=n>mxNodes</span><span class=p>.</span><span class=n>empty</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=k>typename</span> <span class=n>std</span><span class=o>::</span><span class=n>map</span><span class=o>&lt;</span><span class=kt>uint32_t</span><span class=p>,</span> <span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&gt;::</span><span class=n>iterator</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mxNodes</span><span class=p>.</span><span class=n>lower_bound</span><span class=p>(</span><span class=n>hashValue</span><span class=p>);</span>
+
+        <span class=k>if</span> <span class=p>(</span><span class=n>it</span> <span class=o>==</span> <span class=n>mxNodes</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=n>it</span> <span class=o>=</span> <span class=n>mxNodes</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span>
+        <span class=p>}</span>
+
+        <span class=n>node</span> <span class=o>=</span> <span class=n>it</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>;</span>
+
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>GetNodeList</span><span class=p>(</span><span class=n>std</span><span class=o>::</span><span class=n>list</span><span class=o>&lt;</span><span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&gt;&amp;</span> <span class=n>nodeList</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>for</span> <span class=p>(</span><span class=k>typename</span> <span class=n>std</span><span class=o>::</span><span class=n>map</span><span class=o>&lt;</span><span class=kt>uint32_t</span><span class=p>,</span> <span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&gt;::</span><span class=n>iterator</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mxNodes</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span> <span class=n>it</span> <span class=o>!=</span> <span class=n>mxNodes</span><span class=p>.</span><span class=n>end</span><span class=p>();</span> <span class=o>++</span><span class=n>it</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>nodeList</span><span class=p>.</span><span class=n>push_back</span><span class=p>(</span><span class=n>it</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>);</span>
+        <span class=p>}</span>
+
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+<span class=k>private</span><span class=o>:</span>
+    <span class=kt>int</span> <span class=n>mnNodeCount</span> <span class=o>=</span> <span class=mi>500</span><span class=p>;</span>
+    <span class=k>typename</span> <span class=n>std</span><span class=o>::</span><span class=n>map</span><span class=o>&lt;</span><span class=kt>uint32_t</span><span class=p>,</span> <span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;&gt;</span> <span class=n>mxNodes</span><span class=p>;</span>
+    <span class=n>NFIHasher</span><span class=o>*</span> <span class=n>m_pHasher</span><span class=p>;</span>
+<span class=p>};</span>
+</code></pre></div> <br> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../NFDataList_h/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../NFDataList_h/ class="btn btn-xs btn-link"> NFDataList </a> </div> <div class=wm-article-nav> <a href=../../../mkdocs/%E6%97%A0%E6%B3%95build%E7%9A%84%E5%8E%9F%E5%9B%A0/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../../../mkdocs/%E6%97%A0%E6%B3%95build%E7%9A%84%E5%8E%9F%E5%9B%A0/ class="btn btn-xs btn-link"> 无法build </a> </div> </div> <br> </div> <footer class="container-fluid wm-page-content"><p>Copyright &copy; 2020 - 2020 张磊</p> <p>Documentation built with <a href=http://www.mkdocs.org/ >MkDocs</a> using <a href=https://github.com/gristlabs/mkdocs-windmill>Windmill</a> theme by Grist Labs.</p> </footer> </body> </html>
