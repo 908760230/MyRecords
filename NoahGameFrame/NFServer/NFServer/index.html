@@ -1,0 +1,240 @@
+<!DOCTYPE html><html lang=en> <head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" href=../../../img/favicon.ico><meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"><title>NFServer - 记录</title><link href=../../../css/bootstrap-3.3.7.min.css rel=stylesheet><link href=../../../css/font-awesome-4.7.0.css rel=stylesheet><link href=../../../css/base.css rel=stylesheet><link rel=stylesheet href=../../../css/highlight.css><!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries --><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]--><script src=../../../js/jquery-3.2.1.min.js></script><script src=../../../js/bootstrap-3.3.7.min.js></script><script src=../../../js/highlight.pack.js></script><base target=_top><script>
+      var base_url = '../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "NFServer", url: "#_top", children: [
+              {title: "rund.bat", url: "#rundbat" },
+              {title: "Plugin.xml", url: "#pluginxml" },
+              {title: "\u5b8c\u6574\u6e90\u7801", url: "#_1" },
+          ]},
+        ];
+
+    </script><script src=../../../js/base.js></script></head> <body> <script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script> <div class="container-fluid wm-page-content"> <a name=_top></a> <h1 id=nfserver>NFServer<a class=headerlink href=#nfserver title="Permanent link">&para;</a></h1> <p>整个程序的入口处</p> <h2 id=rundbat>rund.bat<a class=headerlink href=#rundbat title="Permanent link">&para;</a></h2> <p>windows 下的启动程序，可以看到NFXXXXX 其实都是NFServer根据 参数来确定启动。而每个主程序都是从Plugin.xml中加载相应的插件</p> <div class=highlight><pre><span></span><code><span class=nb>cd</span> /d %~dp0
+<span class=nb>cd</span> Debug
+
+<span class=nb>echo</span> Starting NFMasterServer...
+start <span class=s2>&quot;NFMasterServer&quot;</span> <span class=s2>&quot;NFServer.exe&quot;</span> <span class=s2>&quot;Server=MasterServer&quot;</span> <span class=s2>&quot;ID=3&quot;</span> <span class=s2>&quot;Plugin=Plugin.xml&quot;</span>
+
+choice /t <span class=m>2</span> /d y /n &gt;nul
+<span class=nb>echo</span> Starting NFWorldServer...
+start <span class=s2>&quot;NFWorldServer&quot;</span> <span class=s2>&quot;NFServer.exe&quot;</span> <span class=s2>&quot;Server=WorldServer&quot;</span> <span class=s2>&quot;ID=7&quot;</span> <span class=s2>&quot;Plugin=Plugin.xml&quot;</span>
+
+
+choice /t <span class=m>5</span> /d y /n &gt;nul
+
+<span class=nb>echo</span> Starting NFLoginServer...
+start <span class=s2>&quot;NFLoginServer&quot;</span> <span class=s2>&quot;NFServer.exe&quot;</span> <span class=s2>&quot;Server=LoginServer&quot;</span> <span class=s2>&quot;ID=4&quot;</span> <span class=s2>&quot;Plugin=Plugin.xml&quot;</span>
+
+choice /t <span class=m>5</span> /d y /n &gt;nul
+
+<span class=nb>echo</span> Starting NFDBServer...
+start <span class=s2>&quot;NFDBServer&quot;</span> <span class=s2>&quot;NFServer.exe&quot;</span> <span class=s2>&quot;Server=DBServer&quot;</span> <span class=s2>&quot;ID=8&quot;</span> <span class=s2>&quot;Plugin=Plugin.xml&quot;</span>
+
+
+choice /t <span class=m>2</span> /d y /n &gt;nul
+
+<span class=nb>echo</span> Starting NFGameServer...
+start <span class=s2>&quot;NFGameServer&quot;</span> <span class=s2>&quot;NFServer.exe&quot;</span> <span class=s2>&quot;Server=GameServer&quot;</span> <span class=s2>&quot;ID=6&quot;</span> <span class=s2>&quot;Plugin=Plugin.xml&quot;</span>
+
+choice /t <span class=m>2</span> /d y /n &gt;nul
+
+
+<span class=nb>echo</span> Starting NFProxyServer...
+start <span class=s2>&quot;NFProxyServer&quot;</span> <span class=s2>&quot;NFServer.exe&quot;</span> <span class=s2>&quot;Server=ProxyServer&quot;</span> <span class=s2>&quot;ID=5&quot;</span> <span class=s2>&quot;Plugin=Plugin.xml&quot;</span>
+</code></pre></div> <h2 id=pluginxml>Plugin.xml<a class=headerlink href=#pluginxml title="Permanent link">&para;</a></h2> <p>该xml所在的目录为 _Out\NFDataCfg\Debug\Plugin.xml</p> <div class=highlight><pre><span></span><code><span class=nt>&lt;XML&gt;</span>
+    <span class=nt>&lt;GameServer&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFNetPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFKernelPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFConfigPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFGameServerPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFGameServerNet_ServerPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFGameServerNet_ClientPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFLogPlugin&quot;</span> <span class=nt>/&gt;</span>   
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFLuaScriptPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=c>&lt;!--&lt;Plugin Name=&quot;NFRenderPlugin&quot; /&gt;--&gt;</span>
+        <span class=c>&lt;!--&lt;Plugin Name=&quot;NFBluePrintPlugin&quot; /&gt;--&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFActorPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFNavigationPlugin&quot;</span> <span class=nt>/&gt;</span>
+
+    <span class=nt>&lt;/GameServer&gt;</span>
+
+    <span class=nt>&lt;LoginServer&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFNetPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFKernelPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFConfigPlugin&quot;</span> <span class=nt>/&gt;</span>    
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFLoginNet_ServerPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFLoginNet_ClientPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFLoginLogicPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFLoginNet_HttpServerPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFLogPlugin&quot;</span> <span class=nt>/&gt;</span>   
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFDBLogicPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFNoSqlPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFActorPlugin&quot;</span> <span class=nt>/&gt;</span>
+    <span class=nt>&lt;/LoginServer&gt;</span>
+
+    <span class=nt>&lt;MasterServer&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFNetPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFKernelPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFConfigPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFMasterServerPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFMasterNet_ServerPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFMasterNet_HttpServerPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFLogPlugin&quot;</span> <span class=nt>/&gt;</span>   
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFActorPlugin&quot;</span> <span class=nt>/&gt;</span>
+    <span class=nt>&lt;/MasterServer&gt;</span>
+
+    <span class=nt>&lt;ProxyServer&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFNetPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFKernelPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFConfigPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFProxyLogicPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFProxyServerNet_ClientPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFProxyServerNet_ServerPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFLogPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFSecurityPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFActorPlugin&quot;</span> <span class=nt>/&gt;</span>     
+    <span class=nt>&lt;/ProxyServer&gt;</span>
+
+    <span class=nt>&lt;WorldServer&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFNetPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFKernelPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFConfigPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFWorldNet_ClientPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFWorldNet_ServerPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFDBLogicPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFLogPlugin&quot;</span> <span class=nt>/&gt;</span>   
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFSecurityPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFActorPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFNoSqlPlugin&quot;</span> <span class=nt>/&gt;</span>
+
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFWorldLogicPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFClanPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFFriendPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFMailPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFRankPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFTeamPlugin&quot;</span> <span class=nt>/&gt;</span>
+    <span class=nt>&lt;/WorldServer&gt;</span>
+    <span class=nt>&lt;DBServer&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFNetPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFKernelPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFConfigPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFDBNet_ClientPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFDBNet_ServerPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFLogPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFDBLogicPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFActorPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFNoSqlPlugin&quot;</span> <span class=nt>/&gt;</span>
+        <span class=nt>&lt;Plugin</span> <span class=na>Name=</span><span class=s>&quot;NFSecurityPlugin&quot;</span> <span class=nt>/&gt;</span>
+    <span class=nt>&lt;/DBServer&gt;</span>
+<span class=nt>&lt;/XML&gt;</span>
+</code></pre></div> <h2 id=_1>完整源码<a class=headerlink href=#_1 title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=cp>#include</span> <span class=cpf>&quot;../NFPluginLoader/NFPluginServer.h&quot;</span><span class=cp></span>
+
+
+<span class=c1>////////////EXTERNAL PLUGIN LISTED BELOW////////////////////////////////////////////</span>
+
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_WIN</span>
+<span class=cp>#pragma comment( lib, &quot;NFPluginLoader.lib&quot; )</span>
+
+<span class=cp>#include</span> <span class=cpf>&quot;Tutorial/Tutorial1/Tutorial1.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;Tutorial/Tutorial2/Tutorial2.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;Tutorial/Tutorial3/Tutorial3Plugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;Tutorial/Tutorial4/Tutorial4Plugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;Tutorial/Tutorial5/Tutorial5.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;Tutorial/Tutorial6/Tutorial6.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;Tutorial/Tutorial7/Tutorial7.h&quot;</span><span class=cp></span>
+
+<span class=cp>#pragma comment( lib, &quot;Tutorial1.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;Tutorial2.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;Tutorial3.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;Tutorial4.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;Tutorial5.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;Tutorial6.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;Tutorial7.lib&quot; )</span>
+<span class=cp>#endif</span>
+
+<span class=kt>void</span> <span class=nf>MidWareLoader</span><span class=p>(</span><span class=n>NFIPluginManager</span><span class=o>*</span> <span class=n>pPluginManager</span><span class=p>)</span>
+<span class=p>{</span>
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_WIN</span>
+    <span class=c1>//TUTORIAL</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=n>pPluginManager</span><span class=p>,</span> <span class=n>Tutorial1</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=n>pPluginManager</span><span class=p>,</span> <span class=n>Tutorial2</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=n>pPluginManager</span><span class=p>,</span> <span class=n>Tutorial3Plugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=n>pPluginManager</span><span class=p>,</span> <span class=n>Tutorial4Plugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=n>pPluginManager</span><span class=p>,</span> <span class=n>Tutorial5</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=n>pPluginManager</span><span class=p>,</span> <span class=n>Tutorial6</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=n>pPluginManager</span><span class=p>,</span> <span class=n>Tutorial7</span><span class=p>)</span>
+<span class=cp>#endif</span>
+<span class=p>}</span>
+<span class=c1>////////////////////////////////////////////////////////</span>
+
+<span class=kt>int</span> <span class=nf>main</span><span class=p>(</span><span class=kt>int</span> <span class=n>argc</span><span class=p>,</span> <span class=kt>char</span><span class=o>*</span> <span class=n>argv</span><span class=p>[])</span>
+<span class=p>{</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;__cplusplus:&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>__cplusplus</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+
+    <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFPluginServer</span><span class=o>&gt;&gt;</span> <span class=n>serverList</span><span class=p>;</span>
+
+    <span class=c1>// 将 命令行的那些参数保存到string中用空格分开，注意首字符是空格</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>strArgvList</span><span class=p>;</span>
+    <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>argc</span><span class=p>;</span> <span class=n>i</span><span class=o>++</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>strArgvList</span> <span class=o>+=</span> <span class=s>&quot; &quot;</span><span class=p>;</span>
+        <span class=n>strArgvList</span> <span class=o>+=</span> <span class=n>argv</span><span class=p>[</span><span class=n>i</span><span class=p>];</span>
+    <span class=p>}</span>
+
+    <span class=c1>// 根据argc的参数判断，程序是不带参数直接启动的，所以第一个参数默认为程序的启动路径</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>argc</span> <span class=o>==</span> <span class=mi>1</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=c1>//将参数保存到string中，然后将每个NFPluginServer对象保存到vector中</span>
+        <span class=c1>//IDE</span>
+        <span class=n>serverList</span><span class=p>.</span><span class=n>push_back</span><span class=p>(</span><span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFPluginServer</span><span class=o>&gt;</span><span class=p>(</span><span class=n>NF_NEW</span> <span class=n>NFPluginServer</span><span class=p>(</span><span class=n>strArgvList</span> <span class=o>+</span> <span class=s>&quot; Server=MasterServer ID=3 Plugin=Plugin.xml&quot;</span><span class=p>)));</span>
+        <span class=n>serverList</span><span class=p>.</span><span class=n>push_back</span><span class=p>(</span><span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFPluginServer</span><span class=o>&gt;</span><span class=p>(</span><span class=n>NF_NEW</span> <span class=n>NFPluginServer</span><span class=p>(</span><span class=n>strArgvList</span> <span class=o>+</span> <span class=s>&quot; Server=WorldServer ID=7 Plugin=Plugin.xml&quot;</span><span class=p>)));</span>
+        <span class=n>serverList</span><span class=p>.</span><span class=n>push_back</span><span class=p>(</span><span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFPluginServer</span><span class=o>&gt;</span><span class=p>(</span><span class=n>NF_NEW</span> <span class=n>NFPluginServer</span><span class=p>(</span><span class=n>strArgvList</span> <span class=o>+</span> <span class=s>&quot; Server=LoginServer ID=4 Plugin=Plugin.xml&quot;</span><span class=p>)));</span>
+        <span class=n>serverList</span><span class=p>.</span><span class=n>push_back</span><span class=p>(</span><span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFPluginServer</span><span class=o>&gt;</span><span class=p>(</span><span class=n>NF_NEW</span> <span class=n>NFPluginServer</span><span class=p>(</span><span class=n>strArgvList</span> <span class=o>+</span> <span class=s>&quot; Server=DBServer ID=8 Plugin=Plugin.xml&quot;</span><span class=p>)));</span>
+        <span class=n>serverList</span><span class=p>.</span><span class=n>push_back</span><span class=p>(</span><span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFPluginServer</span><span class=o>&gt;</span><span class=p>(</span><span class=n>NF_NEW</span> <span class=n>NFPluginServer</span><span class=p>(</span><span class=n>strArgvList</span> <span class=o>+</span> <span class=s>&quot; Server=ProxyServer ID=5 Plugin=Plugin.xml&quot;</span><span class=p>)));</span>
+        <span class=n>serverList</span><span class=p>.</span><span class=n>push_back</span><span class=p>(</span><span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFPluginServer</span><span class=o>&gt;</span><span class=p>(</span><span class=n>NF_NEW</span> <span class=n>NFPluginServer</span><span class=p>(</span><span class=n>strArgvList</span> <span class=o>+</span> <span class=s>&quot; Server=GameServer ID=6 Plugin=Plugin.xml&quot;</span><span class=p>)));</span>
+    <span class=p>}</span>
+    <span class=k>else</span>
+    <span class=p>{</span>
+        <span class=n>serverList</span><span class=p>.</span><span class=n>push_back</span><span class=p>(</span><span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFPluginServer</span><span class=o>&gt;</span><span class=p>(</span><span class=n>NF_NEW</span> <span class=n>NFPluginServer</span><span class=p>(</span><span class=n>strArgvList</span><span class=p>)));</span>
+    <span class=p>}</span>
+
+    <span class=c1>// 创建完各个server的实体之后，接下来就是执行初始的操作</span>
+    <span class=k>for</span> <span class=p>(</span><span class=k>auto</span> <span class=nl>item</span> <span class=p>:</span> <span class=n>serverList</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=c1>//保存的是以pPluginManager* 为参数的函数对象，方便在函数里面扩展加载新的插件</span>
+        <span class=n>item</span><span class=o>-&gt;</span><span class=n>SeMidWareLoader</span><span class=p>(</span><span class=n>MidWareLoader</span><span class=p>);</span>
+        <span class=c1>//这个函数就庞大了，不仅包含了各个插件对象的构建，还包括每个plugin中module的创建和注册，同时还有资源文建的加载，</span>
+        <span class=n>item</span><span class=o>-&gt;</span><span class=n>Init</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=c1>////////////////</span>
+    <span class=kt>uint64_t</span> <span class=n>nIndex</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>while</span> <span class=p>(</span><span class=nb>true</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>nIndex</span><span class=o>++</span><span class=p>;</span>
+
+        <span class=n>std</span><span class=o>::</span><span class=n>this_thread</span><span class=o>::</span><span class=n>sleep_for</span><span class=p>(</span><span class=n>std</span><span class=o>::</span><span class=n>chrono</span><span class=o>::</span><span class=n>milliseconds</span><span class=p>(</span><span class=mi>1</span><span class=p>));</span>
+        <span class=k>for</span> <span class=p>(</span><span class=k>auto</span> <span class=nl>item</span> <span class=p>:</span> <span class=n>serverList</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>item</span><span class=o>-&gt;</span><span class=n>Execute</span><span class=p>();</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=c1>////////////////</span>
+
+    <span class=k>for</span> <span class=p>(</span><span class=k>auto</span> <span class=nl>item</span> <span class=p>:</span> <span class=n>serverList</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>item</span><span class=o>-&gt;</span><span class=n>Final</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=n>serverList</span><span class=p>.</span><span class=n>clear</span><span class=p>();</span>
+
+    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>}</span>
+</code></pre></div> <br> <br> </div> <footer class="container-fluid wm-page-content"><p>Copyright &copy; 2020 - 2020 张磊</p> <p>Documentation built with <a href=http://www.mkdocs.org/ >MkDocs</a> using <a href=https://github.com/gristlabs/mkdocs-windmill>Windmill</a> theme by Grist Labs.</p> </footer> </body> </html>
