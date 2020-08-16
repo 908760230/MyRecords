@@ -127,6 +127,8 @@ nav:
       - dllmain:             NoahGameFrame/NFLogPlugin/dllmain.md
       - NFLogModule:         NoahGameFrame/NFLogPlugin/NFLogModule.md
       - NFLogPlugin:         NoahGameFrame/NFLogPlugin/NFLogPlugin.md
+    - NFServer:
+      - NFServer:             NoahGameFrame/NFServer/NFServer.md
   - vs2019小知识:
     - 调试文件路径:            vs2019小知识/调试文件路径.md
     
