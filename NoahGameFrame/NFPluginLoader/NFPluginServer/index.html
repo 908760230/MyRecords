@@ -14,7 +14,7 @@
 
     </script><script src=../../../js/base.js></script></head> <body> <script>
 if (is_top_frame) { $('body').addClass('wm-top-page'); }
-</script> <div class="container-fluid wm-page-content"> <a name=_top></a> <h1 id=nfpluginserver>NFPluginServer<a class=headerlink href=#nfpluginserver title="Permanent link">&para;</a></h1> <h2 id=nfpluginserverh>NFPluginServer.h<a class=headerlink href=#nfpluginserverh title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=cp>#ifndef NF_SERVER_H</span>
+</script> <div class="container-fluid wm-page-content"> <a name=_top></a> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../../NFServer/NFServer/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../../NFServer/NFServer/ class="btn btn-xs btn-link"> NFServer </a> </div> <div class=wm-article-nav> <a href=../../NFLogPlugin/NFLogPlugin/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../../NFLogPlugin/NFLogPlugin/ class="btn btn-xs btn-link"> NFLogPlugin </a> </div> </div> <h1 id=nfpluginserver>NFPluginServer<a class=headerlink href=#nfpluginserver title="Permanent link">&para;</a></h1> <h2 id=nfpluginserverh>NFPluginServer.h<a class=headerlink href=#nfpluginserverh title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=cp>#ifndef NF_SERVER_H</span>
 <span class=cp>#define NF_SERVER_H</span>
 
 <span class=cp>#include</span> <span class=cpf>&lt;stdlib.h&gt;</span><span class=cp></span>
@@ -100,5 +100,361 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
 <span class=p>};</span>
 
 <span class=cp>#endif</span>
-</code></pre></div> <h2 id=nfpluginservercpp>NFPluginServer.cpp<a class=headerlink href=#nfpluginservercpp title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code>
-</code></pre></div> <br> <br> </div> <footer class="container-fluid wm-page-content"><p>Copyright &copy; 2020 - 2020 张磊</p> <p>Documentation built with <a href=http://www.mkdocs.org/ >MkDocs</a> using <a href=https://github.com/gristlabs/mkdocs-windmill>Windmill</a> theme by Grist Labs.</p> </footer> </body> </html>
+</code></pre></div> <h2 id=nfpluginservercpp>NFPluginServer.cpp<a class=headerlink href=#nfpluginservercpp title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=cp>#include</span> <span class=cpf>&quot;NFPluginServer.h&quot;</span><span class=cp></span>
+
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_WIN</span>
+<span class=kt>bool</span> <span class=nf>ApplicationCtrlHandler</span><span class=p>(</span><span class=n>DWORD</span> <span class=n>fdwctrltype</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=k>switch</span> <span class=p>(</span><span class=n>fdwctrltype</span><span class=p>)</span>
+    <span class=p>{</span>
+    <span class=k>case</span> <span class=nl>CTRL_C_EVENT</span><span class=p>:</span>
+    <span class=k>case</span> <span class=nl>CTRL_CLOSE_EVENT</span><span class=p>:</span>
+    <span class=k>case</span> <span class=nl>CTRL_BREAK_EVENT</span><span class=p>:</span>
+    <span class=k>case</span> <span class=nl>CTRL_LOGOFF_EVENT</span><span class=p>:</span>
+    <span class=k>case</span> <span class=nl>CTRL_SHUTDOWN_EVENT</span><span class=p>:</span>
+    <span class=p>{</span>
+        <span class=c1>//bExitApp = true;</span>
+    <span class=p>}</span>
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=k>default</span><span class=o>:</span>
+        <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=nf>CreateDumpFile</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strDumpFilePathName</span><span class=p>,</span> <span class=n>EXCEPTION_POINTERS</span><span class=o>*</span> <span class=n>pException</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=c1>//Dump</span>
+    <span class=n>HANDLE</span> <span class=n>hDumpFile</span> <span class=o>=</span> <span class=n>CreateFile</span><span class=p>(</span><span class=n>strDumpFilePathName</span><span class=p>.</span><span class=n>c_str</span><span class=p>(),</span> <span class=n>GENERIC_WRITE</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=n>CREATE_ALWAYS</span><span class=p>,</span> <span class=n>FILE_ATTRIBUTE_NORMAL</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>);</span>
+
+    <span class=n>MINIDUMP_EXCEPTION_INFORMATION</span> <span class=n>dumpInfo</span><span class=p>;</span>
+    <span class=n>dumpInfo</span><span class=p>.</span><span class=n>ExceptionPointers</span> <span class=o>=</span> <span class=n>pException</span><span class=p>;</span>
+    <span class=n>dumpInfo</span><span class=p>.</span><span class=n>ThreadId</span> <span class=o>=</span> <span class=n>GetCurrentThreadId</span><span class=p>();</span>
+    <span class=n>dumpInfo</span><span class=p>.</span><span class=n>ClientPointers</span> <span class=o>=</span> <span class=n>TRUE</span><span class=p>;</span>
+    <span class=c1>//将信息写入dump文件中</span>
+    <span class=n>MiniDumpWriteDump</span><span class=p>(</span><span class=n>GetCurrentProcess</span><span class=p>(),</span> <span class=n>GetCurrentProcessId</span><span class=p>(),</span> <span class=n>hDumpFile</span><span class=p>,</span> <span class=n>MiniDumpNormal</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>dumpInfo</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>);</span>
+
+    <span class=n>CloseHandle</span><span class=p>(</span><span class=n>hDumpFile</span><span class=p>);</span>
+<span class=p>}</span>
+
+<span class=kt>long</span> <span class=nf>ApplicationCrashHandler</span><span class=p>(</span><span class=n>EXCEPTION_POINTERS</span><span class=o>*</span> <span class=n>pException</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=kt>time_t</span> <span class=n>t</span> <span class=o>=</span> <span class=n>time</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+    <span class=kt>char</span> <span class=n>szDmupName</span><span class=p>[</span><span class=n>MAX_PATH</span><span class=p>];</span>
+    <span class=n>tm</span><span class=o>*</span> <span class=n>ptm</span> <span class=o>=</span> <span class=n>localtime</span><span class=p>(</span><span class=o>&amp;</span><span class=n>t</span><span class=p>);</span>
+
+    <span class=n>sprintf_s</span><span class=p>(</span><span class=n>szDmupName</span><span class=p>,</span> <span class=s>&quot;%04d_%02d_%02d_%02d_%02d_%02d.dmp&quot;</span><span class=p>,</span> <span class=n>ptm</span><span class=o>-&gt;</span><span class=n>tm_year</span> <span class=o>+</span> <span class=mi>1900</span><span class=p>,</span> <span class=n>ptm</span><span class=o>-&gt;</span><span class=n>tm_mon</span> <span class=o>+</span> <span class=mi>1</span><span class=p>,</span> <span class=n>ptm</span><span class=o>-&gt;</span><span class=n>tm_mday</span><span class=p>,</span> <span class=n>ptm</span><span class=o>-&gt;</span><span class=n>tm_hour</span><span class=p>,</span> <span class=n>ptm</span><span class=o>-&gt;</span><span class=n>tm_min</span><span class=p>,</span> <span class=n>ptm</span><span class=o>-&gt;</span><span class=n>tm_sec</span><span class=p>);</span>
+    <span class=n>CreateDumpFile</span><span class=p>(</span><span class=n>szDmupName</span><span class=p>,</span> <span class=n>pException</span><span class=p>);</span>
+
+    <span class=n>FatalAppExit</span><span class=p>(</span><span class=o>-</span><span class=mi>1</span><span class=p>,</span> <span class=n>szDmupName</span><span class=p>);</span>
+
+    <span class=k>return</span> <span class=n>EXCEPTION_EXECUTE_HANDLER</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=cp>#else</span>
+
+<span class=kt>void</span> <span class=nf>NFCrashHandler</span><span class=p>(</span><span class=kt>int</span> <span class=n>sig</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=c1>// FOLLOWING LINE IS ABSOLUTELY NEEDED AT THE END IN ORDER TO ABORT APPLICATION</span>
+    <span class=c1>//el::base::debug::StackTrace();</span>
+    <span class=c1>//el::Helpers::logCrashReason(sig, true);</span>
+
+
+    <span class=n>LOG</span><span class=p>(</span><span class=n>FATAL</span><span class=p>)</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;crash sig:&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>sig</span><span class=p>;</span>
+
+    <span class=kt>int</span> <span class=n>size</span> <span class=o>=</span> <span class=mi>16</span><span class=p>;</span>
+    <span class=kt>void</span><span class=o>*</span> <span class=n>array</span><span class=p>[</span><span class=mi>16</span><span class=p>];</span>
+    <span class=kt>int</span> <span class=n>stack_num</span> <span class=o>=</span> <span class=n>backtrace</span><span class=p>(</span><span class=n>array</span><span class=p>,</span> <span class=n>size</span><span class=p>);</span>
+    <span class=kt>char</span><span class=o>**</span> <span class=n>stacktrace</span> <span class=o>=</span> <span class=n>backtrace_symbols</span><span class=p>(</span><span class=n>array</span><span class=p>,</span> <span class=n>stack_num</span><span class=p>);</span>
+    <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>stack_num</span><span class=p>;</span> <span class=o>++</span><span class=n>i</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=c1>//printf(&quot;%s\n&quot;, stacktrace[i]);</span>
+        <span class=n>LOG</span><span class=p>(</span><span class=n>FATAL</span><span class=p>)</span> <span class=o>&lt;&lt;</span> <span class=n>stacktrace</span><span class=p>[</span><span class=n>i</span><span class=p>];</span>
+    <span class=p>}</span>
+
+    <span class=n>free</span><span class=p>(</span><span class=n>stacktrace</span><span class=p>);</span>
+<span class=p>}</span>
+
+<span class=cp>#endif</span>
+
+<span class=n>NFPluginServer</span><span class=o>::</span><span class=n>NFPluginServer</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strArgv</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=k>this</span><span class=o>-&gt;</span><span class=n>strArgvList</span> <span class=o>=</span> <span class=n>strArgv</span><span class=p>;</span>
+
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_WIN</span>
+    <span class=n>SetUnhandledExceptionFilter</span><span class=p>((</span><span class=n>LPTOP_LEVEL_EXCEPTION_FILTER</span><span class=p>)</span><span class=n>ApplicationCrashHandler</span><span class=p>);</span>
+<span class=cp>#else</span>
+    <span class=n>signal</span><span class=p>(</span><span class=n>SIGSEGV</span><span class=p>,</span> <span class=n>NFCrashHandler</span><span class=p>);</span>
+    <span class=c1>//el::Helpers::setCrashHandler(CrashHandler);</span>
+<span class=cp>#endif</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFPluginServer</span><span class=o>::</span><span class=n>Execute</span><span class=p>()</span>
+<span class=p>{</span>
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_WIN</span>
+    <span class=kr>__try</span>
+<span class=cp>#else</span>
+    <span class=k>try</span>
+<span class=cp>#endif</span>
+    <span class=p>{</span>
+        <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>Execute</span><span class=p>();</span>
+    <span class=p>}</span>
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_WIN</span>
+    <span class=kr>__except</span> <span class=p>(</span><span class=n>ApplicationCrashHandler</span><span class=p>(</span><span class=n>GetExceptionInformation</span><span class=p>()))</span>
+    <span class=p>{</span>
+    <span class=p>}</span>
+<span class=cp>#else</span>
+    <span class=k>catch</span> <span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>exception</span> <span class=o>&amp;</span> <span class=n>e</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>NFException</span><span class=o>::</span><span class=n>StackTrace</span><span class=p>(</span><span class=mi>11</span><span class=p>);</span>
+    <span class=p>}</span>
+    <span class=k>catch</span> <span class=p>(...)</span>
+    <span class=p>{</span>
+        <span class=n>NFException</span><span class=o>::</span><span class=n>StackTrace</span><span class=p>(</span><span class=mi>11</span><span class=p>);</span>
+    <span class=p>}</span>
+<span class=cp>#endif</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFPluginServer</span><span class=o>::</span><span class=n>PrintfLogo</span><span class=p>()</span>
+<span class=p>{</span>
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_WIN</span>
+    <span class=n>SetConsoleTextAttribute</span><span class=p>(</span><span class=n>GetStdHandle</span><span class=p>(</span><span class=n>STD_OUTPUT_HANDLE</span><span class=p>),</span> <span class=n>FOREGROUND_INTENSITY</span> <span class=o>|</span> <span class=n>FOREGROUND_RED</span> <span class=o>|</span> <span class=n>FOREGROUND_GREEN</span> <span class=o>|</span> <span class=n>FOREGROUND_BLUE</span><span class=p>);</span>
+<span class=cp>#endif</span>
+
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;</span><span class=se>\n</span><span class=s>&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;************************************************&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;**                                            **&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;**                 NoahFrame                  **&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;**   Copyright (c) 2011-2019, LvSheng.Huang   **&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;**             All rights reserved.           **&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;**                                            **&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;************************************************&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;</span><span class=se>\n</span><span class=s>&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;-d Run itas daemon mode, only on linux&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;-x Close the &#39;X&#39; button, only on windows&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;Instance: name.xml File&#39;s name to instead of </span><span class=se>\&quot;</span><span class=s>Plugin.xml</span><span class=se>\&quot;</span><span class=s> when programs be launched, all platform&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;Instance: </span><span class=se>\&quot;</span><span class=s>ID=number</span><span class=se>\&quot;</span><span class=s>, </span><span class=se>\&quot;</span><span class=s>Server=GameServer</span><span class=se>\&quot;</span><span class=s>  when programs be launched, all platform&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;</span><span class=se>\n</span><span class=s>&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_WIN</span>
+    <span class=n>SetConsoleTextAttribute</span><span class=p>(</span><span class=n>GetStdHandle</span><span class=p>(</span><span class=n>STD_OUTPUT_HANDLE</span><span class=p>),</span> <span class=n>FOREGROUND_INTENSITY</span> <span class=o>|</span> <span class=n>FOREGROUND_RED</span> <span class=o>|</span> <span class=n>FOREGROUND_GREEN</span> <span class=o>|</span> <span class=n>FOREGROUND_BLUE</span><span class=p>);</span>
+<span class=cp>#endif</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFPluginServer</span><span class=o>::</span><span class=n>SeMidWareLoader</span><span class=p>(</span><span class=n>std</span><span class=o>::</span><span class=n>function</span><span class=o>&lt;</span><span class=kt>void</span><span class=p>(</span><span class=n>NFIPluginManager</span> <span class=o>*</span> <span class=n>p</span><span class=p>)</span><span class=o>&gt;</span> <span class=n>fun</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>externalPluginLoader</span> <span class=o>=</span> <span class=n>fun</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFPluginServer</span><span class=o>::</span><span class=n>Init</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>PrintfLogo</span><span class=p>();</span>
+    <span class=c1>//每一个NFPluginServer只有一个NFPluginManager</span>
+    <span class=n>pPluginManager</span> <span class=o>=</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIPluginManager</span><span class=o>&gt;</span><span class=p>(</span><span class=n>NF_NEW</span> <span class=n>NFPluginManager</span><span class=p>());</span>
+
+    <span class=c1>// 处理NFPluginServer的参数，这个参数可能来自命令行或者构造函数</span>
+    <span class=n>ProcessParameter</span><span class=p>();</span>
+
+    <span class=c1>//设置读取文件内容的函数，用来读取xml内容为字符串</span>
+    <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>SetGetFileContentFunctor</span><span class=p>(</span><span class=n>GetFileContent</span><span class=p>);</span>
+    <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>SetConfigPath</span><span class=p>(</span><span class=s>&quot;../&quot;</span><span class=p>);</span>
+
+    <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>LoadPluginConfig</span><span class=p>();</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>externalPluginLoader</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>externalPluginLoader</span><span class=p>(</span><span class=n>pPluginManager</span><span class=p>.</span><span class=n>get</span><span class=p>());</span>
+    <span class=p>}</span>
+
+    <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>LoadPlugin</span><span class=p>();</span>
+
+    <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>Awake</span><span class=p>();</span>
+    <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>Init</span><span class=p>();</span>
+    <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>AfterInit</span><span class=p>();</span>
+    <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>CheckConfig</span><span class=p>();</span>
+    <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>ReadyExecute</span><span class=p>();</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFPluginServer</span><span class=o>::</span><span class=n>Final</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>BeforeShut</span><span class=p>();</span>
+    <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>Shut</span><span class=p>();</span>
+    <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>Finalize</span><span class=p>();</span>
+
+    <span class=n>pPluginManager</span> <span class=o>=</span> <span class=k>nullptr</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFPluginServer</span><span class=o>::</span><span class=n>ProcessParameter</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=c1>//设置守护进程</span>
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_WIN</span>
+    <span class=n>SetConsoleCtrlHandler</span><span class=p>((</span><span class=n>PHANDLER_ROUTINE</span><span class=p>)</span><span class=n>ApplicationCtrlHandler</span><span class=p>,</span> <span class=nb>true</span><span class=p>);</span>
+<span class=cp>#else</span>
+    <span class=c1>//run it as a daemon process</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>strArgvList</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=s>&quot;-d&quot;</span><span class=p>)</span> <span class=o>!=</span> <span class=n>string</span><span class=o>::</span><span class=n>npos</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>InitDaemon</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=n>signal</span><span class=p>(</span><span class=n>SIGPIPE</span><span class=p>,</span> <span class=n>SIG_IGN</span><span class=p>);</span>
+    <span class=n>signal</span><span class=p>(</span><span class=n>SIGCHLD</span><span class=p>,</span> <span class=n>SIG_IGN</span><span class=p>);</span>
+<span class=cp>#endif</span>
+
+    <span class=n>NFDataList</span> <span class=n>argList</span><span class=p>;</span>
+    <span class=n>argList</span><span class=p>.</span><span class=n>Split</span><span class=p>(</span><span class=k>this</span><span class=o>-&gt;</span><span class=n>strArgvList</span><span class=p>,</span> <span class=s>&quot; &quot;</span><span class=p>);</span>
+
+    <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>argList</span><span class=p>.</span><span class=n>GetCount</span><span class=p>();</span> <span class=n>i</span><span class=o>++</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>strPluginName</span> <span class=o>=</span> <span class=n>argList</span><span class=p>.</span><span class=n>String</span><span class=p>(</span><span class=n>i</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>strPluginName</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=s>&quot;Plugin=&quot;</span><span class=p>)</span> <span class=o>!=</span> <span class=n>string</span><span class=o>::</span><span class=n>npos</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>strPluginName</span><span class=p>.</span><span class=n>erase</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=mi>7</span><span class=p>);</span>
+            <span class=k>break</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=n>strPluginName</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>;</span>
+    <span class=p>}</span>
+    <span class=c1>//将 Plugin.xml传进去</span>
+    <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>SetConfigName</span><span class=p>(</span><span class=n>strPluginName</span><span class=p>);</span>
+
+    <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>argList</span><span class=p>.</span><span class=n>GetCount</span><span class=p>();</span> <span class=n>i</span><span class=o>++</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>strAppName</span> <span class=o>=</span> <span class=n>argList</span><span class=p>.</span><span class=n>String</span><span class=p>(</span><span class=n>i</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>strAppName</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=s>&quot;Server=&quot;</span><span class=p>)</span> <span class=o>!=</span> <span class=n>string</span><span class=o>::</span><span class=n>npos</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>strAppName</span><span class=p>.</span><span class=n>erase</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=mi>7</span><span class=p>);</span>
+            <span class=k>break</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=n>strAppName</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>;</span>
+    <span class=p>}</span>
+    <span class=c1>//设置app的名字</span>
+    <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>SetAppName</span><span class=p>(</span><span class=n>strAppName</span><span class=p>);</span>
+
+    <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>argList</span><span class=p>.</span><span class=n>GetCount</span><span class=p>();</span> <span class=n>i</span><span class=o>++</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>strAppID</span> <span class=o>=</span> <span class=n>argList</span><span class=p>.</span><span class=n>String</span><span class=p>(</span><span class=n>i</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>strAppID</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=s>&quot;ID=&quot;</span><span class=p>)</span> <span class=o>!=</span> <span class=n>string</span><span class=o>::</span><span class=n>npos</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>strAppID</span><span class=p>.</span><span class=n>erase</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=mi>3</span><span class=p>);</span>
+            <span class=k>break</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=n>strAppID</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=kt>int</span> <span class=n>nAppID</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>NF_StrTo</span><span class=p>(</span><span class=n>strAppID</span><span class=p>,</span> <span class=n>nAppID</span><span class=p>))</span>
+    <span class=p>{</span>
+        <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>SetAppID</span><span class=p>(</span><span class=n>nAppID</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=c1>// NoSqlServer.xml:IP=\&quot;127.0.0.1\&quot;==IP=\&quot;192.168.1.1\&quot;</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>strArgvList</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=s>&quot;.xml:&quot;</span><span class=p>)</span> <span class=o>!=</span> <span class=n>string</span><span class=o>::</span><span class=n>npos</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>argList</span><span class=p>.</span><span class=n>GetCount</span><span class=p>();</span> <span class=n>i</span><span class=o>++</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>strPipeline</span> <span class=o>=</span> <span class=n>argList</span><span class=p>.</span><span class=n>String</span><span class=p>(</span><span class=n>i</span><span class=p>);</span>
+            <span class=kt>int</span> <span class=n>posFile</span> <span class=o>=</span> <span class=n>strPipeline</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=s>&quot;.xml:&quot;</span><span class=p>);</span>
+            <span class=kt>int</span> <span class=n>posContent</span> <span class=o>=</span> <span class=n>strPipeline</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=s>&quot;==&quot;</span><span class=p>);</span>
+            <span class=k>if</span> <span class=p>(</span><span class=n>posFile</span> <span class=o>!=</span> <span class=n>string</span><span class=o>::</span><span class=n>npos</span> <span class=o>&amp;&amp;</span> <span class=n>posContent</span> <span class=o>!=</span> <span class=n>string</span><span class=o>::</span><span class=n>npos</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>fileName</span> <span class=o>=</span> <span class=n>strPipeline</span><span class=p>.</span><span class=n>substr</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=n>posFile</span> <span class=o>+</span> <span class=mi>4</span><span class=p>);</span>
+                <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>content</span> <span class=o>=</span> <span class=n>strPipeline</span><span class=p>.</span><span class=n>substr</span><span class=p>(</span><span class=n>posFile</span> <span class=o>+</span> <span class=mi>5</span><span class=p>,</span> <span class=n>posContent</span> <span class=o>-</span> <span class=p>(</span><span class=n>posFile</span> <span class=o>+</span> <span class=mi>5</span><span class=p>));</span>
+                <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>replaceContent</span> <span class=o>=</span> <span class=n>strPipeline</span><span class=p>.</span><span class=n>substr</span><span class=p>(</span><span class=n>posContent</span> <span class=o>+</span> <span class=mi>2</span><span class=p>,</span> <span class=n>strPipeline</span><span class=p>.</span><span class=n>length</span><span class=p>()</span> <span class=o>-</span> <span class=p>(</span><span class=n>posContent</span> <span class=o>+</span> <span class=mi>2</span><span class=p>));</span>
+
+                <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>AddFileReplaceContent</span><span class=p>(</span><span class=n>fileName</span><span class=p>,</span> <span class=n>content</span><span class=p>,</span> <span class=n>replaceContent</span><span class=p>);</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>strDockerFlag</span> <span class=o>=</span> <span class=s>&quot;0&quot;</span><span class=p>;</span>
+    <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>argList</span><span class=p>.</span><span class=n>GetCount</span><span class=p>();</span> <span class=n>i</span><span class=o>++</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>strDockerFlag</span> <span class=o>=</span> <span class=n>argList</span><span class=p>.</span><span class=n>String</span><span class=p>(</span><span class=n>i</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>strDockerFlag</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=s>&quot;Docker=&quot;</span><span class=p>)</span> <span class=o>!=</span> <span class=n>string</span><span class=o>::</span><span class=n>npos</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>strDockerFlag</span><span class=p>.</span><span class=n>erase</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=mi>7</span><span class=p>);</span>
+            <span class=k>break</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=n>strDockerFlag</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=kt>int</span> <span class=n>nDockerFlag</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>NF_StrTo</span><span class=p>(</span><span class=n>strDockerFlag</span><span class=p>,</span> <span class=n>nDockerFlag</span><span class=p>))</span>
+    <span class=p>{</span>
+        <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>SetRunningDocker</span><span class=p>(</span><span class=n>nDockerFlag</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=n>strTitleName</span> <span class=o>=</span> <span class=n>strAppName</span> <span class=o>+</span> <span class=n>strAppID</span><span class=p>;</span><span class=c1>// +&quot; PID&quot; + NFGetPID();</span>
+    <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>strTitleName</span><span class=p>.</span><span class=n>empty</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=c1>//去掉字符串中的Server</span>
+        <span class=n>strTitleName</span><span class=p>.</span><span class=n>replace</span><span class=p>(</span><span class=n>strTitleName</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=s>&quot;Server&quot;</span><span class=p>),</span> <span class=mi>6</span><span class=p>,</span> <span class=s>&quot;&quot;</span><span class=p>);</span>
+        <span class=n>strTitleName</span> <span class=o>=</span> <span class=s>&quot;NF&quot;</span> <span class=o>+</span> <span class=n>strTitleName</span><span class=p>;</span>
+    <span class=p>}</span>
+    <span class=k>else</span>
+    <span class=p>{</span>
+        <span class=n>strTitleName</span> <span class=o>=</span> <span class=s>&quot;NFIDE&quot;</span><span class=p>;</span>
+    <span class=p>}</span>
+
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_WIN</span>
+    <span class=n>SetConsoleTitle</span><span class=p>(</span><span class=n>strTitleName</span><span class=p>.</span><span class=n>c_str</span><span class=p>());</span>
+<span class=cp>#elif NF_PLATFORM == NF_PLATFORM_LINUX</span>
+    <span class=n>prctl</span><span class=p>(</span><span class=n>PR_SET_NAME</span><span class=p>,</span> <span class=n>strTitleName</span><span class=p>.</span><span class=n>c_str</span><span class=p>());</span>
+    <span class=c1>//setproctitle(strTitleName.c_str());</span>
+<span class=cp>#endif</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFPluginServer</span><span class=o>::</span><span class=n>InitDaemon</span><span class=p>()</span>
+<span class=p>{</span>
+<span class=cp>#if NF_PLATFORM != NF_PLATFORM_WIN</span>
+    <span class=n>daemon</span><span class=p>(</span><span class=mi>1</span><span class=p>,</span> <span class=mi>0</span><span class=p>);</span>
+
+    <span class=c1>// ignore signals</span>
+    <span class=n>signal</span><span class=p>(</span><span class=n>SIGINT</span><span class=p>,</span> <span class=n>SIG_IGN</span><span class=p>);</span>
+    <span class=n>signal</span><span class=p>(</span><span class=n>SIGHUP</span><span class=p>,</span> <span class=n>SIG_IGN</span><span class=p>);</span>
+    <span class=n>signal</span><span class=p>(</span><span class=n>SIGQUIT</span><span class=p>,</span> <span class=n>SIG_IGN</span><span class=p>);</span>
+    <span class=n>signal</span><span class=p>(</span><span class=n>SIGPIPE</span><span class=p>,</span> <span class=n>SIG_IGN</span><span class=p>);</span>
+    <span class=n>signal</span><span class=p>(</span><span class=n>SIGTTOU</span><span class=p>,</span> <span class=n>SIG_IGN</span><span class=p>);</span>
+    <span class=n>signal</span><span class=p>(</span><span class=n>SIGTTIN</span><span class=p>,</span> <span class=n>SIG_IGN</span><span class=p>);</span>
+    <span class=n>signal</span><span class=p>(</span><span class=n>SIGTERM</span><span class=p>,</span> <span class=n>SIG_IGN</span><span class=p>);</span>
+<span class=cp>#endif</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFPluginServer</span><span class=o>::</span><span class=n>GetFileContent</span><span class=p>(</span><span class=n>NFIPluginManager</span><span class=o>*</span> <span class=n>p</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strFilePath</span><span class=p>,</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strContent</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=kt>FILE</span><span class=o>*</span> <span class=n>fp</span> <span class=o>=</span> <span class=n>fopen</span><span class=p>(</span><span class=n>strFilePath</span><span class=p>.</span><span class=n>c_str</span><span class=p>(),</span> <span class=s>&quot;rb&quot;</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>fp</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+    <span class=p>}</span>
+    <span class=c1>//定位到文件的结尾处</span>
+    <span class=n>fseek</span><span class=p>(</span><span class=n>fp</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=n>SEEK_END</span><span class=p>);</span>
+    <span class=c1>//得到文件内容的大小</span>
+    <span class=k>const</span> <span class=kt>long</span> <span class=n>filelength</span> <span class=o>=</span> <span class=n>ftell</span><span class=p>(</span><span class=n>fp</span><span class=p>);</span>
+    <span class=c1>//定位到文件的开头</span>
+    <span class=n>fseek</span><span class=p>(</span><span class=n>fp</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=n>SEEK_SET</span><span class=p>);</span>
+    <span class=c1>//将字符串设置成相应的大小</span>
+    <span class=n>strContent</span><span class=p>.</span><span class=n>resize</span><span class=p>(</span><span class=n>filelength</span><span class=p>);</span>
+    <span class=c1>//将文件内容读取到字符串中</span>
+    <span class=n>fread</span><span class=p>((</span><span class=kt>void</span><span class=o>*</span><span class=p>)</span><span class=n>strContent</span><span class=p>.</span><span class=n>data</span><span class=p>(),</span> <span class=n>filelength</span><span class=p>,</span> <span class=mi>1</span><span class=p>,</span> <span class=n>fp</span><span class=p>);</span>
+    <span class=n>fclose</span><span class=p>(</span><span class=n>fp</span><span class=p>);</span>
+    <span class=c1>//../NFDataCfg/Debug/Plugin.xml的子串 Plugin.xml</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>strFileName</span> <span class=o>=</span> <span class=n>strFilePath</span><span class=p>.</span><span class=n>substr</span><span class=p>(</span><span class=n>strFilePath</span><span class=p>.</span><span class=n>find_last_of</span><span class=p>(</span><span class=s>&quot;/</span><span class=se>\\</span><span class=s>&quot;</span><span class=p>)</span> <span class=o>+</span> <span class=mi>1</span><span class=p>);</span>
+    <span class=c1>//content为空</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>NFReplaceContent</span><span class=o>&gt;</span> <span class=n>contents</span> <span class=o>=</span> <span class=n>p</span><span class=o>-&gt;</span><span class=n>GetFileReplaceContents</span><span class=p>(</span><span class=n>strFileName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>contents</span><span class=p>.</span><span class=n>empty</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=k>for</span> <span class=p>(</span><span class=k>auto</span> <span class=nl>it</span> <span class=p>:</span> <span class=n>contents</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>std</span><span class=o>::</span><span class=kt>size_t</span> <span class=n>pos</span> <span class=o>=</span> <span class=n>strContent</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>it</span><span class=p>.</span><span class=n>content</span><span class=p>);</span>
+            <span class=k>if</span> <span class=p>(</span><span class=n>pos</span> <span class=o>!=</span> <span class=n>string</span><span class=o>::</span><span class=n>npos</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=n>strContent</span><span class=p>.</span><span class=n>replace</span><span class=p>(</span><span class=n>pos</span><span class=p>,</span> <span class=n>it</span><span class=p>.</span><span class=n>content</span><span class=p>.</span><span class=n>length</span><span class=p>(),</span> <span class=n>it</span><span class=p>.</span><span class=n>newValue</span><span class=p>.</span><span class=n>c_str</span><span class=p>());</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+</code></pre></div> <br> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../../NFServer/NFServer/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../../NFServer/NFServer/ class="btn btn-xs btn-link"> NFServer </a> </div> <div class=wm-article-nav> <a href=../../NFLogPlugin/NFLogPlugin/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../../NFLogPlugin/NFLogPlugin/ class="btn btn-xs btn-link"> NFLogPlugin </a> </div> </div> <br> </div> <footer class="container-fluid wm-page-content"><p>Copyright &copy; 2020 - 2020 张磊</p> <p>Documentation built with <a href=http://www.mkdocs.org/ >MkDocs</a> using <a href=https://github.com/gristlabs/mkdocs-windmill>Windmill</a> theme by Grist Labs.</p> </footer> </body> </html>
