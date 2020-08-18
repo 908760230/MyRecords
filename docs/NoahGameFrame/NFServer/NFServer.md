@@ -172,6 +172,7 @@ start "NFProxyServer" "NFServer.exe" "Server=ProxyServer" "ID=5" "Plugin=Plugin.
 void MidWareLoader(NFIPluginManager* pPluginManager)
 {
 #if NF_PLATFORM == NF_PLATFORM_WIN
+	//设置教程里的插件，这部分可以自定义，根据Tutorial.xml来配置相关的文件
 	//TUTORIAL
 	CREATE_PLUGIN(pPluginManager, Tutorial1)
 	CREATE_PLUGIN(pPluginManager, Tutorial2)
@@ -212,6 +213,7 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
+		//以bat或者sh启动时，只启动单个的server
 		serverList.push_back(NF_SHARE_PTR<NFPluginServer>(NF_NEW NFPluginServer(strArgvList)));
 	}
 	
@@ -229,7 +231,7 @@ int main(int argc, char* argv[])
 	while (true)
 	{
 		nIndex++;
-
+		// server以1毫秒为间隔执行
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		for (auto item : serverList)
 		{

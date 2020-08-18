@@ -99,6 +99,7 @@ private:
 #if NF_PLATFORM == NF_PLATFORM_WIN
 bool ApplicationCtrlHandler(DWORD fdwctrltype)
 {
+    //只有case里面的信号才会导致程序关闭 
     switch (fdwctrltype)
     {
     case CTRL_C_EVENT:
@@ -174,6 +175,7 @@ NFPluginServer::NFPluginServer(const std::string& strArgv)
 {
     this->strArgvList = strArgv;
 
+//创建输出dump信息
 #if NF_PLATFORM == NF_PLATFORM_WIN
     SetUnhandledExceptionFilter((LPTOP_LEVEL_EXCEPTION_FILTER)ApplicationCrashHandler);
 #else
@@ -245,7 +247,7 @@ void NFPluginServer::Init()
     //每一个NFPluginServer只有一个NFPluginManager
     pPluginManager = NF_SHARE_PTR<NFIPluginManager>(NF_NEW NFPluginManager());
 
-    // 处理NFPluginServer的参数，这个参数可能来自命令行或者构造函数
+    // 创建新的控制台处理NFPluginServer的参数，这个参数可能来自命令行或者构造函数
     ProcessParameter();
 
     //设置读取文件内容的函数，用来读取xml内容为字符串
@@ -278,7 +280,7 @@ void NFPluginServer::Final()
 
 void NFPluginServer::ProcessParameter()
 {
-    //设置守护进程
+    //设置处理控制台消息
 #if NF_PLATFORM == NF_PLATFORM_WIN
     SetConsoleCtrlHandler((PHANDLER_ROUTINE)ApplicationCtrlHandler, true);
 #else
@@ -401,6 +403,7 @@ void NFPluginServer::ProcessParameter()
 
 void NFPluginServer::InitDaemon()
 {
+    //linux下创建守护进程
 #if NF_PLATFORM != NF_PLATFORM_WIN
     daemon(1, 0);
 

@@ -128,6 +128,8 @@ nav:
       - NFLogModule:         NoahGameFrame/NFLogPlugin/NFLogModule.md
       - NFLogPlugin:         NoahGameFrame/NFLogPlugin/NFLogPlugin.md
     - NFPluginLoader:
+      - NFDynLib:            NoahGameFrame/NFPluginLoader/NFDynLib.md
+      - NFPluginManager:     NoahGameFrame/NFPluginLoader/NFPluginManager.md
       - NFPluginServer:      NoahGameFrame/NFPluginLoader/NFPluginServer.md
     - NFServer:
       - NFServer:            NoahGameFrame/NFServer/NFServer.md
