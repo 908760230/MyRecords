@@ -161,6 +161,7 @@ start <span class=s2>&quot;NFProxyServer&quot;</span> <span class=s2>&quot;NFSer
 <span class=kt>void</span> <span class=nf>MidWareLoader</span><span class=p>(</span><span class=n>NFIPluginManager</span><span class=o>*</span> <span class=n>pPluginManager</span><span class=p>)</span>
 <span class=p>{</span>
 <span class=cp>#if NF_PLATFORM == NF_PLATFORM_WIN</span>
+    <span class=c1>//设置教程里的插件，这部分可以自定义，根据Tutorial.xml来配置相关的文件</span>
     <span class=c1>//TUTORIAL</span>
     <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=n>pPluginManager</span><span class=p>,</span> <span class=n>Tutorial1</span><span class=p>)</span>
     <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=n>pPluginManager</span><span class=p>,</span> <span class=n>Tutorial2</span><span class=p>)</span>
@@ -201,6 +202,7 @@ start <span class=s2>&quot;NFProxyServer&quot;</span> <span class=s2>&quot;NFSer
     <span class=p>}</span>
     <span class=k>else</span>
     <span class=p>{</span>
+        <span class=c1>//以bat或者sh启动时，只启动单个的server</span>
         <span class=n>serverList</span><span class=p>.</span><span class=n>push_back</span><span class=p>(</span><span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFPluginServer</span><span class=o>&gt;</span><span class=p>(</span><span class=n>NF_NEW</span> <span class=n>NFPluginServer</span><span class=p>(</span><span class=n>strArgvList</span><span class=p>)));</span>
     <span class=p>}</span>
 
@@ -218,7 +220,7 @@ start <span class=s2>&quot;NFProxyServer&quot;</span> <span class=s2>&quot;NFSer
     <span class=k>while</span> <span class=p>(</span><span class=nb>true</span><span class=p>)</span>
     <span class=p>{</span>
         <span class=n>nIndex</span><span class=o>++</span><span class=p>;</span>
-
+        <span class=c1>// server以1毫秒为间隔执行</span>
         <span class=n>std</span><span class=o>::</span><span class=n>this_thread</span><span class=o>::</span><span class=n>sleep_for</span><span class=p>(</span><span class=n>std</span><span class=o>::</span><span class=n>chrono</span><span class=o>::</span><span class=n>milliseconds</span><span class=p>(</span><span class=mi>1</span><span class=p>));</span>
         <span class=k>for</span> <span class=p>(</span><span class=k>auto</span> <span class=nl>item</span> <span class=p>:</span> <span class=n>serverList</span><span class=p>)</span>
         <span class=p>{</span>

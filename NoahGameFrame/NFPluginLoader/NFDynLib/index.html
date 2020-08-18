@@ -1,0 +1,125 @@
+<!DOCTYPE html><html lang=en> <head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" href=../../../img/favicon.ico><meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"><title>NFDynLib - 记录</title><link href=../../../css/bootstrap-3.3.7.min.css rel=stylesheet><link href=../../../css/font-awesome-4.7.0.css rel=stylesheet><link href=../../../css/base.css rel=stylesheet><link rel=stylesheet href=../../../css/highlight.css><!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries --><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]--><script src=../../../js/jquery-3.2.1.min.js></script><script src=../../../js/bootstrap-3.3.7.min.js></script><script src=../../../js/highlight.pack.js></script><base target=_top><script>
+      var base_url = '../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "NFDynLib", url: "#_top", children: [
+              {title: "\u5934\u6587\u4ef6", url: "#_1" },
+              {title: "cpp\u4ee3\u7801", url: "#cpp" },
+          ]},
+        ];
+
+    </script><script src=../../../js/base.js></script></head> <body> <script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script> <div class="container-fluid wm-page-content"> <a name=_top></a> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../NFPluginManager/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../NFPluginManager/ class="btn btn-xs btn-link"> NFPluginManager </a> </div> <div class=wm-article-nav> <a href=../../NFLogPlugin/NFLogPlugin/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../../NFLogPlugin/NFLogPlugin/ class="btn btn-xs btn-link"> NFLogPlugin </a> </div> </div> <h1 id=nfdynlib>NFDynLib<a class=headerlink href=#nfdynlib title="Permanent link">&para;</a></h1> <p>根据平台的不同加上对应的文件格式，DYNLIB_HANDLE 抽象公共句柄。</p> <h2 id=_1>头文件<a class=headerlink href=#_1 title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=cp>#ifndef NF_DYNLIB_H</span>
+<span class=cp>#define NF_DYNLIB_H</span>
+
+<span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFPluginModule/NFPlatform.h&quot;</span><span class=cp></span>
+
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_WIN</span>
+<span class=cp>#    define DYNLIB_HANDLE hInstance</span>
+<span class=cp>#    define DYNLIB_LOAD( a ) LoadLibraryExA( a, NULL, LOAD_WITH_ALTERED_SEARCH_PATH )</span>
+<span class=cp>#    define DYNLIB_GETSYM( a, b ) GetProcAddress( a, b )</span>
+<span class=cp>#    define DYNLIB_UNLOAD( a ) FreeLibrary( a )</span>
+
+<span class=k>struct</span> <span class=n>HINSTANCE__</span><span class=p>;</span>
+<span class=k>typedef</span> <span class=k>struct</span> <span class=n>HINSTANCE__</span><span class=o>*</span> <span class=n>hInstance</span><span class=p>;</span>
+
+<span class=cp>#elif NF_PLATFORM == NF_PLATFORM_LINUX || NF_PLATFORM == NF_PLATFORM_ANDROID</span>
+<span class=cp>#include</span> <span class=cpf>&lt;dlfcn.h&gt;</span><span class=cp></span>
+<span class=cp>#define DYNLIB_HANDLE void*</span>
+<span class=cp>#define DYNLIB_LOAD( a ) dlopen( a, RTLD_LAZY | RTLD_GLOBAL)</span>
+<span class=cp>#define DYNLIB_GETSYM( a, b ) dlsym( a, b )</span>
+<span class=cp>#define DYNLIB_UNLOAD( a ) dlclose( a )</span>
+
+<span class=cp>#elif NF_PLATFORM == NF_PLATFORM_APPLE || NF_PLATFORM == NF_PLATFORM_APPLE_IOS</span>
+<span class=cp>#include</span> <span class=cpf>&lt;dlfcn.h&gt;</span><span class=cp></span>
+<span class=cp>#define DYNLIB_HANDLE void*</span>
+<span class=cp>#define DYNLIB_LOAD( a ) dlopen( a, RTLD_LOCAL|RTLD_LAZY)</span>
+<span class=cp>#define DYNLIB_GETSYM( a, b ) dlsym( a, b )</span>
+<span class=cp>#define DYNLIB_UNLOAD( a ) dlclose( a )</span>
+
+<span class=cp>#endif</span>
+
+<span class=k>class</span> <span class=nc>NFDynLib</span>
+<span class=p>{</span>
+
+<span class=k>public</span><span class=o>:</span>
+
+    <span class=n>NFDynLib</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strName</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>mbMain</span> <span class=o>=</span> <span class=nb>false</span><span class=p>;</span>
+        <span class=n>mstrName</span> <span class=o>=</span> <span class=n>strName</span><span class=p>;</span>
+<span class=cp>#ifdef NF_DEBUG_MODE</span>
+        <span class=c1>//mstrName.append(&quot;&quot;);</span>
+<span class=cp>#endif</span>
+
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_WIN</span>
+        <span class=n>mstrName</span><span class=p>.</span><span class=n>append</span><span class=p>(</span><span class=s>&quot;.dll&quot;</span><span class=p>);</span>
+<span class=cp>#elif NF_PLATFORM == NF_PLATFORM_LINUX || NF_PLATFORM == NF_PLATFORM_ANDROID</span>
+        <span class=n>mstrName</span><span class=p>.</span><span class=n>append</span><span class=p>(</span><span class=s>&quot;.so&quot;</span><span class=p>);</span>
+<span class=cp>#elif NF_PLATFORM == NF_PLATFORM_APPLE || NF_PLATFORM == NF_PLATFORM_APPLE_IOS</span>
+        <span class=n>mstrName</span><span class=p>.</span><span class=n>append</span><span class=p>(</span><span class=s>&quot;.so&quot;</span><span class=p>);</span>
+<span class=cp>#endif</span>
+
+        <span class=n>printf</span><span class=p>(</span><span class=s>&quot;LoadPlugin:%s</span><span class=se>\n</span><span class=s>&quot;</span><span class=p>,</span> <span class=n>mstrName</span><span class=p>.</span><span class=n>c_str</span><span class=p>());</span>
+    <span class=p>}</span>
+
+    <span class=o>~</span><span class=n>NFDynLib</span><span class=p>()</span>
+    <span class=p>{</span>
+
+    <span class=p>}</span>
+
+    <span class=kt>bool</span> <span class=n>Load</span><span class=p>();</span>
+
+    <span class=kt>bool</span> <span class=nf>UnLoad</span><span class=p>();</span>
+
+    <span class=c1>/// Get the name of the library</span>
+    <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>GetName</span><span class=p>(</span><span class=kt>void</span><span class=p>)</span> <span class=k>const</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>mstrName</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>const</span> <span class=kt>bool</span> <span class=n>GetMain</span><span class=p>(</span><span class=kt>void</span><span class=p>)</span> <span class=k>const</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>mbMain</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=kt>void</span><span class=o>*</span> <span class=n>GetSymbol</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>szProcName</span><span class=p>);</span>
+
+<span class=k>protected</span><span class=o>:</span>
+
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>mstrName</span><span class=p>;</span>
+    <span class=kt>bool</span> <span class=n>mbMain</span><span class=p>;</span>
+
+    <span class=n>DYNLIB_HANDLE</span> <span class=n>mInst</span><span class=p>;</span>
+<span class=p>};</span>
+
+<span class=cp>#endif</span>
+</code></pre></div> <h2 id=cpp>cpp代码<a class=headerlink href=#cpp title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=cp>#include</span> <span class=cpf>&quot;NFDynLib.h&quot;</span><span class=cp></span>
+
+<span class=kt>bool</span> <span class=n>NFDynLib</span><span class=o>::</span><span class=n>Load</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>strLibPath</span> <span class=o>=</span> <span class=s>&quot;./&quot;</span><span class=p>;</span>
+    <span class=n>strLibPath</span> <span class=o>+=</span> <span class=n>mstrName</span><span class=p>;</span>
+    <span class=n>mInst</span> <span class=o>=</span> <span class=p>(</span><span class=n>DYNLIB_HANDLE</span><span class=p>)</span><span class=n>DYNLIB_LOAD</span><span class=p>(</span><span class=n>strLibPath</span><span class=p>.</span><span class=n>c_str</span><span class=p>());</span>
+
+    <span class=k>return</span> <span class=n>mInst</span> <span class=o>!=</span> <span class=nb>NULL</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFDynLib</span><span class=o>::</span><span class=n>UnLoad</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>DYNLIB_UNLOAD</span><span class=p>(</span><span class=n>mInst</span><span class=p>);</span>
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>void</span><span class=o>*</span> <span class=n>NFDynLib</span><span class=o>::</span><span class=n>GetSymbol</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>szProcName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=k>return</span> <span class=p>(</span><span class=n>DYNLIB_HANDLE</span><span class=p>)</span><span class=n>DYNLIB_GETSYM</span><span class=p>(</span><span class=n>mInst</span><span class=p>,</span> <span class=n>szProcName</span><span class=p>);</span>
+<span class=p>}</span>
+</code></pre></div> <br> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../NFPluginManager/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../NFPluginManager/ class="btn btn-xs btn-link"> NFPluginManager </a> </div> <div class=wm-article-nav> <a href=../../NFLogPlugin/NFLogPlugin/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../../NFLogPlugin/NFLogPlugin/ class="btn btn-xs btn-link"> NFLogPlugin </a> </div> </div> <br> </div> <footer class="container-fluid wm-page-content"><p>Copyright &copy; 2020 - 2020 张磊</p> <p>Documentation built with <a href=http://www.mkdocs.org/ >MkDocs</a> using <a href=https://github.com/gristlabs/mkdocs-windmill>Windmill</a> theme by Grist Labs.</p> </footer> </body> </html>

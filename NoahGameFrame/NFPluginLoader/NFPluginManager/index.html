@@ -1,0 +1,1194 @@
+<!DOCTYPE html><html lang=en> <head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" href=../../../img/favicon.ico><meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"><title>NFPluginManager - 记录</title><link href=../../../css/bootstrap-3.3.7.min.css rel=stylesheet><link href=../../../css/font-awesome-4.7.0.css rel=stylesheet><link href=../../../css/base.css rel=stylesheet><link rel=stylesheet href=../../../css/highlight.css><!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries --><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]--><script src=../../../js/jquery-3.2.1.min.js></script><script src=../../../js/bootstrap-3.3.7.min.js></script><script src=../../../js/highlight.pack.js></script><base target=_top><script>
+      var base_url = '../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "NFPluginManager", url: "#_top", children: [
+              {title: "\u5934\u6587\u4ef6", url: "#_1" },
+              {title: "cpp\u6587\u4ef6", url: "#cpp" },
+          ]},
+        ];
+
+    </script><script src=../../../js/base.js></script></head> <body> <script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script> <div class="container-fluid wm-page-content"> <a name=_top></a> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../NFPluginServer/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../NFPluginServer/ class="btn btn-xs btn-link"> NFPluginServer </a> </div> <div class=wm-article-nav> <a href=../NFDynLib/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../NFDynLib/ class="btn btn-xs btn-link"> NFDynLib </a> </div> </div> <h1 id=nfpluginmanager>NFPluginManager<a class=headerlink href=#nfpluginmanager title="Permanent link">&para;</a></h1> <p>可以说pluginserver其实只是在pluginmanager上面在套一层，其实核心是pluginmanager，他完成了主要的工作。 NFPluginManager 继承于NFIPluginManager，里面大多是对接口的重写</p> <h2 id=_1>头文件<a class=headerlink href=#_1 title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=cp>#ifndef NF_PLUGIN_MANAGER_H</span>
+<span class=cp>#define NF_PLUGIN_MANAGER_H</span>
+
+<span class=cp>#include</span> <span class=cpf>&lt;map&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;string&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;time.h&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;thread&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFDynLib.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFPluginModule/NFIModule.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFPluginModule/NFIPluginManager.h&quot;</span><span class=cp></span>
+
+<span class=k>class</span> <span class=nc>NFPluginManager</span>
+    <span class=o>:</span> <span class=k>public</span> <span class=n>NFIPluginManager</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>NFPluginManager</span><span class=p>();</span>
+    <span class=k>virtual</span> <span class=o>~</span><span class=n>NFPluginManager</span><span class=p>();</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LoadPluginConfig</span><span class=p>()</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LoadPlugin</span><span class=p>()</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Awake</span><span class=p>()</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Init</span><span class=p>()</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>AfterInit</span><span class=p>()</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>CheckConfig</span><span class=p>()</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>ReadyExecute</span><span class=p>()</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>BeforeShut</span><span class=p>()</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Shut</span><span class=p>()</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Finalize</span><span class=p>()</span> <span class=k>override</span><span class=p>;</span>
+
+
+    <span class=c1>//////////////////////////////////////////////////////////////////////////</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>Registered</span><span class=p>(</span><span class=n>NFIPlugin</span><span class=o>*</span> <span class=n>pPlugin</span><span class=p>)</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>UnRegistered</span><span class=p>(</span><span class=n>NFIPlugin</span><span class=o>*</span> <span class=n>pPlugin</span><span class=p>)</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=c1>//////////////////////////////////////////////////////////////////////////</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>ReLoadPlugin</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPluginDLLName</span><span class=p>)</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=n>NFIPlugin</span><span class=o>*</span> <span class=nf>FindPlugin</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPluginName</span><span class=p>)</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>AddModule</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strModuleName</span><span class=p>,</span> <span class=n>NFIModule</span><span class=o>*</span> <span class=n>pModule</span><span class=p>)</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>AddTestModule</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strModuleName</span><span class=p>,</span> <span class=n>NFIModule</span><span class=o>*</span> <span class=n>pModule</span><span class=p>)</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>RemoveModule</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strModuleName</span><span class=p>)</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=n>NFIModule</span><span class=o>*</span> <span class=nf>FindModule</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strModuleName</span><span class=p>)</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=n>NFIModule</span><span class=o>*</span> <span class=nf>FindTestModule</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strModuleName</span><span class=p>)</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=n>std</span><span class=o>::</span><span class=n>list</span><span class=o>&lt;</span><span class=n>NFIModule</span><span class=o>*&gt;</span> <span class=n>Modules</span><span class=p>()</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Execute</span><span class=p>()</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>int</span> <span class=nf>GetAppID</span><span class=p>()</span> <span class=k>const</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetAppID</span><span class=p>(</span><span class=k>const</span> <span class=kt>int</span> <span class=n>nAppID</span><span class=p>)</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>IsRunningDocker</span><span class=p>()</span> <span class=k>const</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetRunningDocker</span><span class=p>(</span><span class=kt>bool</span> <span class=n>bDocker</span><span class=p>)</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>IsStaticPlugin</span><span class=p>()</span> <span class=k>const</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=n>NFINT64</span> <span class=nf>GetInitTime</span><span class=p>()</span> <span class=k>const</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=n>NFINT64</span> <span class=nf>GetNowTime</span><span class=p>()</span> <span class=k>const</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>GetConfigPath</span><span class=p>()</span> <span class=k>const</span> <span class=k>override</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetConfigPath</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>strPath</span><span class=p>)</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetConfigName</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strFileName</span><span class=p>)</span> <span class=k>override</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>GetConfigName</span><span class=p>()</span> <span class=k>const</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>GetAppName</span><span class=p>()</span> <span class=k>const</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetAppName</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strAppName</span><span class=p>)</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>GetLogConfigName</span><span class=p>()</span> <span class=k>const</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetLogConfigName</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strName</span><span class=p>)</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=n>NFIPlugin</span><span class=o>*</span> <span class=nf>GetCurrentPlugin</span><span class=p>()</span> <span class=k>override</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=n>NFIModule</span><span class=o>*</span> <span class=nf>GetCurrenModule</span><span class=p>()</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetCurrentPlugin</span><span class=p>(</span><span class=n>NFIPlugin</span><span class=o>*</span> <span class=n>pPlugin</span><span class=p>)</span> <span class=k>override</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetCurrenModule</span><span class=p>(</span><span class=n>NFIModule</span><span class=o>*</span> <span class=n>pModule</span><span class=p>)</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetGetFileContentFunctor</span><span class=p>(</span><span class=n>GET_FILECONTENT_FUNCTOR</span> <span class=n>fun</span><span class=p>)</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>GetFileContent</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span><span class=n>strFileName</span><span class=p>,</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span><span class=n>strContent</span><span class=p>)</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>AddFileReplaceContent</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>fileName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>content</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>newValue</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>NFReplaceContent</span><span class=o>&gt;</span> <span class=n>GetFileReplaceContents</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>fileName</span><span class=p>);</span>
+
+<span class=k>protected</span><span class=o>:</span>
+
+    <span class=kt>bool</span> <span class=n>LoadStaticPlugin</span><span class=p>();</span>
+    <span class=kt>bool</span> <span class=nf>CheckStaticPlugin</span><span class=p>();</span>
+
+    <span class=kt>bool</span> <span class=nf>LoadStaticPlugin</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPluginDLLName</span><span class=p>);</span>
+    <span class=kt>bool</span> <span class=nf>LoadPluginLibrary</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPluginDLLName</span><span class=p>);</span>
+    <span class=kt>bool</span> <span class=nf>UnLoadPluginLibrary</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPluginDLLName</span><span class=p>);</span>
+    <span class=kt>bool</span> <span class=nf>UnLoadStaticPlugin</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPluginDLLName</span><span class=p>);</span>
+
+<span class=k>private</span><span class=o>:</span>
+    <span class=kt>int</span> <span class=n>mnAppID</span><span class=p>;</span>
+    <span class=kt>bool</span> <span class=n>mbIsDocker</span><span class=p>;</span>
+    <span class=kt>bool</span> <span class=n>mbStaticPlugin</span><span class=p>;</span>
+    <span class=n>NFINT64</span> <span class=n>mnInitTime</span><span class=p>;</span>
+    <span class=n>NFINT64</span> <span class=n>mnNowTime</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>mstrConfigPath</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>mstrConfigName</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>mstrAppName</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>mstrLogConfigName</span><span class=p>;</span>
+
+    <span class=n>NFIPlugin</span><span class=o>*</span> <span class=n>mCurrentPlugin</span><span class=p>;</span>
+    <span class=n>NFIModule</span><span class=o>*</span> <span class=n>mCurrenModule</span><span class=p>;</span>
+
+    <span class=k>typedef</span> <span class=n>std</span><span class=o>::</span><span class=n>map</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=p>,</span> <span class=kt>bool</span><span class=o>&gt;</span> <span class=n>PluginNameMap</span><span class=p>;</span>
+    <span class=k>typedef</span> <span class=n>std</span><span class=o>::</span><span class=n>map</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=p>,</span> <span class=n>NFDynLib</span><span class=o>*&gt;</span> <span class=n>PluginLibMap</span><span class=p>;</span>
+    <span class=k>typedef</span> <span class=n>std</span><span class=o>::</span><span class=n>map</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=p>,</span> <span class=n>NFIPlugin</span><span class=o>*&gt;</span> <span class=n>PluginInstanceMap</span><span class=p>;</span>
+    <span class=k>typedef</span> <span class=n>std</span><span class=o>::</span><span class=n>map</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=p>,</span> <span class=n>NFIModule</span><span class=o>*&gt;</span> <span class=n>ModuleInstanceMap</span><span class=p>;</span>
+    <span class=k>typedef</span> <span class=n>std</span><span class=o>::</span><span class=n>map</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=p>,</span> <span class=n>NFIModule</span><span class=o>*&gt;</span> <span class=n>TestModuleInstanceMap</span><span class=p>;</span>
+
+    <span class=k>typedef</span> <span class=nf>void</span><span class=p>(</span><span class=o>*</span> <span class=n>DLL_START_PLUGIN_FUNC</span><span class=p>)(</span><span class=n>NFIPluginManager</span><span class=o>*</span> <span class=n>pm</span><span class=p>);</span>
+    <span class=k>typedef</span> <span class=nf>void</span><span class=p>(</span><span class=o>*</span> <span class=n>DLL_STOP_PLUGIN_FUNC</span><span class=p>)(</span><span class=n>NFIPluginManager</span><span class=o>*</span> <span class=n>pm</span><span class=p>);</span>
+
+    <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&gt;</span> <span class=n>mStaticPlugin</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>map</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=p>,</span> <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>NFReplaceContent</span><span class=o>&gt;&gt;</span> <span class=n>mReplaceContent</span><span class=p>;</span>
+
+    <span class=n>PluginNameMap</span> <span class=n>mPluginNameMap</span><span class=p>;</span>
+    <span class=n>PluginLibMap</span> <span class=n>mPluginLibMap</span><span class=p>;</span>
+    <span class=n>PluginInstanceMap</span> <span class=n>mPluginInstanceMap</span><span class=p>;</span>
+    <span class=n>ModuleInstanceMap</span> <span class=n>mModuleInstanceMap</span><span class=p>;</span>
+    <span class=n>TestModuleInstanceMap</span> <span class=n>mTestModuleInstanceMap</span><span class=p>;</span>
+
+    <span class=n>GET_FILECONTENT_FUNCTOR</span> <span class=n>mGetFileContentFunctor</span><span class=p>;</span>
+<span class=p>};</span>
+</code></pre></div> <h2 id=cpp>cpp文件<a class=headerlink href=#cpp title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=c1>//基本把所有的插件头文件都包含了</span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFPluginManager.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;Dependencies/RapidXML/rapidxml.hpp&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;Dependencies/RapidXML/rapidxml_iterators.hpp&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;Dependencies/RapidXML/rapidxml_print.hpp&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;Dependencies/RapidXML/rapidxml_utils.hpp&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFPluginModule/NFIPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFPluginModule/NFPlatform.h&quot;</span><span class=cp></span>
+
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_WIN</span>
+<span class=cp>#pragma comment( lib, &quot;opengl32.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;ws2_32.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;version.lib&quot; )</span>
+<span class=c1>//#pragma comment( lib, &quot;SDL2maind.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;msimg32.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;winmm.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;imm32.lib&quot; )</span>
+<span class=c1>//#pragma comment( lib, &quot;msvcrt.lib&quot; )</span>
+<span class=cp>#pragma comment (lib, &quot;Setupapi.lib&quot;)</span>
+
+<span class=cp>#ifndef NF_DYNAMIC_PLUGIN</span>
+<span class=cp>#ifdef NF_DEBUG_MODE</span>
+<span class=cp>#pragma comment( lib, &quot;libprotobufd.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;SDL2d.lib&quot; )</span>
+<span class=cp>#else</span>
+<span class=cp>#pragma comment( lib, &quot;libprotobuf.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;SDL2.lib&quot; )</span>
+<span class=cp>#endif</span>
+
+<span class=cp>#pragma comment( lib, &quot;NFCore.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFMessageDefine.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;event.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;event_core.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;lua.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;navigation.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;hiredis.lib&quot; )</span>
+
+
+<span class=cp>#pragma comment( lib, &quot;NFCore.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFActorPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFConfigPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFKernelPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFLogPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFLuaScriptPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFNavigationPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFNetPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFNoSqlPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFSecurityPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFTestPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFRenderPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFBluePrintPlugin.lib&quot; )</span>
+
+<span class=cp>#pragma comment( lib, &quot;NFDBLogicPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFDBNet_ClientPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFDBNet_ServerPlugin.lib&quot; )</span>
+
+<span class=cp>#pragma comment( lib, &quot;NFGameServerPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFGameServerNet_ClientPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFGameServerNet_ServerPlugin.lib&quot; )</span>
+
+<span class=cp>#pragma comment( lib, &quot;NFLoginLogicPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFLoginNet_ClientPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFLoginNet_ServerPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFLoginNet_HttpServerPlugin.lib&quot; )</span>
+
+<span class=cp>#pragma comment( lib, &quot;NFMasterServerPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFMasterNet_ServerPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFMasterNet_HttpServerPlugin.lib&quot; )</span>
+
+<span class=cp>#pragma comment( lib, &quot;NFProxyLogicPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFProxyServerNet_ClientPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFProxyServerNet_ServerPlugin.lib&quot; )</span>
+
+<span class=cp>#pragma comment( lib, &quot;NFWorldNet_ClientPlugin.lib&quot; )</span>
+<span class=cp>#pragma comment( lib, &quot;NFWorldNet_ServerPlugin.lib&quot; )</span>
+
+<span class=cp>#endif</span>
+
+<span class=cp>#endif</span>
+
+<span class=cp>#ifdef NF_DEBUG_MODE</span>
+
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_WIN</span>
+
+<span class=cp>#elif NF_PLATFORM == NF_PLATFORM_LINUX || NF_PLATFORM == NF_PLATFORM_ANDROID</span>
+<span class=cp>#elif NF_PLATFORM == NF_PLATFORM_APPLE || NF_PLATFORM == NF_PLATFORM_APPLE_IOS</span>
+<span class=cp>#endif</span>
+
+<span class=cp>#else</span>
+
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_WIN</span>
+
+<span class=cp>#elif NF_PLATFORM == NF_PLATFORM_LINUX || NF_PLATFORM == NF_PLATFORM_ANDROID</span>
+<span class=cp>#elif NF_PLATFORM == NF_PLATFORM_APPLE || NF_PLATFORM == NF_PLATFORM_APPLE_IOS</span>
+<span class=cp>#endif</span>
+
+<span class=cp>#endif</span>
+
+
+<span class=cp>#ifndef NF_DYNAMIC_PLUGIN</span>
+<span class=c1>//for nf-sdk plugins</span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFActorPlugin/NFActorPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFConfigPlugin/NFConfigPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFKernelPlugin/NFKernelPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFLogPlugin/NFLogPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFLuaScriptPlugin/NFLuaScriptPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFNavigationPlugin/NFNavigationPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFNetPlugin/NFNetPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFNoSqlPlugin/NFNoSqlPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFSecurityPlugin/NFSecurityPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFTestPlugin/NFTestPlugin.h&quot;</span><span class=cp></span>
+
+<span class=cp>#if NF_PLATFORM != NF_PLATFORM_LINUX</span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFRenderPlugin/NFRenderPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFBluePrintPlugin/NFBluePrintPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#endif</span>
+
+<span class=c1>//DB</span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFServer/NFDBLogicPlugin/NFDBLogicPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFServer/NFDBNet_ClientPlugin/NFDBNet_ClientPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFServer/NFDBNet_ServerPlugin/NFDBNet_ServerPlugin.h&quot;</span><span class=cp></span>
+<span class=c1>//GAME</span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFServer/NFGameServerNet_ClientPlugin/NFGameServerNet_ClientPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFServer/NFGameServerNet_ServerPlugin/NFGameServerNet_ServerPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFServer/NFGameServerPlugin/NFGameServerPlugin.h&quot;</span><span class=cp></span>
+<span class=c1>//LOGIN</span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFServer/NFLoginLogicPlugin/NFLoginLogicPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFServer/NFLoginNet_ClientPlugin/NFLoginNet_ClientPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFServer/NFLoginNet_ServerPlugin/NFLoginNet_ServerPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFServer/NFLoginNet_HttpServerPlugin/NFLoginNet_HttpServerPlugin.h&quot;</span><span class=cp></span>
+<span class=c1>//MASTER</span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFServer/NFMasterNet_HttpServerPlugin/NFMasterNet_HttpServerPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFServer/NFMasterNet_ServerPlugin/NFMasterNet_ServerPlugin.h&quot;</span><span class=cp></span>
+<span class=c1>//PROXY</span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFServer/NFProxyLogicPlugin/NFProxyLogicPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFServer/NFProxyServerNet_ClientPlugin/NFProxyServerNet_ClientPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFServer/NFProxyServerNet_ServerPlugin/NFProxyServerNet_ServerPlugin.h&quot;</span><span class=cp></span>
+<span class=c1>//WORLD</span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFServer/NFWorldNet_ClientPlugin/NFWorldNet_ClientPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFServer/NFWorldNet_ServerPlugin/NFWorldNet_ServerPlugin.h&quot;</span><span class=cp></span>
+
+
+<span class=cp>#endif</span>
+
+<span class=n>NFPluginManager</span><span class=o>::</span><span class=n>NFPluginManager</span><span class=p>()</span> <span class=o>:</span> <span class=n>NFIPluginManager</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>mnAppID</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=n>mbIsDocker</span> <span class=o>=</span> <span class=nb>false</span><span class=p>;</span>
+
+    <span class=n>mCurrentPlugin</span> <span class=o>=</span> <span class=k>nullptr</span><span class=p>;</span>
+    <span class=n>mCurrenModule</span> <span class=o>=</span> <span class=k>nullptr</span><span class=p>;</span>
+
+<span class=c1>//用宏判定插件是否为静态库</span>
+<span class=cp>#ifdef NF_DYNAMIC_PLUGIN</span>
+    <span class=n>mbStaticPlugin</span> <span class=o>=</span> <span class=nb>false</span><span class=p>;</span>
+<span class=cp>#else</span>
+    <span class=n>mbStaticPlugin</span> <span class=o>=</span> <span class=nb>true</span><span class=p>;</span>
+<span class=cp>#endif</span>
+    <span class=c1>//获得启动的初始时间</span>
+    <span class=n>mnInitTime</span> <span class=o>=</span> <span class=n>time</span><span class=p>(</span><span class=nb>NULL</span><span class=p>);</span>
+    <span class=n>mnNowTime</span> <span class=o>=</span> <span class=n>mnInitTime</span><span class=p>;</span>
+
+    <span class=n>mGetFileContentFunctor</span> <span class=o>=</span> <span class=k>nullptr</span><span class=p>;</span>
+
+    <span class=n>mstrConfigPath</span> <span class=o>=</span> <span class=s>&quot;../&quot;</span><span class=p>;</span>
+
+
+   <span class=n>mstrConfigName</span> <span class=o>=</span> <span class=s>&quot;NFDataCfg/Debug/Plugin.xml&quot;</span><span class=p>;</span>
+
+<span class=p>}</span>
+
+<span class=n>NFPluginManager</span><span class=o>::~</span><span class=n>NFPluginManager</span><span class=p>()</span>
+<span class=p>{</span>
+
+<span class=p>}</span>
+
+<span class=c1>//在LoadPlugin之前会执行LoadPluginConfig()</span>
+<span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>LoadPlugin</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;----LoadPlugin----&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+
+<span class=cp>#ifndef NF_DYNAMIC_PLUGIN</span>
+    <span class=c1>//创建注册所有的plugin</span>
+    <span class=n>LoadStaticPlugin</span><span class=p>();</span>
+<span class=cp>#endif</span>
+    <span class=c1>//根据xml配置,将该server下的plugin名字存入到mStaticPlugin 这个string数组中</span>
+    <span class=n>PluginNameMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mPluginNameMap</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span>
+    <span class=k>for</span> <span class=p>(;</span> <span class=n>it</span> <span class=o>!=</span> <span class=n>mPluginNameMap</span><span class=p>.</span><span class=n>end</span><span class=p>();</span> <span class=o>++</span><span class=n>it</span><span class=p>)</span>
+    <span class=p>{</span>
+<span class=cp>#ifndef NF_DYNAMIC_PLUGIN</span>
+        <span class=c1>//根据xml配置,将该server下的plugin存入到mStaticPlugin 这个string数组中</span>
+        <span class=n>LoadStaticPlugin</span><span class=p>(</span><span class=n>it</span><span class=o>-&gt;</span><span class=n>first</span><span class=p>);</span>
+<span class=cp>#else</span>
+        <span class=c1>//加载名字对应的动态库</span>
+        <span class=n>LoadPluginLibrary</span><span class=p>(</span><span class=n>it</span><span class=o>-&gt;</span><span class=n>first</span><span class=p>);</span>
+<span class=cp>#endif</span>
+    <span class=p>}</span>
+
+<span class=cp>#ifndef NF_DYNAMIC_PLUGIN</span>
+    <span class=c1>//判断mStaticPlugin和mPluginInstanceMap中内容是否一致 等等。</span>
+    <span class=n>CheckStaticPlugin</span><span class=p>();</span>
+<span class=cp>#endif</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>Awake</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;----Awake----&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+
+    <span class=n>PluginInstanceMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itAfterInstance</span> <span class=o>=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span>
+    <span class=k>for</span> <span class=p>(;</span> <span class=n>itAfterInstance</span> <span class=o>!=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>();</span> <span class=n>itAfterInstance</span><span class=o>++</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>SetCurrentPlugin</span><span class=p>(</span><span class=n>itAfterInstance</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>);</span>
+        <span class=c1>//这个直接调用的是NFIPlugin的awake(),而它的awake则是遍历NFMap中已添加的module，顺便调用modul的awake()</span>
+        <span class=n>itAfterInstance</span><span class=o>-&gt;</span><span class=n>second</span><span class=o>-&gt;</span><span class=n>Awake</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+
+<span class=kr>inline</span> <span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>Init</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;----Init----&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+
+    <span class=n>PluginInstanceMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itInstance</span> <span class=o>=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span>
+    <span class=k>for</span> <span class=p>(;</span> <span class=n>itInstance</span> <span class=o>!=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>();</span> <span class=n>itInstance</span><span class=o>++</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>SetCurrentPlugin</span><span class=p>(</span><span class=n>itInstance</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>);</span>
+        <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=n>itInstance</span><span class=o>-&gt;</span><span class=n>first</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+        <span class=c1>//这个直接调用的是NFIPlugin的Init(),而它的Init则是遍历NFMap中已添加的module，顺便调用modul的Init()</span>
+        <span class=n>itInstance</span><span class=o>-&gt;</span><span class=n>second</span><span class=o>-&gt;</span><span class=n>Init</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>LoadPluginConfig</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>strContent</span><span class=p>;</span>
+    <span class=c1>// strFilePath的值为 ../NFDataCfg/Debug/Plugin.xml</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>strFilePath</span> <span class=o>=</span> <span class=n>GetConfigPath</span><span class=p>()</span> <span class=o>+</span> <span class=n>mstrConfigName</span><span class=p>;</span>
+    <span class=c1>//文本内容保存在 strContent中</span>
+    <span class=n>GetFileContent</span><span class=p>(</span><span class=n>strFilePath</span><span class=p>,</span> <span class=n>strContent</span><span class=p>);</span>
+
+    <span class=n>rapidxml</span><span class=o>::</span><span class=n>xml_document</span><span class=o>&lt;&gt;</span> <span class=n>xDoc</span><span class=p>;</span>
+    <span class=n>xDoc</span><span class=p>.</span><span class=n>parse</span><span class=o>&lt;</span><span class=mi>0</span><span class=o>&gt;</span><span class=p>((</span><span class=kt>char</span><span class=o>*</span><span class=p>)</span><span class=n>strContent</span><span class=p>.</span><span class=n>c_str</span><span class=p>());</span>
+
+    <span class=n>rapidxml</span><span class=o>::</span><span class=n>xml_node</span><span class=o>&lt;&gt;*</span> <span class=n>pRoot</span> <span class=o>=</span> <span class=n>xDoc</span><span class=p>.</span><span class=n>first_node</span><span class=p>();</span>
+    <span class=c1>//看xml文件可以知道,这获取的是程序的节点，比如GameServer节点</span>
+    <span class=n>rapidxml</span><span class=o>::</span><span class=n>xml_node</span><span class=o>&lt;&gt;*</span> <span class=n>pAppNameNode</span> <span class=o>=</span> <span class=n>pRoot</span><span class=o>-&gt;</span><span class=n>first_node</span><span class=p>(</span><span class=n>mstrAppName</span><span class=p>.</span><span class=n>c_str</span><span class=p>());</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>pAppNameNode</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=c1>// 加载每个Server下的plugin</span>
+        <span class=k>for</span> <span class=p>(</span><span class=n>rapidxml</span><span class=o>::</span><span class=n>xml_node</span><span class=o>&lt;&gt;*</span> <span class=n>pPluginNode</span> <span class=o>=</span> <span class=n>pAppNameNode</span><span class=o>-&gt;</span><span class=n>first_node</span><span class=p>(</span><span class=s>&quot;Plugin&quot;</span><span class=p>);</span> <span class=n>pPluginNode</span><span class=p>;</span> <span class=n>pPluginNode</span> <span class=o>=</span> <span class=n>pPluginNode</span><span class=o>-&gt;</span><span class=n>next_sibling</span><span class=p>(</span><span class=s>&quot;Plugin&quot;</span><span class=p>))</span>
+        <span class=p>{</span>
+            <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>strPluginName</span> <span class=o>=</span> <span class=n>pPluginNode</span><span class=o>-&gt;</span><span class=n>first_attribute</span><span class=p>(</span><span class=s>&quot;Name&quot;</span><span class=p>)</span><span class=o>-&gt;</span><span class=n>value</span><span class=p>();</span>
+            <span class=c1>// 将plugin名字保存到Map中</span>
+            <span class=n>mPluginNameMap</span><span class=p>.</span><span class=n>insert</span><span class=p>(</span><span class=n>PluginNameMap</span><span class=o>::</span><span class=n>value_type</span><span class=p>(</span><span class=n>strPluginName</span><span class=p>,</span> <span class=nb>true</span><span class=p>));</span>
+
+            <span class=c1>//std::cout &lt;&lt; strPluginName &lt;&lt; std::endl;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+    <span class=k>else</span>
+    <span class=p>{</span>
+        <span class=c1>//如果没有找到相对应的Server节点，则往下继续查找xml中的Server节点，这里有个问题是：它会把所有server的所有plugin全部加进去</span>
+        <span class=k>for</span> <span class=p>(</span><span class=n>rapidxml</span><span class=o>::</span><span class=n>xml_node</span><span class=o>&lt;&gt;*</span> <span class=n>pServerNode</span> <span class=o>=</span> <span class=n>pRoot</span><span class=o>-&gt;</span><span class=n>first_node</span><span class=p>();</span> <span class=n>pServerNode</span><span class=p>;</span> <span class=n>pServerNode</span> <span class=o>=</span> <span class=n>pServerNode</span><span class=o>-&gt;</span><span class=n>next_sibling</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=k>for</span> <span class=p>(</span><span class=n>rapidxml</span><span class=o>::</span><span class=n>xml_node</span><span class=o>&lt;&gt;*</span> <span class=n>pPluginNode</span> <span class=o>=</span> <span class=n>pServerNode</span><span class=o>-&gt;</span><span class=n>first_node</span><span class=p>(</span><span class=s>&quot;Plugin&quot;</span><span class=p>);</span> <span class=n>pPluginNode</span><span class=p>;</span> <span class=n>pPluginNode</span> <span class=o>=</span> <span class=n>pPluginNode</span><span class=o>-&gt;</span><span class=n>next_sibling</span><span class=p>(</span><span class=s>&quot;Plugin&quot;</span><span class=p>))</span>
+            <span class=p>{</span>
+                <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>strPluginName</span> <span class=o>=</span> <span class=n>pPluginNode</span><span class=o>-&gt;</span><span class=n>first_attribute</span><span class=p>(</span><span class=s>&quot;Name&quot;</span><span class=p>)</span><span class=o>-&gt;</span><span class=n>value</span><span class=p>();</span>
+                <span class=k>if</span> <span class=p>(</span><span class=n>mPluginNameMap</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>strPluginName</span><span class=p>)</span> <span class=o>==</span> <span class=n>mPluginNameMap</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+                <span class=p>{</span>
+                    <span class=n>mPluginNameMap</span><span class=p>.</span><span class=n>insert</span><span class=p>(</span><span class=n>PluginNameMap</span><span class=o>::</span><span class=n>value_type</span><span class=p>(</span><span class=n>strPluginName</span><span class=p>,</span> <span class=nb>true</span><span class=p>));</span>
+                <span class=p>}</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=c1>//静态库模式下，会把公共的plugin和各个server的plugin注册到NFPluginManager里面</span>
+<span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>LoadStaticPlugin</span><span class=p>()</span>
+<span class=p>{</span>
+
+<span class=cp>#ifndef NF_DYNAMIC_PLUGIN</span>
+
+<span class=c1>//for nf-sdk plugins</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFActorPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFConfigPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFKernelPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFLogPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFLuaScriptPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFNavigationPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFNetPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFNoSqlPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFSecurityPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFTestPlugin</span><span class=p>)</span>
+
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_APPLE || NF_PLATFORM == NF_PLATFORM_WIN</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFRenderPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFBluePrintPlugin</span><span class=p>)</span>
+<span class=cp>#endif</span>
+
+<span class=c1>//DB</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFDBLogicPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFDBNet_ClientPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFDBNet_ServerPlugin</span><span class=p>)</span>
+
+<span class=c1>//GAME</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFGameServerNet_ClientPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFGameServerNet_ServerPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFGameServerPlugin</span><span class=p>)</span>
+
+<span class=c1>//LOGIN</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFLoginLogicPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFLoginNet_ClientPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFLoginNet_ServerPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFLoginNet_HttpServerPlugin</span><span class=p>)</span>
+
+<span class=c1>//MASTER</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFMasterNet_HttpServerPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFMasterNet_ServerPlugin</span><span class=p>)</span>
+
+<span class=c1>//PROXY</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFProxyLogicPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFProxyServerNet_ClientPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFProxyServerNet_ServerPlugin</span><span class=p>)</span>
+
+<span class=c1>//WORLD</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFWorldNet_ClientPlugin</span><span class=p>)</span>
+    <span class=n>CREATE_PLUGIN</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>NFWorldNet_ServerPlugin</span><span class=p>)</span>
+
+
+
+<span class=cp>#endif</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>CheckStaticPlugin</span><span class=p>()</span>
+<span class=p>{</span>
+<span class=cp>#ifndef NF_DYNAMIC_PLUGIN</span>
+    <span class=c1>//plugin</span>
+    <span class=k>for</span> <span class=p>(</span><span class=k>auto</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span> <span class=n>it</span> <span class=o>!=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>();)</span>
+    <span class=p>{</span>
+        <span class=kt>bool</span> <span class=n>bFind</span> <span class=o>=</span> <span class=nb>false</span><span class=p>;</span>
+        <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPluginName</span> <span class=o>=</span> <span class=n>it</span><span class=o>-&gt;</span><span class=n>first</span><span class=p>;</span>
+        <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>mStaticPlugin</span><span class=p>.</span><span class=n>size</span><span class=p>();</span> <span class=o>++</span><span class=n>i</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>tempPluginName</span> <span class=o>=</span> <span class=n>mStaticPlugin</span><span class=p>[</span><span class=n>i</span><span class=p>];</span>
+            <span class=k>if</span> <span class=p>(</span><span class=n>tempPluginName</span> <span class=o>==</span> <span class=n>strPluginName</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=n>bFind</span> <span class=o>=</span> <span class=nb>true</span><span class=p>;</span>
+                <span class=k>break</span><span class=p>;</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+
+        <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>bFind</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>it</span> <span class=o>=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>erase</span><span class=p>(</span><span class=n>it</span><span class=p>);</span>  
+        <span class=p>}</span>
+        <span class=k>else</span>
+        <span class=p>{</span>
+            <span class=n>it</span><span class=o>++</span><span class=p>;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>for</span> <span class=p>(</span><span class=k>auto</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span> <span class=n>it</span> <span class=o>!=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>();</span> <span class=o>++</span><span class=n>it</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=n>it</span><span class=o>-&gt;</span><span class=n>first</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;-------------&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+
+    <span class=c1>//////module</span>
+    <span class=k>for</span> <span class=p>(</span><span class=k>auto</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mModuleInstanceMap</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span> <span class=n>it</span> <span class=o>!=</span> <span class=n>mModuleInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>();)</span>
+    <span class=p>{</span>
+        <span class=kt>bool</span> <span class=n>bFind</span> <span class=o>=</span> <span class=nb>false</span><span class=p>;</span>
+        <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strModuleName</span> <span class=o>=</span> <span class=n>it</span><span class=o>-&gt;</span><span class=n>first</span><span class=p>;</span>
+
+        <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>mStaticPlugin</span><span class=p>.</span><span class=n>size</span><span class=p>();</span> <span class=o>++</span><span class=n>i</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPluginName</span> <span class=o>=</span> <span class=n>mStaticPlugin</span><span class=p>[</span><span class=n>i</span><span class=p>];</span>
+
+            <span class=n>NFIPlugin</span><span class=o>*</span> <span class=n>pPlugin</span> <span class=o>=</span> <span class=k>this</span><span class=o>-&gt;</span><span class=n>FindPlugin</span><span class=p>(</span><span class=n>strPluginName</span><span class=p>);</span>
+            <span class=k>if</span> <span class=p>(</span><span class=n>pPlugin</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=n>NFIModule</span><span class=o>*</span> <span class=n>pModule</span> <span class=o>=</span> <span class=n>pPlugin</span><span class=o>-&gt;</span><span class=n>GetElement</span><span class=p>(</span><span class=n>strModuleName</span><span class=p>);</span>
+                <span class=k>if</span> <span class=p>(</span><span class=n>pModule</span><span class=p>)</span>
+                <span class=p>{</span>
+                    <span class=n>bFind</span> <span class=o>=</span> <span class=nb>true</span><span class=p>;</span>
+                    <span class=k>break</span><span class=p>;</span>
+                <span class=p>}</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+
+        <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>bFind</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>it</span> <span class=o>=</span> <span class=n>mModuleInstanceMap</span><span class=p>.</span><span class=n>erase</span><span class=p>(</span><span class=n>it</span><span class=p>);</span>  
+        <span class=p>}</span>
+        <span class=k>else</span>
+        <span class=p>{</span>
+            <span class=n>it</span><span class=o>++</span><span class=p>;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;-------------&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+
+    <span class=k>for</span> <span class=p>(</span><span class=k>auto</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mModuleInstanceMap</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span> <span class=n>it</span> <span class=o>!=</span> <span class=n>mModuleInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>();</span> <span class=o>++</span><span class=n>it</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=n>it</span><span class=o>-&gt;</span><span class=n>first</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+    <span class=p>}</span>
+<span class=cp>#endif</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>LoadStaticPlugin</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPluginDLLName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>mStaticPlugin</span><span class=p>.</span><span class=n>push_back</span><span class=p>(</span><span class=n>strPluginDLLName</span><span class=p>);</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=c1>//此函数将会被在CREATE_PLUGIN宏中调用，用以注册new 出来的plugin对象</span>
+<span class=kt>void</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>Registered</span><span class=p>(</span><span class=n>NFIPlugin</span><span class=o>*</span> <span class=n>plugin</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPluginName</span> <span class=o>=</span> <span class=n>plugin</span><span class=o>-&gt;</span><span class=n>GetPluginName</span><span class=p>();</span>
+    <span class=c1>//如果在mPluginInstanceMap没有找到，就保存这个插件</span>
+    <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>FindPlugin</span><span class=p>(</span><span class=n>strPluginName</span><span class=p>))</span>
+    <span class=p>{</span>
+        <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>insert</span><span class=p>(</span><span class=n>PluginInstanceMap</span><span class=o>::</span><span class=n>value_type</span><span class=p>(</span><span class=n>strPluginName</span><span class=p>,</span> <span class=n>plugin</span><span class=p>));</span>
+        <span class=c1>//会调用addmodule将module和其名字存入到mModuleInstanceMap中，而且plugin继承于NFMap(内部有个私有map成员变量，用于存储module)</span>
+        <span class=c1>//addElement()将module存入到NFMap中</span>
+        <span class=n>plugin</span><span class=o>-&gt;</span><span class=n>Install</span><span class=p>();</span>
+    <span class=p>}</span>
+    <span class=k>else</span>
+    <span class=p>{</span>
+        <span class=c1>//显示重复保存plugin的名字</span>
+        <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=n>strPluginName</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+        <span class=n>assert</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>UnRegistered</span><span class=p>(</span><span class=n>NFIPlugin</span><span class=o>*</span> <span class=n>plugin</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>PluginInstanceMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>plugin</span><span class=o>-&gt;</span><span class=n>GetPluginName</span><span class=p>());</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>it</span> <span class=o>!=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=n>it</span><span class=o>-&gt;</span><span class=n>second</span><span class=o>-&gt;</span><span class=n>Uninstall</span><span class=p>();</span>
+        <span class=k>delete</span> <span class=n>it</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>;</span>
+        <span class=n>it</span><span class=o>-&gt;</span><span class=n>second</span> <span class=o>=</span> <span class=nb>NULL</span><span class=p>;</span>
+        <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>erase</span><span class=p>(</span><span class=n>it</span><span class=p>);</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>ReLoadPlugin</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>strPluginDLLName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=c1>//1.shut all module of this plugin</span>
+    <span class=c1>//2.unload this plugin</span>
+    <span class=c1>//3.load new plugin</span>
+    <span class=c1>//4.init new module</span>
+    <span class=c1>//5.tell others who has been reloaded</span>
+    <span class=n>PluginInstanceMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itInstance</span> <span class=o>=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>strPluginDLLName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>itInstance</span> <span class=o>==</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+    <span class=p>}</span>
+    <span class=c1>//1</span>
+    <span class=n>NFIPlugin</span><span class=o>*</span> <span class=n>pPlugin</span> <span class=o>=</span> <span class=n>itInstance</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>;</span>
+    <span class=n>NFIModule</span><span class=o>*</span> <span class=n>pModule</span> <span class=o>=</span> <span class=n>pPlugin</span><span class=o>-&gt;</span><span class=n>First</span><span class=p>();</span>
+    <span class=k>while</span> <span class=p>(</span><span class=n>pModule</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>pModule</span><span class=o>-&gt;</span><span class=n>BeforeShut</span><span class=p>();</span>
+        <span class=n>pModule</span><span class=o>-&gt;</span><span class=n>Shut</span><span class=p>();</span>
+        <span class=n>pModule</span><span class=o>-&gt;</span><span class=n>Finalize</span><span class=p>();</span>
+
+        <span class=n>pModule</span> <span class=o>=</span> <span class=n>pPlugin</span><span class=o>-&gt;</span><span class=n>Next</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=c1>//2</span>
+    <span class=n>PluginLibMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mPluginLibMap</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>strPluginDLLName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>it</span> <span class=o>!=</span> <span class=n>mPluginLibMap</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=n>NFDynLib</span><span class=o>*</span> <span class=n>pLib</span> <span class=o>=</span> <span class=n>it</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>;</span>
+        <span class=n>DLL_STOP_PLUGIN_FUNC</span> <span class=n>pFunc</span> <span class=o>=</span> <span class=p>(</span><span class=n>DLL_STOP_PLUGIN_FUNC</span><span class=p>)</span><span class=n>pLib</span><span class=o>-&gt;</span><span class=n>GetSymbol</span><span class=p>(</span><span class=s>&quot;DllStopPlugin&quot;</span><span class=p>);</span>
+
+        <span class=k>if</span> <span class=p>(</span><span class=n>pFunc</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>pFunc</span><span class=p>(</span><span class=k>this</span><span class=p>);</span>
+        <span class=p>}</span>
+
+        <span class=n>pLib</span><span class=o>-&gt;</span><span class=n>UnLoad</span><span class=p>();</span>
+
+        <span class=k>delete</span> <span class=n>pLib</span><span class=p>;</span>
+        <span class=n>pLib</span> <span class=o>=</span> <span class=nb>NULL</span><span class=p>;</span>
+        <span class=n>mPluginLibMap</span><span class=p>.</span><span class=n>erase</span><span class=p>(</span><span class=n>it</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=c1>//3</span>
+    <span class=n>NFDynLib</span><span class=o>*</span> <span class=n>pLib</span> <span class=o>=</span> <span class=k>new</span> <span class=n>NFDynLib</span><span class=p>(</span><span class=n>strPluginDLLName</span><span class=p>);</span>
+    <span class=kt>bool</span> <span class=n>bLoad</span> <span class=o>=</span> <span class=n>pLib</span><span class=o>-&gt;</span><span class=n>Load</span><span class=p>();</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>bLoad</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>mPluginLibMap</span><span class=p>.</span><span class=n>insert</span><span class=p>(</span><span class=n>PluginLibMap</span><span class=o>::</span><span class=n>value_type</span><span class=p>(</span><span class=n>strPluginDLLName</span><span class=p>,</span> <span class=n>pLib</span><span class=p>));</span>
+
+        <span class=n>DLL_START_PLUGIN_FUNC</span> <span class=n>pFunc</span> <span class=o>=</span> <span class=p>(</span><span class=n>DLL_START_PLUGIN_FUNC</span><span class=p>)</span><span class=n>pLib</span><span class=o>-&gt;</span><span class=n>GetSymbol</span><span class=p>(</span><span class=s>&quot;DllStartPlugin&quot;</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>pFunc</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;Reload Find function DllStartPlugin Failed in [&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>pLib</span><span class=o>-&gt;</span><span class=n>GetName</span><span class=p>()</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;]&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+            <span class=n>assert</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+            <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=n>pFunc</span><span class=p>(</span><span class=k>this</span><span class=p>);</span>
+    <span class=p>}</span>
+    <span class=k>else</span>
+    <span class=p>{</span>
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_LINUX</span>
+        <span class=kt>char</span><span class=o>*</span> <span class=n>error</span> <span class=o>=</span> <span class=n>dlerror</span><span class=p>();</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>error</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=n>stderr</span> <span class=o>&lt;&lt;</span> <span class=s>&quot; Reload shared lib[&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>pLib</span><span class=o>-&gt;</span><span class=n>GetName</span><span class=p>()</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;] failed, ErrorNo. = [&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>error</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;]&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+            <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;Reload [&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>pLib</span><span class=o>-&gt;</span><span class=n>GetName</span><span class=p>()</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;] failed&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+            <span class=n>assert</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+            <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+        <span class=p>}</span>
+<span class=cp>#elif NF_PLATFORM == NF_PLATFORM_WIN</span>
+        <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=n>stderr</span> <span class=o>&lt;&lt;</span> <span class=s>&quot; Reload DLL[&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>pLib</span><span class=o>-&gt;</span><span class=n>GetName</span><span class=p>()</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;] failed, ErrorNo. = [&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>GetLastError</span><span class=p>()</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;]&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+        <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;Reload [&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>pLib</span><span class=o>-&gt;</span><span class=n>GetName</span><span class=p>()</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;] failed&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+        <span class=n>assert</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+        <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+<span class=cp>#endif </span><span class=c1>// NF_PLATFORM</span>
+    <span class=p>}</span>
+
+    <span class=c1>//4</span>
+    <span class=n>PluginInstanceMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itReloadInstance</span> <span class=o>=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span>
+    <span class=k>for</span> <span class=p>(;</span> <span class=n>itReloadInstance</span> <span class=o>!=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>();</span> <span class=n>itReloadInstance</span><span class=o>++</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>strPluginDLLName</span> <span class=o>!=</span> <span class=n>itReloadInstance</span><span class=o>-&gt;</span><span class=n>first</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>itReloadInstance</span><span class=o>-&gt;</span><span class=n>second</span><span class=o>-&gt;</span><span class=n>OnReloadPlugin</span><span class=p>();</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=n>NFIPlugin</span><span class=o>*</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>FindPlugin</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPluginName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>PluginInstanceMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>strPluginName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>it</span> <span class=o>!=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>it</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>Execute</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>mnNowTime</span> <span class=o>=</span> <span class=n>time</span><span class=p>(</span><span class=nb>NULL</span><span class=p>);</span>
+
+    <span class=kt>bool</span> <span class=n>bRet</span> <span class=o>=</span> <span class=nb>true</span><span class=p>;</span>
+
+    <span class=n>PluginInstanceMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span>
+    <span class=k>for</span> <span class=p>(;</span> <span class=n>it</span> <span class=o>!=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>();</span> <span class=o>++</span><span class=n>it</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=kt>bool</span> <span class=n>tembRet</span> <span class=o>=</span> <span class=n>it</span><span class=o>-&gt;</span><span class=n>second</span><span class=o>-&gt;</span><span class=n>Execute</span><span class=p>();</span>
+        <span class=n>bRet</span> <span class=o>=</span> <span class=n>bRet</span> <span class=o>&amp;&amp;</span> <span class=n>tembRet</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=n>bRet</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kr>inline</span> <span class=kt>int</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>GetAppID</span><span class=p>()</span> <span class=k>const</span>
+<span class=p>{</span>
+    <span class=k>return</span> <span class=n>mnAppID</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kr>inline</span> <span class=kt>void</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>SetAppID</span><span class=p>(</span><span class=k>const</span> <span class=kt>int</span> <span class=n>nAppID</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>mnAppID</span> <span class=o>=</span> <span class=n>nAppID</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>IsRunningDocker</span><span class=p>()</span> <span class=k>const</span>
+<span class=p>{</span>
+    <span class=k>return</span> <span class=n>mbIsDocker</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>SetRunningDocker</span><span class=p>(</span><span class=kt>bool</span> <span class=n>bDocker</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>mbIsDocker</span> <span class=o>=</span> <span class=n>bDocker</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>IsStaticPlugin</span><span class=p>()</span> <span class=k>const</span>
+<span class=p>{</span>
+    <span class=k>return</span> <span class=n>mbStaticPlugin</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kr>inline</span> <span class=n>NFINT64</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>GetInitTime</span><span class=p>()</span> <span class=k>const</span>
+<span class=p>{</span>
+    <span class=k>return</span> <span class=n>mnInitTime</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kr>inline</span> <span class=n>NFINT64</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>GetNowTime</span><span class=p>()</span> <span class=k>const</span>
+<span class=p>{</span>
+    <span class=k>return</span> <span class=n>mnNowTime</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kr>inline</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>GetConfigPath</span><span class=p>()</span> <span class=k>const</span>
+<span class=p>{</span>
+    <span class=k>return</span> <span class=n>mstrConfigPath</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kr>inline</span> <span class=kt>void</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>SetConfigPath</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>strPath</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>mstrConfigPath</span> <span class=o>=</span> <span class=n>strPath</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>SetConfigName</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>strFileName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>strFileName</span><span class=p>.</span><span class=n>empty</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=k>return</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>if</span> <span class=p>(</span><span class=n>strFileName</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=s>&quot;.xml&quot;</span><span class=p>)</span> <span class=o>==</span> <span class=n>string</span><span class=o>::</span><span class=n>npos</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span><span class=p>;</span>
+    <span class=p>}</span>
+
+<span class=cp>#ifdef NF_DEBUG_MODE</span>
+    <span class=n>mstrConfigName</span> <span class=o>=</span> <span class=s>&quot;NFDataCfg/Debug/&quot;</span> <span class=o>+</span> <span class=n>strFileName</span><span class=p>;</span>
+<span class=cp>#else</span>
+    <span class=n>mstrConfigName</span> <span class=o>=</span> <span class=s>&quot;NFDataCfg/Release/&quot;</span> <span class=o>+</span> <span class=n>strFileName</span><span class=p>;</span>
+<span class=cp>#endif</span>
+<span class=p>}</span>
+
+<span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>GetConfigName</span><span class=p>()</span> <span class=k>const</span>
+<span class=p>{</span>
+    <span class=k>return</span> <span class=n>mstrConfigName</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>GetAppName</span><span class=p>()</span> <span class=k>const</span>
+<span class=p>{</span>
+    <span class=k>return</span> <span class=n>mstrAppName</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>SetAppName</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strAppName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>mstrAppName</span><span class=p>.</span><span class=n>empty</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=k>return</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=n>mstrAppName</span> <span class=o>=</span> <span class=n>strAppName</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>GetLogConfigName</span><span class=p>()</span> <span class=k>const</span>
+<span class=p>{</span>
+    <span class=k>return</span> <span class=n>mstrLogConfigName</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>SetLogConfigName</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>strName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>mstrLogConfigName</span> <span class=o>=</span> <span class=n>strName</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=n>NFIPlugin</span> <span class=o>*</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>GetCurrentPlugin</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=k>return</span> <span class=n>mCurrentPlugin</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=n>NFIModule</span> <span class=o>*</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>GetCurrenModule</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=k>return</span> <span class=n>mCurrenModule</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>SetCurrentPlugin</span><span class=p>(</span><span class=n>NFIPlugin</span> <span class=o>*</span> <span class=n>pPlugin</span><span class=p>)</span>
+<span class=p>{</span>
+     <span class=n>mCurrentPlugin</span> <span class=o>=</span> <span class=n>pPlugin</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>SetCurrenModule</span><span class=p>(</span><span class=n>NFIModule</span> <span class=o>*</span> <span class=n>pModule</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>mCurrenModule</span> <span class=o>=</span> <span class=n>pModule</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>SetGetFileContentFunctor</span><span class=p>(</span><span class=n>GET_FILECONTENT_FUNCTOR</span> <span class=n>fun</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>mGetFileContentFunctor</span> <span class=o>=</span> <span class=n>fun</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=c1>//先执行SetGetFileContentFunctor 设置好需要执行读取文件内容的函数，就可以根据自定义的函数来读取文件的内容</span>
+<span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>GetFileContent</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span><span class=n>strFileName</span><span class=p>,</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span><span class=n>strContent</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>mGetFileContentFunctor</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>mGetFileContentFunctor</span><span class=p>(</span><span class=k>this</span><span class=p>,</span> <span class=n>strFileName</span><span class=p>,</span> <span class=n>strContent</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=kt>FILE</span> <span class=o>*</span><span class=n>fp</span> <span class=o>=</span> <span class=n>fopen</span><span class=p>(</span><span class=n>strFileName</span><span class=p>.</span><span class=n>c_str</span><span class=p>(),</span> <span class=s>&quot;rb&quot;</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>fp</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=n>fseek</span><span class=p>(</span><span class=n>fp</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=n>SEEK_END</span><span class=p>);</span>
+    <span class=k>const</span> <span class=kt>long</span> <span class=n>filelength</span> <span class=o>=</span> <span class=n>ftell</span><span class=p>(</span><span class=n>fp</span><span class=p>);</span>
+    <span class=n>fseek</span><span class=p>(</span><span class=n>fp</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=n>SEEK_SET</span><span class=p>);</span>
+    <span class=n>strContent</span><span class=p>.</span><span class=n>resize</span><span class=p>(</span><span class=n>filelength</span><span class=p>);</span>
+    <span class=n>fread</span><span class=p>((</span><span class=kt>void</span><span class=o>*</span><span class=p>)</span><span class=n>strContent</span><span class=p>.</span><span class=n>data</span><span class=p>(),</span> <span class=n>filelength</span><span class=p>,</span> <span class=mi>1</span><span class=p>,</span> <span class=n>fp</span><span class=p>);</span>
+    <span class=n>fclose</span><span class=p>(</span><span class=n>fp</span><span class=p>);</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>AddModule</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strModuleName</span><span class=p>,</span> <span class=n>NFIModule</span><span class=o>*</span> <span class=n>pModule</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>FindModule</span><span class=p>(</span><span class=n>strModuleName</span><span class=p>))</span>
+    <span class=p>{</span>
+        <span class=n>mModuleInstanceMap</span><span class=p>.</span><span class=n>insert</span><span class=p>(</span><span class=n>ModuleInstanceMap</span><span class=o>::</span><span class=n>value_type</span><span class=p>(</span><span class=n>strModuleName</span><span class=p>,</span> <span class=n>pModule</span><span class=p>));</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>AddTestModule</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strModuleName</span><span class=p>,</span> <span class=n>NFIModule</span><span class=o>*</span> <span class=n>pModule</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>FindTestModule</span><span class=p>(</span><span class=n>strModuleName</span><span class=p>))</span>
+    <span class=p>{</span>
+        <span class=n>mTestModuleInstanceMap</span><span class=p>.</span><span class=n>insert</span><span class=p>(</span><span class=n>TestModuleInstanceMap</span><span class=o>::</span><span class=n>value_type</span><span class=p>(</span><span class=n>strModuleName</span><span class=p>,</span> <span class=n>pModule</span><span class=p>));</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>RemoveModule</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strModuleName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>ModuleInstanceMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mModuleInstanceMap</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>strModuleName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>it</span> <span class=o>!=</span> <span class=n>mModuleInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=n>mModuleInstanceMap</span><span class=p>.</span><span class=n>erase</span><span class=p>(</span><span class=n>it</span><span class=p>);</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+
+
+<span class=n>NFIModule</span><span class=o>*</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>FindModule</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strModuleName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>strSubModuleName</span> <span class=o>=</span> <span class=n>strModuleName</span><span class=p>;</span>
+
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_WIN</span>
+    <span class=n>std</span><span class=o>::</span><span class=kt>size_t</span> <span class=n>position</span> <span class=o>=</span> <span class=n>strSubModuleName</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=s>&quot; &quot;</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>string</span><span class=o>::</span><span class=n>npos</span> <span class=o>!=</span> <span class=n>position</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>strSubModuleName</span> <span class=o>=</span> <span class=n>strSubModuleName</span><span class=p>.</span><span class=n>substr</span><span class=p>(</span><span class=n>position</span> <span class=o>+</span> <span class=mi>1</span><span class=p>,</span> <span class=n>strSubModuleName</span><span class=p>.</span><span class=n>length</span><span class=p>());</span>
+    <span class=p>}</span>
+<span class=cp>#else</span>
+    <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>strSubModuleName</span><span class=p>.</span><span class=n>length</span><span class=p>();</span> <span class=n>i</span><span class=o>++</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>s</span> <span class=o>=</span> <span class=n>strSubModuleName</span><span class=p>.</span><span class=n>substr</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=n>i</span> <span class=o>+</span> <span class=mi>1</span><span class=p>);</span>
+        <span class=kt>int</span> <span class=n>n</span> <span class=o>=</span> <span class=n>atof</span><span class=p>(</span><span class=n>s</span><span class=p>.</span><span class=n>c_str</span><span class=p>());</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>strSubModuleName</span><span class=p>.</span><span class=n>length</span><span class=p>()</span> <span class=o>==</span> <span class=n>i</span> <span class=o>+</span> <span class=mi>1</span> <span class=o>+</span> <span class=n>n</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>strSubModuleName</span> <span class=o>=</span> <span class=n>strSubModuleName</span><span class=p>.</span><span class=n>substr</span><span class=p>(</span><span class=n>i</span> <span class=o>+</span> <span class=mi>1</span><span class=p>,</span> <span class=n>strSubModuleName</span><span class=p>.</span><span class=n>length</span><span class=p>());</span>
+            <span class=k>break</span><span class=p>;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+<span class=cp>#endif</span>
+
+    <span class=n>ModuleInstanceMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mModuleInstanceMap</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>strSubModuleName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>it</span> <span class=o>!=</span> <span class=n>mModuleInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>it</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>if</span> <span class=p>(</span><span class=k>this</span><span class=o>-&gt;</span><span class=n>GetCurrenModule</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=k>this</span><span class=o>-&gt;</span><span class=n>GetCurrenModule</span><span class=p>()</span><span class=o>-&gt;</span><span class=n>strName</span> <span class=o>&lt;&lt;</span> <span class=s>&quot; want to find module: &quot;</span> <span class=o>&lt;&lt;</span> <span class=n>strModuleName</span> <span class=o>&lt;&lt;</span> <span class=s>&quot; but got null_ptr!!!&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=n>NFIModule</span><span class=o>*</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>FindTestModule</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strModuleName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>strSubModuleName</span> <span class=o>=</span> <span class=n>strModuleName</span><span class=p>;</span>
+
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_WIN</span>
+    <span class=n>std</span><span class=o>::</span><span class=kt>size_t</span> <span class=n>position</span> <span class=o>=</span> <span class=n>strSubModuleName</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=s>&quot; &quot;</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>string</span><span class=o>::</span><span class=n>npos</span> <span class=o>!=</span> <span class=n>position</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>strSubModuleName</span> <span class=o>=</span> <span class=n>strSubModuleName</span><span class=p>.</span><span class=n>substr</span><span class=p>(</span><span class=n>position</span> <span class=o>+</span> <span class=mi>1</span><span class=p>,</span> <span class=n>strSubModuleName</span><span class=p>.</span><span class=n>length</span><span class=p>());</span>
+    <span class=p>}</span>
+<span class=cp>#else</span>
+    <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>strSubModuleName</span><span class=p>.</span><span class=n>length</span><span class=p>();</span> <span class=n>i</span><span class=o>++</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>s</span> <span class=o>=</span> <span class=n>strSubModuleName</span><span class=p>.</span><span class=n>substr</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=n>i</span> <span class=o>+</span> <span class=mi>1</span><span class=p>);</span>
+        <span class=kt>int</span> <span class=n>n</span> <span class=o>=</span> <span class=n>atof</span><span class=p>(</span><span class=n>s</span><span class=p>.</span><span class=n>c_str</span><span class=p>());</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>strSubModuleName</span><span class=p>.</span><span class=n>length</span><span class=p>()</span> <span class=o>==</span> <span class=n>i</span> <span class=o>+</span> <span class=mi>1</span> <span class=o>+</span> <span class=n>n</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>strSubModuleName</span> <span class=o>=</span> <span class=n>strSubModuleName</span><span class=p>.</span><span class=n>substr</span><span class=p>(</span><span class=n>i</span> <span class=o>+</span> <span class=mi>1</span><span class=p>,</span> <span class=n>strSubModuleName</span><span class=p>.</span><span class=n>length</span><span class=p>());</span>
+            <span class=k>break</span><span class=p>;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+<span class=cp>#endif</span>
+
+    <span class=n>TestModuleInstanceMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mTestModuleInstanceMap</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>strSubModuleName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>it</span> <span class=o>!=</span> <span class=n>mTestModuleInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>it</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=n>std</span><span class=o>::</span><span class=n>list</span><span class=o>&lt;</span><span class=n>NFIModule</span><span class=o>*&gt;</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>Modules</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>list</span><span class=o>&lt;</span><span class=n>NFIModule</span><span class=o>*&gt;</span> <span class=n>xModules</span><span class=p>;</span>
+
+    <span class=n>ModuleInstanceMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itCheckInstance</span> <span class=o>=</span> <span class=n>mModuleInstanceMap</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span>
+    <span class=k>for</span> <span class=p>(;</span> <span class=n>itCheckInstance</span> <span class=o>!=</span> <span class=n>mModuleInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>();</span> <span class=n>itCheckInstance</span><span class=o>++</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>xModules</span><span class=p>.</span><span class=n>push_back</span><span class=p>(</span><span class=n>itCheckInstance</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=n>xModules</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>AfterInit</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;----AfterInit----&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+
+    <span class=n>PluginInstanceMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itAfterInstance</span> <span class=o>=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span>
+    <span class=k>for</span> <span class=p>(;</span> <span class=n>itAfterInstance</span> <span class=o>!=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>();</span> <span class=n>itAfterInstance</span><span class=o>++</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>SetCurrentPlugin</span><span class=p>(</span><span class=n>itAfterInstance</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>);</span>
+        <span class=n>itAfterInstance</span><span class=o>-&gt;</span><span class=n>second</span><span class=o>-&gt;</span><span class=n>AfterInit</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>CheckConfig</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;----CheckConfig----&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+
+    <span class=n>PluginInstanceMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itCheckInstance</span> <span class=o>=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span>
+    <span class=k>for</span> <span class=p>(;</span> <span class=n>itCheckInstance</span> <span class=o>!=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>();</span> <span class=n>itCheckInstance</span><span class=o>++</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>SetCurrentPlugin</span><span class=p>(</span><span class=n>itCheckInstance</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>);</span>
+        <span class=n>itCheckInstance</span><span class=o>-&gt;</span><span class=n>second</span><span class=o>-&gt;</span><span class=n>CheckConfig</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>ReadyExecute</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;----ReadyExecute----&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+
+    <span class=n>PluginInstanceMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itCheckInstance</span> <span class=o>=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span>
+    <span class=k>for</span> <span class=p>(;</span> <span class=n>itCheckInstance</span> <span class=o>!=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>();</span> <span class=n>itCheckInstance</span><span class=o>++</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>SetCurrentPlugin</span><span class=p>(</span><span class=n>itCheckInstance</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>);</span>
+        <span class=n>itCheckInstance</span><span class=o>-&gt;</span><span class=n>second</span><span class=o>-&gt;</span><span class=n>ReadyExecute</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>BeforeShut</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>PluginInstanceMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itBeforeInstance</span> <span class=o>=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span>
+    <span class=k>for</span> <span class=p>(;</span> <span class=n>itBeforeInstance</span> <span class=o>!=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>();</span> <span class=n>itBeforeInstance</span><span class=o>++</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>SetCurrentPlugin</span><span class=p>(</span><span class=n>itBeforeInstance</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>);</span>
+        <span class=n>itBeforeInstance</span><span class=o>-&gt;</span><span class=n>second</span><span class=o>-&gt;</span><span class=n>BeforeShut</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>Shut</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>PluginInstanceMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itInstance</span> <span class=o>=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span>
+    <span class=k>for</span> <span class=p>(;</span> <span class=n>itInstance</span> <span class=o>!=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>();</span> <span class=o>++</span><span class=n>itInstance</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>SetCurrentPlugin</span><span class=p>(</span><span class=n>itInstance</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>);</span>
+        <span class=n>itInstance</span><span class=o>-&gt;</span><span class=n>second</span><span class=o>-&gt;</span><span class=n>Shut</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>Finalize</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>PluginInstanceMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itInstance</span> <span class=o>=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span>
+    <span class=k>for</span> <span class=p>(;</span> <span class=n>itInstance</span> <span class=o>!=</span> <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>end</span><span class=p>();</span> <span class=n>itInstance</span><span class=o>++</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>SetCurrentPlugin</span><span class=p>(</span><span class=n>itInstance</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>);</span>
+        <span class=n>itInstance</span><span class=o>-&gt;</span><span class=n>second</span><span class=o>-&gt;</span><span class=n>Finalize</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=c1>////////////////////////////////////////////////</span>
+
+    <span class=n>PluginNameMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mPluginNameMap</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span>
+    <span class=k>for</span> <span class=p>(;</span> <span class=n>it</span> <span class=o>!=</span> <span class=n>mPluginNameMap</span><span class=p>.</span><span class=n>end</span><span class=p>();</span> <span class=n>it</span><span class=o>++</span><span class=p>)</span>
+    <span class=p>{</span>
+<span class=cp>#ifdef NF_DYNAMIC_PLUGIN</span>
+        <span class=n>UnLoadPluginLibrary</span><span class=p>(</span><span class=n>it</span><span class=o>-&gt;</span><span class=n>first</span><span class=p>);</span>
+<span class=cp>#else</span>
+        <span class=n>UnLoadStaticPlugin</span><span class=p>(</span><span class=n>it</span><span class=o>-&gt;</span><span class=n>first</span><span class=p>);</span>
+<span class=cp>#endif</span>
+    <span class=p>}</span>
+
+    <span class=n>mPluginInstanceMap</span><span class=p>.</span><span class=n>clear</span><span class=p>();</span>
+    <span class=n>mPluginNameMap</span><span class=p>.</span><span class=n>clear</span><span class=p>();</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>LoadPluginLibrary</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPluginDLLName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>PluginLibMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mPluginLibMap</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>strPluginDLLName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>it</span> <span class=o>==</span> <span class=n>mPluginLibMap</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=n>NFDynLib</span><span class=o>*</span> <span class=n>pLib</span> <span class=o>=</span> <span class=k>new</span> <span class=n>NFDynLib</span><span class=p>(</span><span class=n>strPluginDLLName</span><span class=p>);</span>
+        <span class=kt>bool</span> <span class=n>bLoad</span> <span class=o>=</span> <span class=n>pLib</span><span class=o>-&gt;</span><span class=n>Load</span><span class=p>();</span>
+
+        <span class=k>if</span> <span class=p>(</span><span class=n>bLoad</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>mPluginLibMap</span><span class=p>.</span><span class=n>insert</span><span class=p>(</span><span class=n>PluginLibMap</span><span class=o>::</span><span class=n>value_type</span><span class=p>(</span><span class=n>strPluginDLLName</span><span class=p>,</span> <span class=n>pLib</span><span class=p>));</span>
+
+            <span class=n>DLL_START_PLUGIN_FUNC</span> <span class=n>pFunc</span> <span class=o>=</span> <span class=p>(</span><span class=n>DLL_START_PLUGIN_FUNC</span><span class=p>)</span><span class=n>pLib</span><span class=o>-&gt;</span><span class=n>GetSymbol</span><span class=p>(</span><span class=s>&quot;DllStartPlugin&quot;</span><span class=p>);</span>
+            <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>pFunc</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;Find function DllStartPlugin Failed in [&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>pLib</span><span class=o>-&gt;</span><span class=n>GetName</span><span class=p>()</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;]&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+                <span class=n>assert</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+                <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+            <span class=p>}</span>
+
+            <span class=n>pFunc</span><span class=p>(</span><span class=k>this</span><span class=p>);</span>
+
+            <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+        <span class=p>}</span>
+        <span class=k>else</span>
+        <span class=p>{</span>
+<span class=cp>#if NF_PLATFORM == NF_PLATFORM_LINUX || NF_PLATFORM == NF_PLATFORM_APPLE</span>
+            <span class=kt>char</span><span class=o>*</span> <span class=n>error</span> <span class=o>=</span> <span class=n>dlerror</span><span class=p>();</span>
+            <span class=k>if</span> <span class=p>(</span><span class=n>error</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=n>stderr</span> <span class=o>&lt;&lt;</span> <span class=s>&quot; Load shared lib[&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>pLib</span><span class=o>-&gt;</span><span class=n>GetName</span><span class=p>()</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;] failed, ErrorNo. = [&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>error</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;]&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+                <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;Load [&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>pLib</span><span class=o>-&gt;</span><span class=n>GetName</span><span class=p>()</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;] failed&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+                <span class=n>assert</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+                <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+            <span class=p>}</span>
+<span class=cp>#elif NF_PLATFORM == NF_PLATFORM_WIN</span>
+            <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=n>stderr</span> <span class=o>&lt;&lt;</span> <span class=s>&quot; Load DLL[&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>pLib</span><span class=o>-&gt;</span><span class=n>GetName</span><span class=p>()</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;] failed, ErrorNo. = [&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>GetLastError</span><span class=p>()</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;]&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+            <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;Load [&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>pLib</span><span class=o>-&gt;</span><span class=n>GetName</span><span class=p>()</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;] failed&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+            <span class=n>assert</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+            <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+<span class=cp>#endif </span><span class=c1>// NF_PLATFORM</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>UnLoadPluginLibrary</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPluginDLLName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>PluginLibMap</span><span class=o>::</span><span class=n>iterator</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mPluginLibMap</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>strPluginDLLName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>it</span> <span class=o>!=</span> <span class=n>mPluginLibMap</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=n>NFDynLib</span><span class=o>*</span> <span class=n>pLib</span> <span class=o>=</span> <span class=n>it</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>;</span>
+        <span class=n>DLL_STOP_PLUGIN_FUNC</span> <span class=n>pFunc</span> <span class=o>=</span> <span class=p>(</span><span class=n>DLL_STOP_PLUGIN_FUNC</span><span class=p>)</span><span class=n>pLib</span><span class=o>-&gt;</span><span class=n>GetSymbol</span><span class=p>(</span><span class=s>&quot;DllStopPlugin&quot;</span><span class=p>);</span>
+
+        <span class=k>if</span> <span class=p>(</span><span class=n>pFunc</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>pFunc</span><span class=p>(</span><span class=k>this</span><span class=p>);</span>
+        <span class=p>}</span>
+
+        <span class=n>pLib</span><span class=o>-&gt;</span><span class=n>UnLoad</span><span class=p>();</span>
+
+        <span class=k>delete</span> <span class=n>pLib</span><span class=p>;</span>
+        <span class=n>pLib</span> <span class=o>=</span> <span class=nb>NULL</span><span class=p>;</span>
+        <span class=n>mPluginLibMap</span><span class=p>.</span><span class=n>erase</span><span class=p>(</span><span class=n>it</span><span class=p>);</span>
+
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>UnLoadStaticPlugin</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>strPluginDLLName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=c1>//     DESTROY_PLUGIN(this, NFConfigPlugin)</span>
+    <span class=c1>//     DESTROY_PLUGIN(this, NFEventProcessPlugin)</span>
+    <span class=c1>//     DESTROY_PLUGIN(this, NFKernelPlugin)</span>
+    <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>void</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>AddFileReplaceContent</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>fileName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>content</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>newValue</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=k>auto</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mReplaceContent</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>fileName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>it</span> <span class=o>==</span> <span class=n>mReplaceContent</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>NFReplaceContent</span><span class=o>&gt;</span> <span class=n>v</span><span class=p>;</span>
+        <span class=n>v</span><span class=p>.</span><span class=n>push_back</span><span class=p>(</span><span class=n>NFReplaceContent</span><span class=p>(</span><span class=n>content</span><span class=p>,</span> <span class=n>newValue</span><span class=p>));</span>
+
+        <span class=n>mReplaceContent</span><span class=p>.</span><span class=n>insert</span><span class=p>(</span><span class=n>std</span><span class=o>::</span><span class=n>pair</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=p>,</span> <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>NFReplaceContent</span><span class=o>&gt;</span> <span class=o>&gt;</span><span class=p>(</span><span class=n>fileName</span><span class=p>,</span> <span class=n>v</span><span class=p>));</span>
+    <span class=p>}</span>
+    <span class=k>else</span>
+    <span class=p>{</span>
+        <span class=n>it</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>.</span><span class=n>push_back</span><span class=p>(</span><span class=n>NFReplaceContent</span><span class=p>(</span><span class=n>content</span><span class=p>,</span> <span class=n>newValue</span><span class=p>));</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+
+<span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>NFReplaceContent</span><span class=o>&gt;</span> <span class=n>NFPluginManager</span><span class=o>::</span><span class=n>GetFileReplaceContents</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>fileName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=k>auto</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mReplaceContent</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>fileName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>it</span> <span class=o>!=</span> <span class=n>mReplaceContent</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>it</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>NFReplaceContent</span><span class=o>&gt;</span><span class=p>();</span>
+<span class=p>}</span>
+</code></pre></div> <br> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../NFPluginServer/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../NFPluginServer/ class="btn btn-xs btn-link"> NFPluginServer </a> </div> <div class=wm-article-nav> <a href=../NFDynLib/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../NFDynLib/ class="btn btn-xs btn-link"> NFDynLib </a> </div> </div> <br> </div> <footer class="container-fluid wm-page-content"><p>Copyright &copy; 2020 - 2020 张磊</p> <p>Documentation built with <a href=http://www.mkdocs.org/ >MkDocs</a> using <a href=https://github.com/gristlabs/mkdocs-windmill>Windmill</a> theme by Grist Labs.</p> </footer> </body> </html>
