@@ -120,6 +120,7 @@ nav:
       - NFVector3:           NoahGameFrame/NFCore/NFVector3.md
     - NFHeaderFiles:
       - NFGUID:              NoahGameFrame/NFHeaderFiles/NFGUID_h.md
+      - NFIComponent:        NoahGameFrame/NFHeaderFiles/NFIComponent_h.md
       - NFIModule:           NoahGameFrame/NFHeaderFiles/NFIModule_h.md
       - NFIPlugin:           NoahGameFrame/NFHeaderFiles/NFIPlugin_h.md
       - NFIPluginManager:    NoahGameFrame/NFHeaderFiles/NFIPluginManager_h.md
