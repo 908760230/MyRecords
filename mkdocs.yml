@@ -103,6 +103,7 @@ nav:
   - C++:
     - 关键字decltype:         C++/关键字decltype.md
     - 关键字volatile:         C++/关键字volatile.md
+    - 死循环内的sleep函数:      C++/死循环内的sleep函数.md
     - C++11线程中的几种锁:      C++/C++11线程中的几种锁.md
   - Libevent:
     - 开始:                   Libevent/index.md
@@ -111,11 +112,17 @@ nav:
   - mkdcos错误总结:
     - 无法build:              mkdocs/无法build的原因.md
   - NoahGameFrame:
+    - NFActorPlugin:
+      - dllmain:             NoahGameFrame/NFActorPlugin/dllmain.md
+      - NFActor:             NoahGameFrame/NFActorPlugin/NFActor.md
+      - NFActorModule:       NoahGameFrame/NFActorPlugin/NFActorModule.md
+      - NFActorPlugin:       NoahGameFrame/NFActorPlugin/NFActorPlugin.md
     - NFCore:
       - NFConsistentHash_h:  NoahGameFrame/NFCore/NFConsistentHash_h.md
       - NFDataList:          NoahGameFrame/NFCore/NFDataList_h.md
       - NFIProperty:         NoahGameFrame/NFCore/NFIProperty_h.md   
       - NFMemoryCounter_h:   NoahGameFrame/NFCore/NFMemoryCounter_h.md
+      - NFQueue:             NoahGameFrame/NFCore/NFQueue_h.md
       - NFVector2:           NoahGameFrame/NFCore/NFVector2.md
       - NFVector3:           NoahGameFrame/NFCore/NFVector3.md
     - NFHeaderFiles:
@@ -124,6 +131,10 @@ nav:
       - NFIModule:           NoahGameFrame/NFHeaderFiles/NFIModule_h.md
       - NFIPlugin:           NoahGameFrame/NFHeaderFiles/NFIPlugin_h.md
       - NFIPluginManager:    NoahGameFrame/NFHeaderFiles/NFIPluginManager_h.md
+      - NFIThreadPoolModule: NoahGameFrame/NFHeaderFiles/NFIThreadPoolModule_h.md
+    - NFKernelPlugin:
+      - NFKernelPlugin:      NoahGameFrame/NFKernelPlugin/NFKernelPlugin.md
+      - NFThreadPoolModule:  NoahGameFrame/NFKernelPlugin/NFThreadPoolModule.md
     - NFLogPlugin:
       - dllmain:             NoahGameFrame/NFLogPlugin/dllmain.md
       - NFLogModule:         NoahGameFrame/NFLogPlugin/NFLogModule.md
@@ -136,6 +147,8 @@ nav:
       - NFServer:            NoahGameFrame/NFServer/NFServer.md
   - vs2019小知识:
     - 调试文件路径:            vs2019小知识/调试文件路径.md
+  - 练习的Demon:
+    - Actor模型:              练习的Demon/Actor模型.md
     
   
 
