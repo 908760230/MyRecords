@@ -1,0 +1,239 @@
+<!DOCTYPE html><html lang=en> <head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" href=../../../img/favicon.ico><meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"><title>NFIComponent - 记录</title><link href=../../../css/bootstrap-3.3.7.min.css rel=stylesheet><link href=../../../css/font-awesome-4.7.0.css rel=stylesheet><link href=../../../css/base.css rel=stylesheet><link rel=stylesheet href=../../../css/highlight.css><!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries --><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]--><script src=../../../js/jquery-3.2.1.min.js></script><script src=../../../js/bootstrap-3.3.7.min.js></script><script src=../../../js/highlight.pack.js></script><base target=_top><script>
+      var base_url = '../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "NFIComponent", url: "#_top", children: [
+          ]},
+        ];
+
+    </script><script src=../../../js/base.js></script></head> <body> <script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script> <div class="container-fluid wm-page-content"> <a name=_top></a> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../NFIModule_h/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../NFIModule_h/ class="btn btn-xs btn-link"> NFIModule </a> </div> <div class=wm-article-nav> <a href=../NFGUID_h/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../NFGUID_h/ class="btn btn-xs btn-link"> NFGUID </a> </div> </div> <h1 id=nficomponent>NFIComponent<a class=headerlink href=#nficomponent title="Permanent link">&para;</a></h1> <p>Component是对Actor的再一次封装</p> <div class=highlight><pre><span></span><code><span class=cp>#ifndef NFI_COMPONENT_H</span>
+<span class=cp>#define NFI_COMPONENT_H</span>
+
+<span class=cp>#include</span> <span class=cpf>&quot;NFPlatform.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFGUID.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFIModule.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFCore/NFMemoryCounter.h&quot;</span><span class=cp></span>
+
+<span class=k>class</span> <span class=nc>NFActorMessage</span><span class=p>;</span>
+<span class=k>class</span> <span class=nc>NFIComponent</span><span class=p>;</span>
+
+<span class=k>typedef</span> <span class=n>std</span><span class=o>::</span><span class=n>function</span><span class=o>&lt;</span><span class=kt>void</span><span class=p>(</span><span class=n>NFActorMessage</span><span class=o>&amp;</span><span class=p>)</span><span class=o>&gt;</span> <span class=n>ACTOR_PROCESS_FUNCTOR</span><span class=p>;</span>
+<span class=k>typedef</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>ACTOR_PROCESS_FUNCTOR</span><span class=o>&gt;</span> <span class=n>ACTOR_PROCESS_FUNCTOR_PTR</span><span class=p>;</span>
+
+<span class=k>class</span> <span class=nc>NFActorMessage</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>NFActorMessage</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=n>msgID</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+        <span class=n>index</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=kt>int</span> <span class=n>msgID</span><span class=p>;</span>
+    <span class=kt>uint64_t</span> <span class=n>index</span><span class=p>;</span>
+    <span class=n>NFGUID</span> <span class=n>id</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>data</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>arg</span><span class=p>;</span>
+<span class=k>protected</span><span class=o>:</span>
+<span class=k>private</span><span class=o>:</span>
+<span class=p>};</span>
+
+<span class=k>class</span> <span class=nc>NFIActor</span> <span class=o>:</span> <span class=n>NFMemoryCounter</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>NFIActor</span><span class=p>()</span>
+        <span class=o>:</span> <span class=n>NFMemoryCounter</span><span class=p>(</span><span class=n>GET_CLASS_NAME</span><span class=p>(</span><span class=n>NFIActor</span><span class=p>),</span> <span class=mi>1</span><span class=p>)</span>
+    <span class=p>{</span>
+
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=o>~</span><span class=n>NFIActor</span><span class=p>()</span> <span class=p>{}</span>
+    <span class=k>virtual</span> <span class=k>const</span> <span class=n>NFGUID</span> <span class=n>ID</span><span class=p>()</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Execute</span><span class=p>()</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=c1>//先判断类型是否正确，然后调用protected的子类函数</span>
+    <span class=k>template</span> <span class=o>&lt;</span><span class=k>typename</span> <span class=n>T</span><span class=o>&gt;</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=n>AddComponent</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIComponent</span><span class=o>&gt;</span> <span class=n>component</span> <span class=o>=</span> <span class=n>FindComponent</span><span class=p>(</span><span class=k>typeid</span><span class=p>(</span><span class=n>T</span><span class=p>).</span><span class=n>name</span><span class=p>());</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>component</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=p>{</span>
+            <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>TIsDerived</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>NFIComponent</span><span class=o>&gt;::</span><span class=n>Result</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+            <span class=p>}</span>
+
+            <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=n>pComponent</span> <span class=o>=</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span><span class=p>(</span><span class=n>NF_NEW</span> <span class=n>T</span><span class=p>());</span>
+
+            <span class=n>assert</span><span class=p>(</span><span class=nb>NULL</span> <span class=o>!=</span> <span class=n>pComponent</span><span class=p>);</span>
+
+            <span class=n>AddComponent</span><span class=p>(</span><span class=n>pComponent</span><span class=p>);</span>
+
+            <span class=k>return</span> <span class=n>pComponent</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=k>return</span> <span class=k>nullptr</span><span class=p>;</span>
+    <span class=p>}</span>
+
+
+
+    <span class=k>template</span> <span class=o>&lt;</span><span class=k>typename</span> <span class=n>T</span><span class=o>&gt;</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=n>FindComponent</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIComponent</span><span class=o>&gt;</span> <span class=n>component</span> <span class=o>=</span> <span class=n>FindComponent</span><span class=p>(</span><span class=k>typeid</span><span class=p>(</span><span class=n>T</span><span class=p>).</span><span class=n>name</span><span class=p>());</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>component</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=n>pT</span> <span class=o>=</span> <span class=n>std</span><span class=o>::</span><span class=n>dynamic_pointer_cast</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span><span class=p>(</span><span class=n>component</span><span class=p>);</span>
+
+            <span class=n>assert</span><span class=p>(</span><span class=nb>NULL</span> <span class=o>!=</span> <span class=n>pT</span><span class=p>);</span>
+
+            <span class=k>return</span> <span class=n>pT</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=k>return</span> <span class=k>nullptr</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>template</span> <span class=o>&lt;</span><span class=k>typename</span> <span class=n>T</span><span class=o>&gt;</span>
+    <span class=kt>bool</span> <span class=n>RemoveComponent</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>RemoveComponent</span><span class=p>(</span><span class=k>typeid</span><span class=p>(</span><span class=n>T</span><span class=p>).</span><span class=n>name</span><span class=p>());</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>SendMsg</span><span class=p>(</span><span class=k>const</span> <span class=n>NFActorMessage</span><span class=o>&amp;</span> <span class=n>message</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>SendMsg</span><span class=p>(</span><span class=k>const</span> <span class=kt>int</span> <span class=n>eventID</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>data</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>arg</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>BackMsgToMainThread</span><span class=p>(</span><span class=k>const</span> <span class=n>NFActorMessage</span><span class=o>&amp;</span> <span class=n>message</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>AddMessageHandler</span><span class=p>(</span><span class=k>const</span> <span class=kt>int</span> <span class=n>nSubMsgID</span><span class=p>,</span> <span class=n>ACTOR_PROCESS_FUNCTOR_PTR</span> <span class=n>xBeginFunctor</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+<span class=k>protected</span><span class=o>:</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>AddComponent</span><span class=p>(</span><span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIComponent</span><span class=o>&gt;</span> <span class=n>pComponent</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>RemoveComponent</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strComponentName</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIComponent</span><span class=o>&gt;</span> <span class=n>FindComponent</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strComponentName</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+<span class=p>};</span>
+
+<span class=k>class</span> <span class=nc>NFIComponent</span> <span class=o>:</span> <span class=n>NFMemoryCounter</span>
+<span class=p>{</span>
+<span class=k>private</span><span class=o>:</span>
+    <span class=n>NFIComponent</span><span class=p>()</span>
+        <span class=o>:</span> <span class=n>NFMemoryCounter</span><span class=p>(</span><span class=n>GET_CLASS_NAME</span><span class=p>(</span><span class=n>NFIComponent</span><span class=p>),</span> <span class=mi>1</span><span class=p>)</span>
+    <span class=p>{</span>
+    <span class=p>}</span>
+
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>NFIComponent</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strName</span><span class=p>)</span>
+        <span class=o>:</span> <span class=n>NFMemoryCounter</span><span class=p>(</span><span class=n>GET_CLASS_NAME</span><span class=p>(</span><span class=n>NFIComponent</span><span class=p>),</span> <span class=mi>1</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>mbEnable</span> <span class=o>=</span> <span class=nb>true</span><span class=p>;</span>
+        <span class=n>mstrName</span> <span class=o>=</span> <span class=n>strName</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=o>~</span><span class=n>NFIComponent</span><span class=p>()</span> <span class=p>{}</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=n>SetActor</span><span class=p>(</span><span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIActor</span><span class=o>&gt;</span> <span class=n>self</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>mSelf</span> <span class=o>=</span> <span class=n>self</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIActor</span><span class=o>&gt;</span> <span class=n>GetActor</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>mSelf</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>Awake</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>Init</span><span class=p>()</span>
+    <span class=p>{</span>
+
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>AfterInit</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>CheckConfig</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>ReadyExecute</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>Execute</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>BeforeShut</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>Shut</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>Finalize</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>SetEnable</span><span class=p>(</span><span class=k>const</span> <span class=kt>bool</span> <span class=n>bEnable</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>mbEnable</span> <span class=o>=</span> <span class=n>bEnable</span><span class=p>;</span>
+
+        <span class=k>return</span> <span class=n>mbEnable</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>Enable</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>mbEnable</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>GetComponentName</span><span class=p>()</span> <span class=k>const</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>mstrName</span><span class=p>;</span>
+    <span class=p>};</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>ToMemoryCounterString</span><span class=p>(</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>info</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>info</span><span class=p>.</span><span class=n>append</span><span class=p>(</span><span class=n>mSelf</span><span class=o>-&gt;</span><span class=n>ID</span><span class=p>().</span><span class=n>ToString</span><span class=p>());</span>
+        <span class=n>info</span><span class=p>.</span><span class=n>append</span><span class=p>(</span><span class=s>&quot;:&quot;</span><span class=p>);</span>
+        <span class=n>info</span><span class=p>.</span><span class=n>append</span><span class=p>(</span><span class=n>mstrName</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=k>template</span><span class=o>&lt;</span><span class=k>typename</span> <span class=n>BaseType</span><span class=o>&gt;</span>
+    <span class=kt>bool</span> <span class=n>AddMsgHandler</span><span class=p>(</span><span class=k>const</span> <span class=kt>int</span> <span class=n>nSubMessage</span><span class=p>,</span> <span class=n>BaseType</span><span class=o>*</span> <span class=n>pBase</span><span class=p>,</span> <span class=kt>int</span> <span class=p>(</span><span class=n>BaseType</span><span class=o>::*</span><span class=n>handler</span><span class=p>)(</span><span class=n>NFActorMessage</span><span class=o>&amp;</span><span class=p>))</span>
+    <span class=p>{</span>
+        <span class=n>ACTOR_PROCESS_FUNCTOR</span> <span class=n>functor</span> <span class=o>=</span> <span class=n>std</span><span class=o>::</span><span class=n>bind</span><span class=p>(</span><span class=n>handler</span><span class=p>,</span> <span class=n>pBase</span><span class=p>,</span> <span class=n>std</span><span class=o>::</span><span class=n>placeholders</span><span class=o>::</span><span class=n>_1</span><span class=p>);</span>
+        <span class=n>ACTOR_PROCESS_FUNCTOR_PTR</span> <span class=nf>functorPtr</span><span class=p>(</span><span class=k>new</span> <span class=n>ACTOR_PROCESS_FUNCTOR</span><span class=p>(</span><span class=n>functor</span><span class=p>));</span>
+
+        <span class=k>return</span> <span class=n>mSelf</span><span class=o>-&gt;</span><span class=n>AddMessageHandler</span><span class=p>(</span><span class=n>nSubMessage</span><span class=p>,</span> <span class=n>functorPtr</span><span class=p>);</span>
+    <span class=p>}</span>
+
+<span class=k>private</span><span class=o>:</span>
+    <span class=kt>bool</span> <span class=n>mbEnable</span><span class=p>;</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIActor</span><span class=o>&gt;</span> <span class=n>mSelf</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>mstrName</span><span class=p>;</span>
+<span class=p>};</span>
+
+<span class=cp>#endif</span>
+</code></pre></div> <br> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../NFIModule_h/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../NFIModule_h/ class="btn btn-xs btn-link"> NFIModule </a> </div> <div class=wm-article-nav> <a href=../NFGUID_h/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../NFGUID_h/ class="btn btn-xs btn-link"> NFGUID </a> </div> </div> <br> </div> <footer class="container-fluid wm-page-content"><p>Copyright &copy; 2020 - 2020 张磊</p> <p>Documentation built with <a href=http://www.mkdocs.org/ >MkDocs</a> using <a href=https://github.com/gristlabs/mkdocs-windmill>Windmill</a> theme by Grist Labs.</p> </footer> </body> </html>

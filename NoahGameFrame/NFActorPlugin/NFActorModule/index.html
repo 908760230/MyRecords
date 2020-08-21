@@ -1,0 +1,240 @@
+<!DOCTYPE html><html lang=en> <head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" href=../../../img/favicon.ico><meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"><title>NFActorModule - 记录</title><link href=../../../css/bootstrap-3.3.7.min.css rel=stylesheet><link href=../../../css/font-awesome-4.7.0.css rel=stylesheet><link href=../../../css/base.css rel=stylesheet><link rel=stylesheet href=../../../css/highlight.css><!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries --><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]--><script src=../../../js/jquery-3.2.1.min.js></script><script src=../../../js/bootstrap-3.3.7.min.js></script><script src=../../../js/highlight.pack.js></script><base target=_top><script>
+      var base_url = '../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "NFActorModule", url: "#_top", children: [
+              {title: "\u5934\u6587\u4ef6", url: "#_1" },
+              {title: "cpp\u6587\u4ef6", url: "#cpp" },
+          ]},
+        ];
+
+    </script><script src=../../../js/base.js></script></head> <body> <script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script> <div class="container-fluid wm-page-content"> <a name=_top></a> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../NFActorPlugin/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../NFActorPlugin/ class="btn btn-xs btn-link"> NFActorPlugin </a> </div> <div class=wm-article-nav> <a href=../NFActor/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../NFActor/ class="btn btn-xs btn-link"> NFActor </a> </div> </div> <h1 id=nfactormodule>NFActorModule<a class=headerlink href=#nfactormodule title="Permanent link">&para;</a></h1> <h2 id=_1>头文件<a class=headerlink href=#_1 title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=cp>#ifndef NF_ACTOR_MANAGER_H</span>
+<span class=cp>#define NF_ACTOR_MANAGER_H</span>
+
+<span class=cp>#include</span> <span class=cpf>&lt;map&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;string&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;queue&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFActor.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFPluginModule/NFIComponent.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFPluginModule/NFIActorModule.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFPluginModule/NFIKernelModule.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFPluginModule/NFIThreadPoolModule.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFCore/NFQueue.hpp&quot;</span><span class=cp></span>
+
+<span class=k>class</span> <span class=nc>NFActorModule</span>
+    <span class=o>:</span> <span class=k>public</span> <span class=n>NFIActorModule</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>NFActorModule</span><span class=p>(</span><span class=n>NFIPluginManager</span><span class=o>*</span> <span class=n>p</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=o>~</span><span class=n>NFActorModule</span><span class=p>();</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Init</span><span class=p>();</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>AfterInit</span><span class=p>();</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>BeforeShut</span><span class=p>();</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Shut</span><span class=p>();</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Execute</span><span class=p>();</span>
+
+    <span class=k>virtual</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIActor</span><span class=o>&gt;</span> <span class=n>RequireActor</span><span class=p>();</span>
+    <span class=k>virtual</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIActor</span><span class=o>&gt;</span> <span class=n>GetActor</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>nActorIndex</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>ReleaseActor</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>nActorIndex</span><span class=p>);</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>SendMsgToActor</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>actorIndex</span><span class=p>,</span> <span class=k>const</span> <span class=n>NFGUID</span> <span class=n>who</span><span class=p>,</span> <span class=k>const</span> <span class=kt>int</span> <span class=n>eventID</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>data</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>arg</span> <span class=o>=</span> <span class=s>&quot;&quot;</span><span class=p>);</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>AddResult</span><span class=p>(</span><span class=k>const</span> <span class=n>NFActorMessage</span><span class=o>&amp;</span> <span class=n>message</span><span class=p>);</span>
+
+<span class=k>protected</span><span class=o>:</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>SendMsgToActor</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>actorIndex</span><span class=p>,</span> <span class=k>const</span> <span class=n>NFActorMessage</span><span class=o>&amp;</span> <span class=n>message</span><span class=p>);</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>AddEndFunc</span><span class=p>(</span><span class=k>const</span> <span class=kt>int</span> <span class=n>subMessageID</span><span class=p>,</span> <span class=n>ACTOR_PROCESS_FUNCTOR_PTR</span> <span class=n>functorPtr_end</span><span class=p>);</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>ExecuteEvent</span><span class=p>();</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>ExecuteResultEvent</span><span class=p>();</span>
+
+<span class=k>private</span><span class=o>:</span>
+    <span class=kt>bool</span> <span class=n>test</span> <span class=o>=</span> <span class=nb>false</span><span class=p>;</span>
+
+    <span class=n>NFIKernelModule</span><span class=o>*</span> <span class=n>m_pKernelModule</span><span class=p>;</span>
+    <span class=n>NFIThreadPoolModule</span><span class=o>*</span> <span class=n>m_pThreadPoolModule</span><span class=p>;</span>
+
+    <span class=n>std</span><span class=o>::</span><span class=n>map</span><span class=o>&lt;</span><span class=n>NFGUID</span><span class=p>,</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIActor</span><span class=o>&gt;&gt;</span> <span class=n>mxActorMap</span><span class=p>;</span>
+
+    <span class=n>NFQueue</span><span class=o>&lt;</span><span class=n>NFActorMessage</span><span class=o>&gt;</span> <span class=n>mxResultQueue</span><span class=p>;</span>
+    <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=kt>int</span><span class=p>,</span> <span class=n>ACTOR_PROCESS_FUNCTOR</span><span class=o>&gt;</span> <span class=n>mxEndFunctor</span><span class=p>;</span>
+<span class=p>};</span>
+
+<span class=cp>#endif</span>
+</code></pre></div> <h2 id=cpp>cpp文件<a class=headerlink href=#cpp title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=cp>#include</span> <span class=cpf>&quot;NFActorModule.h&quot;</span><span class=cp></span>
+
+<span class=n>NFActorModule</span><span class=o>::</span><span class=n>NFActorModule</span><span class=p>(</span><span class=n>NFIPluginManager</span><span class=o>*</span> <span class=n>p</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>pPluginManager</span> <span class=o>=</span> <span class=n>p</span><span class=p>;</span>
+    <span class=c1>//初始化随机函数</span>
+    <span class=n>srand</span><span class=p>((</span><span class=kt>unsigned</span><span class=p>)</span><span class=n>time</span><span class=p>(</span><span class=nb>NULL</span><span class=p>));</span>
+<span class=p>}</span>
+
+<span class=n>NFActorModule</span><span class=o>::~</span><span class=n>NFActorModule</span><span class=p>()</span>
+<span class=p>{</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFActorModule</span><span class=o>::</span><span class=n>Init</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>m_pKernelModule</span> <span class=o>=</span> <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>FindModule</span><span class=o>&lt;</span><span class=n>NFIKernelModule</span><span class=o>&gt;</span><span class=p>();</span>
+    <span class=n>m_pThreadPoolModule</span> <span class=o>=</span> <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>FindModule</span><span class=o>&lt;</span><span class=n>NFIThreadPoolModule</span><span class=o>&gt;</span><span class=p>();</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFActorModule</span><span class=o>::</span><span class=n>AfterInit</span><span class=p>()</span>
+<span class=p>{</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFActorModule</span><span class=o>::</span><span class=n>BeforeShut</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>mxActorMap</span><span class=p>.</span><span class=n>clear</span><span class=p>();</span>
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFActorModule</span><span class=o>::</span><span class=n>Shut</span><span class=p>()</span>
+<span class=p>{</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFActorModule</span><span class=o>::</span><span class=n>Execute</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>ExecuteEvent</span><span class=p>();</span>
+    <span class=n>ExecuteResultEvent</span><span class=p>();</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+
+<span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIActor</span><span class=o>&gt;</span> <span class=n>NFActorModule</span><span class=o>::</span><span class=n>RequireActor</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIActor</span><span class=o>&gt;</span> <span class=n>pActor</span> <span class=o>=</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIActor</span><span class=o>&gt;</span><span class=p>(</span><span class=n>NF_NEW</span> <span class=n>NFActor</span><span class=p>(</span><span class=n>m_pKernelModule</span><span class=o>-&gt;</span><span class=n>CreateGUID</span><span class=p>(),</span> <span class=k>this</span><span class=p>));</span>
+    <span class=n>mxActorMap</span><span class=p>.</span><span class=n>insert</span><span class=p>(</span><span class=n>std</span><span class=o>::</span><span class=n>map</span><span class=o>&lt;</span><span class=n>NFGUID</span><span class=p>,</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIActor</span><span class=o>&gt;&gt;::</span><span class=n>value_type</span><span class=p>(</span><span class=n>pActor</span><span class=o>-&gt;</span><span class=n>ID</span><span class=p>(),</span> <span class=n>pActor</span><span class=p>));</span>
+
+    <span class=k>return</span> <span class=n>pActor</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIActor</span><span class=o>&gt;</span> <span class=n>NFActorModule</span><span class=o>::</span><span class=n>GetActor</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>nActorIndex</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=k>auto</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mxActorMap</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>nActorIndex</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>it</span> <span class=o>!=</span> <span class=n>mxActorMap</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>it</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=k>nullptr</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFActorModule</span><span class=o>::</span><span class=n>AddResult</span><span class=p>(</span><span class=k>const</span> <span class=n>NFActorMessage</span> <span class=o>&amp;</span> <span class=n>message</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=c1>//只是将结果压入栈中</span>
+    <span class=k>return</span> <span class=n>mxResultQueue</span><span class=p>.</span><span class=n>Push</span><span class=p>(</span><span class=n>message</span><span class=p>);</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFActorModule</span><span class=o>::</span><span class=n>ExecuteEvent</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=k>for</span> <span class=p>(</span><span class=k>auto</span> <span class=nl>it</span> <span class=p>:</span> <span class=n>mxActorMap</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIActor</span><span class=o>&gt;</span> <span class=n>pActor</span> <span class=o>=</span> <span class=n>it</span><span class=p>.</span><span class=n>second</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>pActor</span><span class=p>)</span>
+        <span class=p>{</span>   <span class=c1>//测试状态下 直接执行</span>
+            <span class=k>if</span> <span class=p>(</span><span class=n>test</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=n>pActor</span><span class=o>-&gt;</span><span class=n>Execute</span><span class=p>();</span>
+            <span class=p>}</span>
+            <span class=k>else</span>
+            <span class=p>{</span>   <span class=c1>//在线程池内执行</span>
+                <span class=n>m_pThreadPoolModule</span><span class=o>-&gt;</span><span class=n>DoAsyncTask</span><span class=p>(</span><span class=n>pActor</span><span class=o>-&gt;</span><span class=n>ID</span><span class=p>(),</span> <span class=s>&quot;&quot;</span><span class=p>,</span>
+                    <span class=p>[</span><span class=n>pActor</span><span class=p>](</span><span class=n>NFThreadTask</span><span class=o>&amp;</span> <span class=n>threadTask</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=kt>void</span>
+                    <span class=p>{</span>
+                        <span class=n>pActor</span><span class=o>-&gt;</span><span class=n>Execute</span><span class=p>();</span>
+                    <span class=p>});</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFActorModule</span><span class=o>::</span><span class=n>ExecuteResultEvent</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>NFActorMessage</span> <span class=n>actorMessage</span><span class=p>;</span>
+    <span class=k>while</span> <span class=p>(</span><span class=n>mxResultQueue</span><span class=p>.</span><span class=n>try_dequeue</span><span class=p>(</span><span class=n>actorMessage</span><span class=p>))</span>
+    <span class=p>{</span>
+        <span class=n>ACTOR_PROCESS_FUNCTOR_PTR</span> <span class=n>functorPtr_end</span> <span class=o>=</span> <span class=n>mxEndFunctor</span><span class=p>.</span><span class=n>GetElement</span><span class=p>(</span><span class=n>actorMessage</span><span class=p>.</span><span class=n>msgID</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>functorPtr_end</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>functorPtr_end</span><span class=o>-&gt;</span><span class=k>operator</span><span class=p>()(</span><span class=n>actorMessage</span><span class=p>);</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFActorModule</span><span class=o>::</span><span class=n>SendMsgToActor</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>actorIndex</span><span class=p>,</span> <span class=k>const</span> <span class=n>NFGUID</span> <span class=n>who</span><span class=p>,</span> <span class=k>const</span> <span class=kt>int</span> <span class=n>eventID</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>data</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>arg</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=k>static</span> <span class=kt>uint64_t</span> <span class=n>index</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIActor</span><span class=o>&gt;</span> <span class=n>pActor</span> <span class=o>=</span> <span class=n>GetActor</span><span class=p>(</span><span class=n>actorIndex</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=k>nullptr</span> <span class=o>!=</span> <span class=n>pActor</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>NFActorMessage</span> <span class=n>xMessage</span><span class=p>;</span>
+
+        <span class=n>xMessage</span><span class=p>.</span><span class=n>id</span> <span class=o>=</span> <span class=n>who</span><span class=p>;</span>
+        <span class=n>xMessage</span><span class=p>.</span><span class=n>index</span>  <span class=o>=</span> <span class=n>index</span><span class=o>++</span><span class=p>;</span>
+        <span class=n>xMessage</span><span class=p>.</span><span class=n>data</span> <span class=o>=</span> <span class=n>data</span><span class=p>;</span>
+        <span class=n>xMessage</span><span class=p>.</span><span class=n>msgID</span> <span class=o>=</span> <span class=n>eventID</span><span class=p>;</span>
+        <span class=n>xMessage</span><span class=p>.</span><span class=n>arg</span> <span class=o>=</span> <span class=n>arg</span><span class=p>;</span>
+
+
+        <span class=k>return</span> <span class=k>this</span><span class=o>-&gt;</span><span class=n>SendMsgToActor</span><span class=p>(</span><span class=n>actorIndex</span><span class=p>,</span> <span class=n>xMessage</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFActorModule</span><span class=o>::</span><span class=n>ReleaseActor</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>nActorIndex</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=k>auto</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mxActorMap</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>nActorIndex</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>it</span> <span class=o>!=</span> <span class=n>mxActorMap</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=n>mxActorMap</span><span class=p>.</span><span class=n>erase</span><span class=p>(</span><span class=n>it</span><span class=p>);</span>
+
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFActorModule</span><span class=o>::</span><span class=n>AddEndFunc</span><span class=p>(</span><span class=k>const</span> <span class=kt>int</span> <span class=n>subMessageID</span><span class=p>,</span> <span class=n>ACTOR_PROCESS_FUNCTOR_PTR</span> <span class=n>functorPtr_end</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=k>return</span> <span class=n>mxEndFunctor</span><span class=p>.</span><span class=n>AddElement</span><span class=p>(</span><span class=n>subMessageID</span><span class=p>,</span> <span class=n>functorPtr_end</span><span class=p>);</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFActorModule</span><span class=o>::</span><span class=n>SendMsgToActor</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>actorIndex</span><span class=p>,</span> <span class=k>const</span> <span class=n>NFActorMessage</span> <span class=o>&amp;</span><span class=n>message</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=k>auto</span> <span class=n>it</span> <span class=o>=</span> <span class=n>mxActorMap</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>actorIndex</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>it</span> <span class=o>!=</span> <span class=n>mxActorMap</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=c1>//std::cout &lt;&lt; &quot;send message &quot; &lt;&lt; message.msgID &lt;&lt; &quot; to &quot; &lt;&lt; actorIndex.ToString() &lt;&lt; &quot; and msg index is &quot; &lt;&lt; message.index &lt;&lt; std::endl;</span>
+        <span class=c1>// 将message加入MessageQueue中</span>
+        <span class=k>return</span> <span class=n>it</span><span class=o>-&gt;</span><span class=n>second</span><span class=o>-&gt;</span><span class=n>SendMsg</span><span class=p>(</span><span class=n>message</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+<span class=p>}</span>
+</code></pre></div> <br> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../NFActorPlugin/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../NFActorPlugin/ class="btn btn-xs btn-link"> NFActorPlugin </a> </div> <div class=wm-article-nav> <a href=../NFActor/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../NFActor/ class="btn btn-xs btn-link"> NFActor </a> </div> </div> <br> </div> <footer class="container-fluid wm-page-content"><p>Copyright &copy; 2020 - 2020 张磊</p> <p>Documentation built with <a href=http://www.mkdocs.org/ >MkDocs</a> using <a href=https://github.com/gristlabs/mkdocs-windmill>Windmill</a> theme by Grist Labs.</p> </footer> </body> </html>

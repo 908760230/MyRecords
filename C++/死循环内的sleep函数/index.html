@@ -1,0 +1,40 @@
+<!DOCTYPE html><html lang=en> <head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" href=../../img/favicon.ico><meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"><title>死循环内的sleep函数 - 记录</title><link href=../../css/bootstrap-3.3.7.min.css rel=stylesheet><link href=../../css/font-awesome-4.7.0.css rel=stylesheet><link href=../../css/base.css rel=stylesheet><link rel=stylesheet href=../../css/highlight.css><!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries --><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]--><script src=../../js/jquery-3.2.1.min.js></script><script src=../../js/bootstrap-3.3.7.min.js></script><script src=../../js/highlight.pack.js></script><base target=_top><script>
+      var base_url = '../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "\u6b7b\u5faa\u73af\u5185\u7684sleep\u51fd\u6570", url: "#_top", children: [
+              {title: "1\uff09", url: "#1" },
+              {title: "2\uff09", url: "#2" },
+          ]},
+        ];
+
+    </script><script src=../../js/base.js></script></head> <body> <script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script> <div class="container-fluid wm-page-content"> <a name=_top></a> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../C%2B%2B11%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E5%87%A0%E7%A7%8D%E9%94%81/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../C%2B%2B11%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E5%87%A0%E7%A7%8D%E9%94%81/ class="btn btn-xs btn-link"> C++11线程中的几种锁 </a> </div> <div class=wm-article-nav> <a href=../%E5%85%B3%E9%94%AE%E5%AD%97volatile/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../%E5%85%B3%E9%94%AE%E5%AD%97volatile/ class="btn btn-xs btn-link"> 关键字volatile </a> </div> </div> <h1 id=sleep>死循环内的sleep函数<a class=headerlink href=#sleep title="Permanent link">&para;</a></h1> <p>看到别人框架内，线程函数死循环里sleep了一毫秒。顿时对这个很不解，问了一下大佬，同时也看了一下其他人写的博客。</p> <p>对这个函数的作用大概弄懂了。</p> <p>我从两方面来写我的理解：</p> <h2 id=1><strong>1）</strong><a class=headerlink href=#1 title="Permanent link">&para;</a></h2> <p>如果函数内时刻有任务需要执行，那么sleep就是多余的。</p> <p>比如： <div class=highlight><pre><span></span><code><span class=kt>void</span> <span class=nf>print</span><span class=p>(){</span>
+    <span class=k>while</span><span class=p>(</span><span class=nb>true</span><span class=p>){</span>
+        <span class=n>cout</span><span class=o>&lt;&lt;</span><span class=n>i</span><span class=o>++&lt;&lt;</span><span class=n>endl</span><span class=p>;</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+</code></pre></div> 在这个不断打印i值的函数里，加入sleep就是多余的，妨碍执行速度。</p> <p>但是很多时候并不是这种情况。 <div class=highlight><pre><span></span><code><span class=k>while</span> <span class=p>(</span><span class=nb>true</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>std</span><span class=o>::</span><span class=n>this_thread</span><span class=o>::</span><span class=n>sleep_for</span><span class=p>(</span><span class=n>std</span><span class=o>::</span><span class=n>chrono</span><span class=o>::</span><span class=n>milliseconds</span><span class=p>(</span><span class=mi>1</span><span class=p>));</span>
+
+            <span class=c1>//pick the first task and do it</span>
+            <span class=n>NFThreadTask</span> <span class=n>task</span><span class=p>;</span>
+            <span class=k>if</span> <span class=p>(</span><span class=n>mTaskList</span><span class=p>.</span><span class=n>TryPop</span><span class=p>(</span><span class=n>task</span><span class=p>))</span>
+            <span class=p>{</span>
+                <span class=n>task</span><span class=p>.</span><span class=n>xThreadFunc</span><span class=o>-&gt;</span><span class=k>operator</span><span class=p>()(</span><span class=n>task</span><span class=p>);</span>
+
+                <span class=c1>//repush the result to the main thread</span>
+                <span class=c1>//and, do we must to tell the result?</span>
+                <span class=k>if</span> <span class=p>(</span><span class=n>task</span><span class=p>.</span><span class=n>xEndFunc</span><span class=p>)</span>
+                <span class=p>{</span>
+                    <span class=n>m_pThreadPoolModule</span><span class=o>-&gt;</span><span class=n>TaskResult</span><span class=p>(</span><span class=n>task</span><span class=p>);</span>
+                <span class=p>}</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+</code></pre></div> 在原作者的框架里，在线程内不断的pop出task，然后执行里面的回调函数。 这里有一个问题就是taskList里面并不是一直都有task执行，也就是说出现什么都没做却一直占用cpu的情况。</p> <h2 id=2><strong>2）</strong><a class=headerlink href=#2 title="Permanent link">&para;</a></h2> <p>线程是进程的逻辑流，是进程在cpu上执行的最小单位。</p> <p>这里就需要考虑操作系统的调度算法了：</p> <p>windows是抢占式的谁的优先级高，谁就先执行。</p> <p>linux是基于时间片，每一个线程的执行分配一个时间片，如果在规定的时间内未执行完，则会保存到队列的尾部，等待继续执行。</p> <p>死循环内未加sleep可能对linux 的影响较小，但是对windows来说，如果未sleep，cpu一直被当前线程占据。其他线程会出现饿死的情况。而且cpu的使用率会过高，但是却未被合理使用。</p> <br> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../C%2B%2B11%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E5%87%A0%E7%A7%8D%E9%94%81/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../C%2B%2B11%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E5%87%A0%E7%A7%8D%E9%94%81/ class="btn btn-xs btn-link"> C++11线程中的几种锁 </a> </div> <div class=wm-article-nav> <a href=../%E5%85%B3%E9%94%AE%E5%AD%97volatile/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../%E5%85%B3%E9%94%AE%E5%AD%97volatile/ class="btn btn-xs btn-link"> 关键字volatile </a> </div> </div> <br> </div> <footer class="container-fluid wm-page-content"><p>Copyright &copy; 2020 - 2020 张磊</p> <p>Documentation built with <a href=http://www.mkdocs.org/ >MkDocs</a> using <a href=https://github.com/gristlabs/mkdocs-windmill>Windmill</a> theme by Grist Labs.</p> </footer> </body> </html>

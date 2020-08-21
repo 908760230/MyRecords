@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang=en> <head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" href=../../../img/favicon.ico><meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"><title>NFIThreadPoolModule - 记录</title><link href=../../../css/bootstrap-3.3.7.min.css rel=stylesheet><link href=../../../css/font-awesome-4.7.0.css rel=stylesheet><link href=../../../css/base.css rel=stylesheet><link rel=stylesheet href=../../../css/highlight.css><!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries --><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]--><script src=../../../js/jquery-3.2.1.min.js></script><script src=../../../js/bootstrap-3.3.7.min.js></script><script src=../../../js/highlight.pack.js></script><base target=_top><script>
+      var base_url = '../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "NFIThreadPoolModule", url: "#_top", children: [
+          ]},
+        ];
+
+    </script><script src=../../../js/base.js></script></head> <body> <script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script> <div class="container-fluid wm-page-content"> <a name=_top></a> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../../NFKernelPlugin/NFKernelPlugin/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../../NFKernelPlugin/NFKernelPlugin/ class="btn btn-xs btn-link"> NFKernelPlugin </a> </div> <div class=wm-article-nav> <a href=../NFIPluginManager_h/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../NFIPluginManager_h/ class="btn btn-xs btn-link"> NFIPluginManager </a> </div> </div> <h1 id=nfithreadpoolmodule>NFIThreadPoolModule<a class=headerlink href=#nfithreadpoolmodule title="Permanent link">&para;</a></h1> <p>继承于 NFImodule</p> <div class=highlight><pre><span></span><code><span class=cp>#ifndef NFI_THREAD_POOL_MODULE_H</span>
+<span class=cp>#define NFI_THREAD_POOL_MODULE_H</span>
+
+<span class=cp>#include</span> <span class=cpf>&quot;NFIModule.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;thread&gt;</span><span class=cp></span>
+
+<span class=c1>///////////////////////////////////////////////////</span>
+<span class=k>class</span> <span class=nc>NFThreadTask</span><span class=p>;</span>
+
+<span class=k>typedef</span> <span class=n>std</span><span class=o>::</span><span class=n>function</span><span class=o>&lt;</span><span class=kt>void</span><span class=p>(</span><span class=n>NFThreadTask</span><span class=o>&amp;</span><span class=p>)</span><span class=o>&gt;</span> <span class=n>TASK_PROCESS_FUNCTOR</span><span class=p>;</span>
+<span class=k>typedef</span> <span class=n>std</span><span class=o>::</span><span class=n>shared_ptr</span><span class=o>&lt;</span><span class=n>TASK_PROCESS_FUNCTOR</span><span class=o>&gt;</span> <span class=n>TASK_PROCESS_FUNCTOR_PTR</span><span class=p>;</span>
+
+<span class=c1>//定义了数据内容和回调函数</span>
+<span class=k>class</span> <span class=nc>NFThreadTask</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>NFGUID</span> <span class=n>nTaskID</span><span class=p>;</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>data</span><span class=p>;</span>
+    <span class=n>TASK_PROCESS_FUNCTOR_PTR</span> <span class=n>xThreadFunc</span><span class=p>;</span> <span class=c1>//线程内执行的回调函数</span>
+    <span class=n>TASK_PROCESS_FUNCTOR_PTR</span> <span class=n>xEndFunc</span><span class=p>;</span>    <span class=c1>//根据这个来判断是否将结果传回到主线程</span>
+<span class=p>};</span>
+
+
+<span class=k>class</span> <span class=nc>NFIThreadPoolModule</span> <span class=o>:</span> <span class=k>public</span> <span class=n>NFIModule</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=c1>//根据cpu的核数来设置线程数量</span>
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=n>SetCpu</span><span class=p>(</span><span class=k>const</span> <span class=kt>int</span> <span class=n>cpuCount</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>template</span><span class=o>&lt;</span><span class=k>typename</span> <span class=n>BaseType</span><span class=o>&gt;</span>
+    <span class=kt>void</span> <span class=n>DoAsyncTask</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>taskID</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>data</span><span class=p>,</span> <span class=n>BaseType</span><span class=o>*</span> <span class=n>pBase</span><span class=p>,</span> <span class=kt>void</span> <span class=p>(</span><span class=n>BaseType</span><span class=o>::*</span><span class=n>handler_begin</span><span class=p>)(</span><span class=n>NFThreadTask</span><span class=o>&amp;&amp;</span><span class=p>))</span>
+    <span class=p>{</span>
+        <span class=n>TASK_PROCESS_FUNCTOR</span> <span class=n>functor_begin</span> <span class=o>=</span> <span class=n>std</span><span class=o>::</span><span class=n>bind</span><span class=p>(</span><span class=n>handler_begin</span><span class=p>,</span> <span class=n>pBase</span><span class=p>,</span> <span class=n>std</span><span class=o>::</span><span class=n>placeholders</span><span class=o>::</span><span class=n>_1</span><span class=p>);</span>
+        <span class=n>TASK_PROCESS_FUNCTOR_PTR</span> <span class=nf>functorPtr_begin</span><span class=p>(</span><span class=k>new</span> <span class=n>TASK_PROCESS_FUNCTOR</span><span class=p>(</span><span class=n>functor_begin</span><span class=p>));</span>
+
+        <span class=n>DoAsyncTask</span><span class=p>(</span><span class=n>taskID</span><span class=p>,</span> <span class=n>data</span><span class=p>,</span> <span class=n>functorPtr_begin</span><span class=p>,</span> <span class=k>nullptr</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=k>template</span><span class=o>&lt;</span><span class=k>typename</span> <span class=n>BaseType</span><span class=o>&gt;</span>
+    <span class=kt>void</span> <span class=n>DoAsyncTask</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>taskID</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>data</span><span class=p>,</span> <span class=n>BaseType</span><span class=o>*</span> <span class=n>pBase</span><span class=p>,</span> <span class=kt>void</span> <span class=p>(</span><span class=n>BaseType</span><span class=o>::*</span><span class=n>handler_begin</span><span class=p>)(</span><span class=n>NFThreadTask</span><span class=o>&amp;&amp;</span><span class=p>),</span> <span class=kt>void</span> <span class=p>(</span><span class=n>BaseType</span><span class=o>::*</span><span class=n>handler_end</span><span class=p>)(</span><span class=n>NFThreadTask</span><span class=o>&amp;&amp;</span><span class=p>))</span>
+    <span class=p>{</span>
+        <span class=n>TASK_PROCESS_FUNCTOR</span> <span class=n>functor_begin</span> <span class=o>=</span> <span class=n>std</span><span class=o>::</span><span class=n>bind</span><span class=p>(</span><span class=n>handler_begin</span><span class=p>,</span> <span class=n>pBase</span><span class=p>,</span> <span class=n>std</span><span class=o>::</span><span class=n>placeholders</span><span class=o>::</span><span class=n>_1</span><span class=p>);</span>
+        <span class=n>TASK_PROCESS_FUNCTOR_PTR</span> <span class=nf>functorPtr_begin</span><span class=p>(</span><span class=k>new</span> <span class=n>TASK_PROCESS_FUNCTOR</span><span class=p>(</span><span class=n>functor_begin</span><span class=p>));</span>
+
+        <span class=n>TASK_PROCESS_FUNCTOR</span> <span class=n>functor_end</span> <span class=o>=</span> <span class=n>std</span><span class=o>::</span><span class=n>bind</span><span class=p>(</span><span class=n>handler_end</span><span class=p>,</span> <span class=n>pBase</span><span class=p>,</span> <span class=n>std</span><span class=o>::</span><span class=n>placeholders</span><span class=o>::</span><span class=n>_1</span><span class=p>);</span>
+        <span class=n>TASK_PROCESS_FUNCTOR_PTR</span> <span class=nf>functorPtr_end</span><span class=p>(</span><span class=k>new</span> <span class=n>TASK_PROCESS_FUNCTOR</span><span class=p>(</span><span class=n>functor_end</span><span class=p>));</span>
+
+        <span class=n>DoAsyncTask</span><span class=p>(</span><span class=n>taskID</span><span class=p>,</span> <span class=n>data</span><span class=p>,</span> <span class=n>functorPtr_begin</span><span class=p>,</span> <span class=n>functorPtr_end</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=kt>void</span> <span class=n>DoAsyncTask</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>taskID</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>data</span><span class=p>,</span> <span class=n>TASK_PROCESS_FUNCTOR</span> <span class=n>asyncFunctor</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>TASK_PROCESS_FUNCTOR_PTR</span> <span class=n>functorPtr_begin</span><span class=p>(</span><span class=k>new</span> <span class=n>TASK_PROCESS_FUNCTOR</span><span class=p>(</span><span class=n>asyncFunctor</span><span class=p>));</span>
+
+        <span class=n>DoAsyncTask</span><span class=p>(</span><span class=n>taskID</span><span class=p>,</span> <span class=n>data</span><span class=p>,</span> <span class=n>functorPtr_begin</span><span class=p>,</span> <span class=k>nullptr</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=kt>void</span> <span class=n>DoAsyncTask</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>taskID</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>data</span><span class=p>,</span> <span class=n>TASK_PROCESS_FUNCTOR</span> <span class=n>asyncFunctor</span><span class=p>,</span> <span class=n>TASK_PROCESS_FUNCTOR</span> <span class=n>functor_end</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>TASK_PROCESS_FUNCTOR_PTR</span> <span class=n>functorPtr_begin</span><span class=p>(</span><span class=k>new</span> <span class=n>TASK_PROCESS_FUNCTOR</span><span class=p>(</span><span class=n>asyncFunctor</span><span class=p>));</span>
+        <span class=n>TASK_PROCESS_FUNCTOR_PTR</span> <span class=nf>functorPtr_end</span><span class=p>(</span><span class=k>new</span> <span class=n>TASK_PROCESS_FUNCTOR</span><span class=p>(</span><span class=n>functor_end</span><span class=p>));</span>
+
+        <span class=n>DoAsyncTask</span><span class=p>(</span><span class=n>taskID</span><span class=p>,</span> <span class=n>data</span><span class=p>,</span> <span class=n>functorPtr_begin</span><span class=p>,</span> <span class=n>functorPtr_end</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=n>DoAsyncTask</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span> <span class=n>taskID</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>data</span><span class=p>,</span> <span class=n>TASK_PROCESS_FUNCTOR_PTR</span> <span class=n>asyncFunctor</span><span class=p>,</span> <span class=n>TASK_PROCESS_FUNCTOR_PTR</span> <span class=n>functor_end</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=c1>/////repush the result</span>
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>TaskResult</span><span class=p>(</span><span class=k>const</span> <span class=n>NFThreadTask</span><span class=o>&amp;</span> <span class=n>task</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>};</span>
+
+<span class=cp>#endif</span>
+</code></pre></div> <br> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../../NFKernelPlugin/NFKernelPlugin/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../../NFKernelPlugin/NFKernelPlugin/ class="btn btn-xs btn-link"> NFKernelPlugin </a> </div> <div class=wm-article-nav> <a href=../NFIPluginManager_h/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../NFIPluginManager_h/ class="btn btn-xs btn-link"> NFIPluginManager </a> </div> </div> <br> </div> <footer class="container-fluid wm-page-content"><p>Copyright &copy; 2020 - 2020 张磊</p> <p>Documentation built with <a href=http://www.mkdocs.org/ >MkDocs</a> using <a href=https://github.com/gristlabs/mkdocs-windmill>Windmill</a> theme by Grist Labs.</p> </footer> </body> </html>
