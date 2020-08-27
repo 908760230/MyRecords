@@ -1,0 +1,80 @@
+<!DOCTYPE html><html lang=en> <head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" href=../../../img/favicon.ico><meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"><title>NFIClassModule - 记录</title><link href=../../../css/bootstrap-3.3.7.min.css rel=stylesheet><link href=../../../css/font-awesome-4.7.0.css rel=stylesheet><link href=../../../css/base.css rel=stylesheet><link rel=stylesheet href=../../../css/highlight.css><!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries --><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]--><script src=../../../js/jquery-3.2.1.min.js></script><script src=../../../js/bootstrap-3.3.7.min.js></script><script src=../../../js/highlight.pack.js></script><base target=_top><script>
+      var base_url = '../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "NFIClassModule", url: "#_top", children: [
+          ]},
+        ];
+
+    </script><script src=../../../js/base.js></script></head> <body> <script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script> <div class="container-fluid wm-page-content"> <a name=_top></a> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../NFIComponent_h/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../NFIComponent_h/ class="btn btn-xs btn-link"> NFIComponent </a> </div> <div class=wm-article-nav> <a href=../NFGUID_h/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../NFGUID_h/ class="btn btn-xs btn-link"> NFGUID </a> </div> </div> <h1 id=nficlassmodule>NFIClassModule<a class=headerlink href=#nficlassmodule title="Permanent link">&para;</a></h1> <div class=highlight><pre><span></span><code><span class=cp>#ifndef NFI_LOGICCLASS_MODULE_H</span>
+<span class=cp>#define NFI_LOGICCLASS_MODULE_H</span>
+
+<span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFIModule.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFCore/NFIObject.h&quot;</span><span class=cp></span>
+
+<span class=k>typedef</span> <span class=n>std</span><span class=o>::</span><span class=n>function</span><span class=o>&lt;</span><span class=kt>int</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span><span class=o>&amp;</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span><span class=p>,</span> <span class=k>const</span> <span class=n>CLASS_OBJECT_EVENT</span><span class=p>,</span> <span class=k>const</span> <span class=n>NFDataList</span><span class=o>&amp;</span><span class=p>)</span><span class=o>&gt;</span> <span class=n>CLASS_EVENT_FUNCTOR</span><span class=p>;</span>
+<span class=k>typedef</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>CLASS_EVENT_FUNCTOR</span><span class=o>&gt;</span> <span class=n>CLASS_EVENT_FUNCTOR_PTR</span><span class=p>;</span><span class=c1>//EVENT</span>
+
+<span class=k>class</span> <span class=nc>NFIClass</span>
+    <span class=o>:</span> <span class=k>public</span> <span class=n>NFList</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&gt;</span><span class=c1>//include files</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=k>virtual</span> <span class=o>~</span><span class=n>NFIClass</span><span class=p>()</span> <span class=p>{}</span>
+
+    <span class=k>virtual</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIPropertyManager</span><span class=o>&gt;</span> <span class=n>GetPropertyManager</span><span class=p>()</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIRecordManager</span><span class=o>&gt;</span> <span class=n>GetRecordManager</span><span class=p>()</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetParent</span><span class=p>(</span><span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIClass</span><span class=o>&gt;</span> <span class=n>pClass</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIClass</span><span class=o>&gt;</span> <span class=n>GetParent</span><span class=p>()</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetTypeName</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>strType</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>GetTypeName</span><span class=p>()</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>GetClassName</span><span class=p>()</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=k>const</span> <span class=kt>bool</span> <span class=nf>AddId</span><span class=p>(</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&gt;&amp;</span> <span class=n>GetIDList</span><span class=p>()</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>GetInstancePath</span><span class=p>()</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>SetInstancePath</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPath</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>AddClassCallBack</span><span class=p>(</span><span class=k>const</span> <span class=n>CLASS_EVENT_FUNCTOR_PTR</span><span class=o>&amp;</span> <span class=n>cb</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>DoEvent</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span><span class=o>&amp;</span> <span class=n>objectID</span><span class=p>,</span> <span class=k>const</span> <span class=n>CLASS_OBJECT_EVENT</span> <span class=n>eClassEvent</span><span class=p>,</span> <span class=k>const</span> <span class=n>NFDataList</span><span class=o>&amp;</span> <span class=n>valueList</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>};</span>
+
+<span class=k>class</span> <span class=nc>NFIClassModule</span>
+    <span class=o>:</span> <span class=k>public</span> <span class=n>NFIModule</span><span class=p>,</span>
+  <span class=k>public</span> <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=p>,</span> <span class=n>NFIClass</span><span class=o>&gt;</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=k>virtual</span> <span class=o>~</span><span class=n>NFIClassModule</span><span class=p>()</span> <span class=p>{}</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>Load</span><span class=p>()</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Save</span><span class=p>()</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Clear</span><span class=p>()</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=n>NFIClassModule</span><span class=o>*</span> <span class=nf>GetBackupClassModule</span><span class=p>()</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>template</span><span class=o>&lt;</span><span class=k>typename</span> <span class=n>BaseType</span><span class=o>&gt;</span>
+    <span class=kt>bool</span> <span class=n>AddClassCallBack</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strClassName</span><span class=p>,</span> <span class=n>BaseType</span><span class=o>*</span> <span class=n>pBase</span><span class=p>,</span> <span class=kt>int</span> <span class=p>(</span><span class=n>BaseType</span><span class=o>::*</span><span class=n>handler</span><span class=p>)(</span><span class=k>const</span> <span class=n>NFGUID</span><span class=o>&amp;</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span><span class=p>,</span> <span class=k>const</span> <span class=n>CLASS_OBJECT_EVENT</span><span class=p>,</span> <span class=k>const</span> <span class=n>NFDataList</span><span class=o>&amp;</span><span class=p>))</span>
+    <span class=p>{</span>
+        <span class=n>CLASS_EVENT_FUNCTOR</span> <span class=n>functor</span> <span class=o>=</span> <span class=n>std</span><span class=o>::</span><span class=n>bind</span><span class=p>(</span><span class=n>handler</span><span class=p>,</span> <span class=n>pBase</span><span class=p>,</span> <span class=n>std</span><span class=o>::</span><span class=n>placeholders</span><span class=o>::</span><span class=n>_1</span><span class=p>,</span> <span class=n>std</span><span class=o>::</span><span class=n>placeholders</span><span class=o>::</span><span class=n>_2</span><span class=p>,</span> <span class=n>std</span><span class=o>::</span><span class=n>placeholders</span><span class=o>::</span><span class=n>_3</span><span class=p>,</span> <span class=n>std</span><span class=o>::</span><span class=n>placeholders</span><span class=o>::</span><span class=n>_4</span><span class=p>);</span>
+        <span class=n>CLASS_EVENT_FUNCTOR_PTR</span> <span class=nf>functorPtr</span><span class=p>(</span><span class=k>new</span> <span class=n>CLASS_EVENT_FUNCTOR</span><span class=p>(</span><span class=n>functor</span><span class=p>));</span>
+        <span class=k>return</span> <span class=nf>AddClassCallBack</span><span class=p>(</span><span class=n>strClassName</span><span class=p>,</span> <span class=n>functorPtr</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>DoEvent</span><span class=p>(</span><span class=k>const</span> <span class=n>NFGUID</span><span class=o>&amp;</span> <span class=n>objectID</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strClassName</span><span class=p>,</span> <span class=k>const</span> <span class=n>CLASS_OBJECT_EVENT</span> <span class=n>eClassEvent</span><span class=p>,</span> <span class=k>const</span> <span class=n>NFDataList</span><span class=o>&amp;</span> <span class=n>valueList</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>AddClassCallBack</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strClassName</span><span class=p>,</span> <span class=k>const</span> <span class=n>CLASS_EVENT_FUNCTOR_PTR</span><span class=o>&amp;</span> <span class=n>cb</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIPropertyManager</span><span class=o>&gt;</span> <span class=n>GetClassPropertyManager</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strClassName</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIRecordManager</span><span class=o>&gt;</span> <span class=n>GetClassRecordManager</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strClassName</span><span class=p>)</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+
+<span class=p>};</span>
+
+<span class=cp>#endif</span>
+</code></pre></div> <br> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../NFIComponent_h/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../NFIComponent_h/ class="btn btn-xs btn-link"> NFIComponent </a> </div> <div class=wm-article-nav> <a href=../NFGUID_h/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../NFGUID_h/ class="btn btn-xs btn-link"> NFGUID </a> </div> </div> <br> </div> <footer class="container-fluid wm-page-content"><p>Copyright &copy; 2020 - 2020 张磊</p> <p>Documentation built with <a href=http://www.mkdocs.org/ >MkDocs</a> using <a href=https://github.com/gristlabs/mkdocs-windmill>Windmill</a> theme by Grist Labs.</p> </footer> </body> </html>

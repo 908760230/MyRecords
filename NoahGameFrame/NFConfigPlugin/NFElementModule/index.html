@@ -1,0 +1,741 @@
+<!DOCTYPE html><html lang=en> <head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" href=../../../img/favicon.ico><meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"><title>NFElementModule - 记录</title><link href=../../../css/bootstrap-3.3.7.min.css rel=stylesheet><link href=../../../css/font-awesome-4.7.0.css rel=stylesheet><link href=../../../css/base.css rel=stylesheet><link rel=stylesheet href=../../../css/highlight.css><!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries --><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]--><script src=../../../js/jquery-3.2.1.min.js></script><script src=../../../js/bootstrap-3.3.7.min.js></script><script src=../../../js/highlight.pack.js></script><base target=_top><script>
+      var base_url = '../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "NFElementModule", url: "#_top", children: [
+              {title: "\u5934\u6587\u4ef6", url: "#_1" },
+              {title: "cpp\u6587\u4ef6", url: "#cpp" },
+          ]},
+        ];
+
+    </script><script src=../../../js/base.js></script></head> <body> <script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script> <div class="container-fluid wm-page-content"> <a name=_top></a> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../../NFCore/NFConsistentHash_h/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../../NFCore/NFConsistentHash_h/ class="btn btn-xs btn-link"> NFConsistentHash_h </a> </div> <div class=wm-article-nav> <a href=../NFConfigPlugin/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../NFConfigPlugin/ class="btn btn-xs btn-link"> NFConfigPlugin </a> </div> </div> <h1 id=nfelementmodule>NFElementModule<a class=headerlink href=#nfelementmodule title="Permanent link">&para;</a></h1> <h2 id=_1>头文件<a class=headerlink href=#_1 title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=cp>#ifndef NF_ELEMENT_MODULE_H</span>
+<span class=cp>#define NF_ELEMENT_MODULE_H</span>
+
+<span class=cp>#include</span> <span class=cpf>&lt;map&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;string&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;Dependencies/RapidXML/rapidxml.hpp&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;Dependencies/RapidXML/rapidxml_iterators.hpp&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;Dependencies/RapidXML/rapidxml_print.hpp&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;Dependencies/RapidXML/rapidxml_utils.hpp&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFCore/NFMap.hpp&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFCore/NFList.hpp&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFCore/NFDataList.hpp&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFCore/NFRecord.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFCore/NFPropertyManager.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFCore/NFRecordManager.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFPluginModule/NFIElementModule.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFPluginModule/NFIClassModule.h&quot;</span><span class=cp></span>
+
+<span class=k>class</span> <span class=nc>NFClass</span><span class=p>;</span>
+<span class=c1>// 保存了 property 和 record的管理器 就得到 class的所有记录</span>
+<span class=k>class</span> <span class=nc>ElementConfigInfo</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>ElementConfigInfo</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=n>m_pPropertyManager</span> <span class=o>=</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIPropertyManager</span><span class=o>&gt;</span><span class=p>(</span><span class=n>NF_NEW</span> <span class=n>NFPropertyManager</span><span class=p>(</span><span class=n>NFGUID</span><span class=p>()));</span>
+        <span class=n>m_pRecordManager</span> <span class=o>=</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIRecordManager</span><span class=o>&gt;</span><span class=p>(</span><span class=n>NF_NEW</span> <span class=n>NFRecordManager</span><span class=p>(</span><span class=n>NFGUID</span><span class=p>()));</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=o>~</span><span class=n>ElementConfigInfo</span><span class=p>()</span>
+    <span class=p>{</span>
+    <span class=p>}</span>
+
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIPropertyManager</span><span class=o>&gt;</span> <span class=n>GetPropertyManager</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>m_pPropertyManager</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIRecordManager</span><span class=o>&gt;</span> <span class=n>GetRecordManager</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>m_pRecordManager</span><span class=p>;</span>
+    <span class=p>}</span>
+
+<span class=k>protected</span><span class=o>:</span>
+
+    <span class=c1>//std::string mstrConfigID;</span>
+
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIPropertyManager</span><span class=o>&gt;</span> <span class=n>m_pPropertyManager</span><span class=p>;</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIRecordManager</span><span class=o>&gt;</span> <span class=n>m_pRecordManager</span><span class=p>;</span>
+<span class=p>};</span>
+
+<span class=k>class</span> <span class=nc>NFElementModule</span>
+    <span class=o>:</span> <span class=k>public</span> <span class=n>NFIElementModule</span><span class=p>,</span>
+      <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=p>,</span> <span class=n>ElementConfigInfo</span><span class=o>&gt;</span>
+<span class=p>{</span>
+<span class=k>private</span><span class=o>:</span>
+    <span class=n>NFElementModule</span><span class=p>();</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=n>NFElementModule</span><span class=p>(</span><span class=n>NFIPluginManager</span><span class=o>*</span> <span class=n>p</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=o>~</span><span class=n>NFElementModule</span><span class=p>();</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Awake</span><span class=p>();</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Init</span><span class=p>();</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Shut</span><span class=p>();</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>AfterInit</span><span class=p>();</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>BeforeShut</span><span class=p>();</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Execute</span><span class=p>();</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Load</span><span class=p>();</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Save</span><span class=p>();</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Clear</span><span class=p>();</span>
+
+     <span class=n>NFIElementModule</span><span class=o>*</span> <span class=nf>GetBackupElementModule</span><span class=p>()</span> <span class=k>override</span><span class=p>;</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LoadSceneInfo</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strFileName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strClassName</span><span class=p>);</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>ExistElement</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>ExistElement</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strClassName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>);</span>
+
+    <span class=k>virtual</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIPropertyManager</span><span class=o>&gt;</span> <span class=n>GetPropertyManager</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIRecordManager</span><span class=o>&gt;</span> <span class=n>GetRecordManager</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>);</span>
+
+    <span class=k>virtual</span> <span class=n>NFINT64</span> <span class=nf>GetPropertyInt</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPropertyName</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>int</span> <span class=nf>GetPropertyInt32</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPropertyName</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>double</span> <span class=nf>GetPropertyFloat</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPropertyName</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>GetPropertyString</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPropertyName</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=k>const</span> <span class=n>NFVector2</span> <span class=nf>GetPropertyVector2</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPropertyName</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=k>const</span> <span class=n>NFVector3</span> <span class=nf>GetPropertyVector3</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPropertyName</span><span class=p>);</span>
+
+    <span class=k>virtual</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&gt;</span> <span class=n>GetListByProperty</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strClassName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPropertyName</span><span class=p>,</span> <span class=k>const</span> <span class=n>NFINT64</span> <span class=n>nValue</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&gt;</span> <span class=n>GetListByProperty</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strClassName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPropertyName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>nValue</span><span class=p>);</span>
+
+<span class=k>protected</span><span class=o>:</span>
+    <span class=k>virtual</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIProperty</span><span class=o>&gt;</span> <span class=n>GetProperty</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPropertyName</span><span class=p>);</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>Load</span><span class=p>(</span><span class=n>rapidxml</span><span class=o>::</span><span class=n>xml_node</span><span class=o>&lt;&gt;*</span> <span class=n>attrNode</span><span class=p>,</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIClass</span><span class=o>&gt;</span> <span class=n>pLogicClass</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>CheckRef</span><span class=p>();</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LegalNumber</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>str</span><span class=p>);</span>
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>LegalFloat</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>str</span><span class=p>);</span>
+
+<span class=k>protected</span><span class=o>:</span>
+    <span class=n>NFIClassModule</span><span class=o>*</span> <span class=n>m_pClassModule</span><span class=p>;</span>
+    <span class=n>NFElementModule</span><span class=o>*</span> <span class=n>m_pBackupElementModule</span><span class=p>;</span>
+
+    <span class=kt>bool</span> <span class=n>mbLoaded</span><span class=p>;</span>
+    <span class=kt>bool</span> <span class=n>mbBackup</span> <span class=o>=</span> <span class=nb>false</span><span class=p>;</span>
+<span class=p>};</span>
+
+<span class=cp>#endif</span>
+</code></pre></div> <h2 id=cpp>cpp文件<a class=headerlink href=#cpp title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=cp>#include</span> <span class=cpf>&lt;algorithm&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;ctype.h&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFConfigPlugin.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFElementModule.h&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFClassModule.h&quot;</span><span class=cp></span>
+
+<span class=n>NFElementModule</span><span class=o>::</span><span class=n>NFElementModule</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>m_pBackupElementModule</span> <span class=o>=</span> <span class=k>nullptr</span><span class=p>;</span>
+    <span class=n>mbLoaded</span> <span class=o>=</span> <span class=nb>false</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=n>NFElementModule</span><span class=o>::</span><span class=n>NFElementModule</span><span class=p>(</span><span class=n>NFIPluginManager</span><span class=o>*</span> <span class=n>p</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>m_pBackupElementModule</span> <span class=o>=</span> <span class=k>nullptr</span><span class=p>;</span>
+    <span class=n>pPluginManager</span> <span class=o>=</span> <span class=n>p</span><span class=p>;</span>
+    <span class=n>mbLoaded</span> <span class=o>=</span> <span class=nb>false</span><span class=p>;</span>
+
+    <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=k>this</span><span class=o>-&gt;</span><span class=n>mbBackup</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>m_pBackupElementModule</span> <span class=o>=</span> <span class=k>new</span> <span class=n>NFElementModule</span><span class=p>();</span>
+        <span class=n>m_pBackupElementModule</span><span class=o>-&gt;</span><span class=n>mbBackup</span> <span class=o>=</span> <span class=nb>true</span><span class=p>;</span>
+        <span class=n>m_pBackupElementModule</span><span class=o>-&gt;</span><span class=n>pPluginManager</span> <span class=o>=</span> <span class=n>pPluginManager</span><span class=p>;</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+
+<span class=n>NFElementModule</span><span class=o>::~</span><span class=n>NFElementModule</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=k>this</span><span class=o>-&gt;</span><span class=n>mbBackup</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>delete</span> <span class=n>m_pBackupElementModule</span><span class=p>;</span>
+        <span class=n>m_pBackupElementModule</span> <span class=o>=</span> <span class=k>nullptr</span><span class=p>;</span>
+    <span class=p>}</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>Awake</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>m_pClassModule</span> <span class=o>=</span> <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>FindModule</span><span class=o>&lt;</span><span class=n>NFIClassModule</span><span class=o>&gt;</span><span class=p>();</span>
+    <span class=k>if</span> <span class=p>(</span><span class=k>this</span><span class=o>-&gt;</span><span class=n>mbBackup</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>m_pClassModule</span> <span class=o>=</span> <span class=n>m_pClassModule</span><span class=o>-&gt;</span><span class=n>GetBackupClassModule</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=k>if</span> <span class=p>(</span><span class=n>m_pBackupElementModule</span><span class=p>)</span> <span class=n>m_pBackupElementModule</span><span class=o>-&gt;</span><span class=n>Awake</span><span class=p>();</span>
+
+    <span class=n>Load</span><span class=p>();</span>
+
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>Init</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>m_pBackupElementModule</span><span class=p>)</span>  <span class=n>m_pBackupElementModule</span><span class=o>-&gt;</span><span class=n>Init</span><span class=p>();</span>
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>Shut</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>Clear</span><span class=p>();</span>
+
+    <span class=k>if</span> <span class=p>(</span><span class=n>m_pBackupElementModule</span><span class=p>)</span> <span class=n>m_pBackupElementModule</span><span class=o>-&gt;</span><span class=n>Shut</span><span class=p>();</span>
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>Load</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>mbLoaded</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIClass</span><span class=o>&gt;</span> <span class=n>pLogicClass</span> <span class=o>=</span> <span class=n>m_pClassModule</span><span class=o>-&gt;</span><span class=n>First</span><span class=p>();</span>
+    <span class=k>while</span> <span class=p>(</span><span class=n>pLogicClass</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strInstancePath</span> <span class=o>=</span> <span class=n>pLogicClass</span><span class=o>-&gt;</span><span class=n>GetInstancePath</span><span class=p>();</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>strInstancePath</span><span class=p>.</span><span class=n>empty</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=n>pLogicClass</span> <span class=o>=</span> <span class=n>m_pClassModule</span><span class=o>-&gt;</span><span class=n>Next</span><span class=p>();</span>
+            <span class=k>continue</span><span class=p>;</span>
+        <span class=p>}</span>
+        <span class=c1>//////////////////////////////////////////////////////////////////////////</span>
+        <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>strFile</span> <span class=o>=</span> <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>GetConfigPath</span><span class=p>()</span> <span class=o>+</span> <span class=n>strInstancePath</span><span class=p>;</span>
+        <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>strContent</span><span class=p>;</span>
+        <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>GetFileContent</span><span class=p>(</span><span class=n>strFile</span><span class=p>,</span> <span class=n>strContent</span><span class=p>);</span>
+
+        <span class=n>rapidxml</span><span class=o>::</span><span class=n>xml_document</span><span class=o>&lt;&gt;</span> <span class=n>xDoc</span><span class=p>;</span>
+        <span class=n>xDoc</span><span class=p>.</span><span class=n>parse</span><span class=o>&lt;</span><span class=mi>0</span><span class=o>&gt;</span><span class=p>((</span><span class=kt>char</span><span class=o>*</span><span class=p>)</span><span class=n>strContent</span><span class=p>.</span><span class=n>c_str</span><span class=p>());</span>
+        <span class=c1>//////////////////////////////////////////////////////////////////////////</span>
+        <span class=c1>//support for unlimited layer class inherits</span>
+        <span class=n>rapidxml</span><span class=o>::</span><span class=n>xml_node</span><span class=o>&lt;&gt;*</span> <span class=n>root</span> <span class=o>=</span> <span class=n>xDoc</span><span class=p>.</span><span class=n>first_node</span><span class=p>();</span>
+        <span class=k>for</span> <span class=p>(</span><span class=n>rapidxml</span><span class=o>::</span><span class=n>xml_node</span><span class=o>&lt;&gt;*</span> <span class=n>attrNode</span> <span class=o>=</span> <span class=n>root</span><span class=o>-&gt;</span><span class=n>first_node</span><span class=p>();</span> <span class=n>attrNode</span><span class=p>;</span> <span class=n>attrNode</span> <span class=o>=</span> <span class=n>attrNode</span><span class=o>-&gt;</span><span class=n>next_sibling</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=n>Load</span><span class=p>(</span><span class=n>attrNode</span><span class=p>,</span> <span class=n>pLogicClass</span><span class=p>);</span>
+        <span class=p>}</span>
+
+        <span class=n>mbLoaded</span> <span class=o>=</span> <span class=nb>true</span><span class=p>;</span>
+        <span class=n>pLogicClass</span> <span class=o>=</span> <span class=n>m_pClassModule</span><span class=o>-&gt;</span><span class=n>Next</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=k>if</span> <span class=p>(</span><span class=n>m_pBackupElementModule</span><span class=p>)</span> <span class=n>m_pBackupElementModule</span><span class=o>-&gt;</span><span class=n>Load</span><span class=p>();</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>CheckRef</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIClass</span><span class=o>&gt;</span> <span class=n>pLogicClass</span> <span class=o>=</span> <span class=n>m_pClassModule</span><span class=o>-&gt;</span><span class=n>First</span><span class=p>();</span>
+    <span class=k>while</span> <span class=p>(</span><span class=n>pLogicClass</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIPropertyManager</span><span class=o>&gt;</span> <span class=n>pClassPropertyManager</span> <span class=o>=</span> <span class=n>pLogicClass</span><span class=o>-&gt;</span><span class=n>GetPropertyManager</span><span class=p>();</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>pClassPropertyManager</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIProperty</span><span class=o>&gt;</span> <span class=n>pProperty</span> <span class=o>=</span> <span class=n>pClassPropertyManager</span><span class=o>-&gt;</span><span class=n>First</span><span class=p>();</span>
+            <span class=k>while</span> <span class=p>(</span><span class=n>pProperty</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=c1>//if one property is ref,check every config</span>
+                <span class=k>if</span> <span class=p>(</span><span class=n>pProperty</span><span class=o>-&gt;</span><span class=n>GetRef</span><span class=p>())</span>
+                <span class=p>{</span>
+                    <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&gt;&amp;</span> <span class=n>strIdList</span> <span class=o>=</span> <span class=n>pLogicClass</span><span class=o>-&gt;</span><span class=n>GetIDList</span><span class=p>();</span>
+                    <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>strIdList</span><span class=p>.</span><span class=n>size</span><span class=p>();</span> <span class=o>++</span><span class=n>i</span><span class=p>)</span>
+                    <span class=p>{</span>
+                        <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strId</span> <span class=o>=</span> <span class=n>strIdList</span><span class=p>[</span><span class=n>i</span><span class=p>];</span>
+
+                        <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strRefValue</span><span class=o>=</span> <span class=k>this</span><span class=o>-&gt;</span><span class=n>GetPropertyString</span><span class=p>(</span><span class=n>strId</span><span class=p>,</span> <span class=n>pProperty</span><span class=o>-&gt;</span><span class=n>GetKey</span><span class=p>());</span>
+                        <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>strRefValue</span><span class=p>.</span><span class=n>empty</span><span class=p>()</span> <span class=o>&amp;&amp;</span> <span class=o>!</span><span class=k>this</span><span class=o>-&gt;</span><span class=n>GetElement</span><span class=p>(</span><span class=n>strRefValue</span><span class=p>))</span>
+                        <span class=p>{</span>
+                            <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>msg</span><span class=p>;</span>
+                            <span class=n>msg</span><span class=p>.</span><span class=n>append</span><span class=p>(</span><span class=s>&quot;check ref failed id: &quot;</span><span class=p>).</span><span class=n>append</span><span class=p>(</span><span class=n>strRefValue</span><span class=p>).</span><span class=n>append</span><span class=p>(</span><span class=s>&quot; in &quot;</span><span class=p>).</span><span class=n>append</span><span class=p>(</span><span class=n>pLogicClass</span><span class=o>-&gt;</span><span class=n>GetClassName</span><span class=p>());</span>
+                            <span class=n>NFASSERT</span><span class=p>(</span><span class=n>nRet</span><span class=p>,</span> <span class=n>msg</span><span class=p>.</span><span class=n>c_str</span><span class=p>(),</span> <span class=n>__FILE__</span><span class=p>,</span> <span class=n>__FUNCTION__</span><span class=p>);</span>
+                            <span class=n>exit</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+                        <span class=p>}</span>
+                    <span class=p>}</span>
+                <span class=p>}</span>
+                <span class=n>pProperty</span> <span class=o>=</span> <span class=n>pClassPropertyManager</span><span class=o>-&gt;</span><span class=n>Next</span><span class=p>();</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+        <span class=c1>//////////////////////////////////////////////////////////////////////////</span>
+        <span class=n>pLogicClass</span> <span class=o>=</span> <span class=n>m_pClassModule</span><span class=o>-&gt;</span><span class=n>Next</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>Load</span><span class=p>(</span><span class=n>rapidxml</span><span class=o>::</span><span class=n>xml_node</span><span class=o>&lt;&gt;*</span> <span class=n>attrNode</span><span class=p>,</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIClass</span><span class=o>&gt;</span> <span class=n>pLogicClass</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=c1>//attrNode is the node of a object</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>strConfigID</span> <span class=o>=</span> <span class=n>attrNode</span><span class=o>-&gt;</span><span class=n>first_attribute</span><span class=p>(</span><span class=s>&quot;Id&quot;</span><span class=p>)</span><span class=o>-&gt;</span><span class=n>value</span><span class=p>();</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>strConfigID</span><span class=p>.</span><span class=n>empty</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=n>NFASSERT</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=n>strConfigID</span><span class=p>,</span> <span class=n>__FILE__</span><span class=p>,</span> <span class=n>__FUNCTION__</span><span class=p>);</span>
+        <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>if</span> <span class=p>(</span><span class=n>ExistElement</span><span class=p>(</span><span class=n>strConfigID</span><span class=p>))</span>
+    <span class=p>{</span>
+        <span class=n>NFASSERT</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=n>strConfigID</span><span class=p>,</span> <span class=n>__FILE__</span><span class=p>,</span> <span class=n>__FUNCTION__</span><span class=p>);</span>
+        <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>ElementConfigInfo</span><span class=o>&gt;</span> <span class=n>pElementInfo</span><span class=p>(</span><span class=n>NF_NEW</span> <span class=n>ElementConfigInfo</span><span class=p>());</span>
+    <span class=n>AddElement</span><span class=p>(</span><span class=n>strConfigID</span><span class=p>,</span> <span class=n>pElementInfo</span><span class=p>);</span>
+
+    <span class=c1>//can find all configid by class name</span>
+    <span class=n>pLogicClass</span><span class=o>-&gt;</span><span class=n>AddId</span><span class=p>(</span><span class=n>strConfigID</span><span class=p>);</span>
+
+    <span class=c1>//ElementConfigInfo* pElementInfo = CreateElement( strConfigID, pElementInfo );</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIPropertyManager</span><span class=o>&gt;</span> <span class=n>pElementPropertyManager</span> <span class=o>=</span> <span class=n>pElementInfo</span><span class=o>-&gt;</span><span class=n>GetPropertyManager</span><span class=p>();</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIRecordManager</span><span class=o>&gt;</span> <span class=n>pElementRecordManager</span> <span class=o>=</span> <span class=n>pElementInfo</span><span class=o>-&gt;</span><span class=n>GetRecordManager</span><span class=p>();</span>
+
+    <span class=c1>//1.add property</span>
+    <span class=c1>//2.set the default value  of them</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIPropertyManager</span><span class=o>&gt;</span> <span class=n>pClassPropertyManager</span> <span class=o>=</span> <span class=n>pLogicClass</span><span class=o>-&gt;</span><span class=n>GetPropertyManager</span><span class=p>();</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIRecordManager</span><span class=o>&gt;</span> <span class=n>pClassRecordManager</span> <span class=o>=</span> <span class=n>pLogicClass</span><span class=o>-&gt;</span><span class=n>GetRecordManager</span><span class=p>();</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>pClassPropertyManager</span> <span class=o>&amp;&amp;</span> <span class=n>pClassRecordManager</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIProperty</span><span class=o>&gt;</span> <span class=n>pProperty</span> <span class=o>=</span> <span class=n>pClassPropertyManager</span><span class=o>-&gt;</span><span class=n>First</span><span class=p>();</span>
+        <span class=k>while</span> <span class=p>(</span><span class=n>pProperty</span><span class=p>)</span>
+        <span class=p>{</span>
+
+            <span class=n>pElementPropertyManager</span><span class=o>-&gt;</span><span class=n>AddProperty</span><span class=p>(</span><span class=n>NFGUID</span><span class=p>(),</span> <span class=n>pProperty</span><span class=p>);</span>
+
+            <span class=n>pProperty</span> <span class=o>=</span> <span class=n>pClassPropertyManager</span><span class=o>-&gt;</span><span class=n>Next</span><span class=p>();</span>
+        <span class=p>}</span>
+
+        <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIRecord</span><span class=o>&gt;</span> <span class=n>pRecord</span> <span class=o>=</span> <span class=n>pClassRecordManager</span><span class=o>-&gt;</span><span class=n>First</span><span class=p>();</span>
+        <span class=k>while</span> <span class=p>(</span><span class=n>pRecord</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIRecord</span><span class=o>&gt;</span> <span class=n>xRecord</span> <span class=o>=</span> <span class=n>pElementRecordManager</span><span class=o>-&gt;</span><span class=n>AddRecord</span><span class=p>(</span><span class=n>NFGUID</span><span class=p>(),</span> <span class=n>pRecord</span><span class=o>-&gt;</span><span class=n>GetName</span><span class=p>(),</span> <span class=n>pRecord</span><span class=o>-&gt;</span><span class=n>GetInitData</span><span class=p>(),</span> <span class=n>pRecord</span><span class=o>-&gt;</span><span class=n>GetTag</span><span class=p>(),</span> <span class=n>pRecord</span><span class=o>-&gt;</span><span class=n>GetRows</span><span class=p>());</span>
+
+            <span class=n>xRecord</span><span class=o>-&gt;</span><span class=n>SetPublic</span><span class=p>(</span><span class=n>pRecord</span><span class=o>-&gt;</span><span class=n>GetPublic</span><span class=p>());</span>
+            <span class=n>xRecord</span><span class=o>-&gt;</span><span class=n>SetPrivate</span><span class=p>(</span><span class=n>pRecord</span><span class=o>-&gt;</span><span class=n>GetPrivate</span><span class=p>());</span>
+            <span class=n>xRecord</span><span class=o>-&gt;</span><span class=n>SetSave</span><span class=p>(</span><span class=n>pRecord</span><span class=o>-&gt;</span><span class=n>GetSave</span><span class=p>());</span>
+            <span class=n>xRecord</span><span class=o>-&gt;</span><span class=n>SetCache</span><span class=p>(</span><span class=n>pRecord</span><span class=o>-&gt;</span><span class=n>GetCache</span><span class=p>());</span>
+            <span class=n>xRecord</span><span class=o>-&gt;</span><span class=n>SetRef</span><span class=p>(</span><span class=n>pRecord</span><span class=o>-&gt;</span><span class=n>GetRef</span><span class=p>());</span>
+            <span class=n>xRecord</span><span class=o>-&gt;</span><span class=n>SetForce</span><span class=p>(</span><span class=n>pRecord</span><span class=o>-&gt;</span><span class=n>GetForce</span><span class=p>());</span>
+            <span class=n>xRecord</span><span class=o>-&gt;</span><span class=n>SetUpload</span><span class=p>(</span><span class=n>pRecord</span><span class=o>-&gt;</span><span class=n>GetUpload</span><span class=p>());</span>
+
+            <span class=n>pRecord</span> <span class=o>=</span> <span class=n>pClassRecordManager</span><span class=o>-&gt;</span><span class=n>Next</span><span class=p>();</span>
+        <span class=p>}</span>
+
+    <span class=p>}</span>
+
+    <span class=c1>//3.set the config value to them</span>
+
+    <span class=c1>//const char* pstrConfigID = attrNode-&gt;first_attribute( &quot;ID&quot; );</span>
+    <span class=k>for</span> <span class=p>(</span><span class=n>rapidxml</span><span class=o>::</span><span class=n>xml_attribute</span><span class=o>&lt;&gt;*</span> <span class=n>pAttribute</span> <span class=o>=</span> <span class=n>attrNode</span><span class=o>-&gt;</span><span class=n>first_attribute</span><span class=p>();</span> <span class=n>pAttribute</span><span class=p>;</span> <span class=n>pAttribute</span> <span class=o>=</span> <span class=n>pAttribute</span><span class=o>-&gt;</span><span class=n>next_attribute</span><span class=p>())</span>
+    <span class=p>{</span>
+        <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>pstrConfigName</span> <span class=o>=</span> <span class=n>pAttribute</span><span class=o>-&gt;</span><span class=n>name</span><span class=p>();</span>
+        <span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>pstrConfigValue</span> <span class=o>=</span> <span class=n>pAttribute</span><span class=o>-&gt;</span><span class=n>value</span><span class=p>();</span>
+        <span class=c1>//printf( &quot;%s : %s\n&quot;, pstrConfigName, pstrConfigValue );</span>
+
+        <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIProperty</span><span class=o>&gt;</span> <span class=n>temProperty</span> <span class=o>=</span> <span class=n>pElementPropertyManager</span><span class=o>-&gt;</span><span class=n>GetElement</span><span class=p>(</span><span class=n>pstrConfigName</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>temProperty</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>continue</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=n>NFData</span> <span class=n>var</span><span class=p>;</span>
+        <span class=k>const</span> <span class=n>NFDATA_TYPE</span> <span class=n>eType</span> <span class=o>=</span> <span class=n>temProperty</span><span class=o>-&gt;</span><span class=n>GetType</span><span class=p>();</span>
+        <span class=k>switch</span> <span class=p>(</span><span class=n>eType</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>case</span> <span class=nl>TDATA_INT</span><span class=p>:</span>
+            <span class=p>{</span>
+                <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>LegalNumber</span><span class=p>(</span><span class=n>pstrConfigValue</span><span class=p>))</span>
+                <span class=p>{</span>
+                    <span class=n>NFASSERT</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=n>temProperty</span><span class=o>-&gt;</span><span class=n>GetKey</span><span class=p>(),</span> <span class=n>__FILE__</span><span class=p>,</span> <span class=n>__FUNCTION__</span><span class=p>);</span>
+                <span class=p>}</span>
+                <span class=n>var</span><span class=p>.</span><span class=n>SetInt</span><span class=p>(</span><span class=n>lexical_cast</span><span class=o>&lt;</span><span class=n>NFINT64</span><span class=o>&gt;</span><span class=p>(</span><span class=n>pstrConfigValue</span><span class=p>));</span>
+            <span class=p>}</span>
+            <span class=k>break</span><span class=p>;</span>
+            <span class=k>case</span> <span class=nl>TDATA_FLOAT</span><span class=p>:</span>
+            <span class=p>{</span>
+                <span class=k>if</span> <span class=p>(</span><span class=n>strlen</span><span class=p>(</span><span class=n>pstrConfigValue</span><span class=p>)</span> <span class=o>&lt;=</span> <span class=mi>0</span> <span class=o>||</span> <span class=o>!</span><span class=n>LegalFloat</span><span class=p>(</span><span class=n>pstrConfigValue</span><span class=p>))</span>
+                <span class=p>{</span>
+                    <span class=n>NFASSERT</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=n>temProperty</span><span class=o>-&gt;</span><span class=n>GetKey</span><span class=p>(),</span> <span class=n>__FILE__</span><span class=p>,</span> <span class=n>__FUNCTION__</span><span class=p>);</span>
+                <span class=p>}</span>
+                <span class=n>var</span><span class=p>.</span><span class=n>SetFloat</span><span class=p>((</span><span class=kt>double</span><span class=p>)</span><span class=n>atof</span><span class=p>(</span><span class=n>pstrConfigValue</span><span class=p>));</span>
+            <span class=p>}</span>
+            <span class=k>break</span><span class=p>;</span>
+            <span class=k>case</span> <span class=nl>TDATA_STRING</span><span class=p>:</span>
+                <span class=p>{</span>
+                    <span class=n>var</span><span class=p>.</span><span class=n>SetString</span><span class=p>(</span><span class=n>pstrConfigValue</span><span class=p>);</span>
+                <span class=p>}</span>
+                <span class=k>break</span><span class=p>;</span>
+            <span class=k>case</span> <span class=nl>TDATA_OBJECT</span><span class=p>:</span>
+            <span class=p>{</span>
+                <span class=k>if</span> <span class=p>(</span><span class=n>strlen</span><span class=p>(</span><span class=n>pstrConfigValue</span><span class=p>)</span> <span class=o>&lt;=</span> <span class=mi>0</span><span class=p>)</span>
+                <span class=p>{</span>
+                    <span class=n>NFASSERT</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=n>temProperty</span><span class=o>-&gt;</span><span class=n>GetKey</span><span class=p>(),</span> <span class=n>__FILE__</span><span class=p>,</span> <span class=n>__FUNCTION__</span><span class=p>);</span>
+                <span class=p>}</span>
+                <span class=n>var</span><span class=p>.</span><span class=n>SetObject</span><span class=p>(</span><span class=n>NFGUID</span><span class=p>());</span>
+            <span class=p>}</span>
+            <span class=k>break</span><span class=p>;</span>
+            <span class=k>case</span> <span class=nl>TDATA_VECTOR2</span><span class=p>:</span>
+            <span class=p>{</span>
+                <span class=k>if</span> <span class=p>(</span><span class=n>strlen</span><span class=p>(</span><span class=n>pstrConfigValue</span><span class=p>)</span> <span class=o>&lt;=</span> <span class=mi>0</span><span class=p>)</span>
+                <span class=p>{</span>
+                    <span class=n>NFASSERT</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=n>temProperty</span><span class=o>-&gt;</span><span class=n>GetKey</span><span class=p>(),</span> <span class=n>__FILE__</span><span class=p>,</span> <span class=n>__FUNCTION__</span><span class=p>);</span>
+                <span class=p>}</span>
+
+                <span class=n>NFVector2</span> <span class=n>tmp</span><span class=p>;</span>
+                <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>tmp</span><span class=p>.</span><span class=n>FromString</span><span class=p>(</span><span class=n>pstrConfigValue</span><span class=p>))</span>
+                <span class=p>{</span>
+                    <span class=n>NFASSERT</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=n>temProperty</span><span class=o>-&gt;</span><span class=n>GetKey</span><span class=p>(),</span> <span class=n>__FILE__</span><span class=p>,</span> <span class=n>__FUNCTION__</span><span class=p>);</span>
+                <span class=p>}</span>
+                <span class=n>var</span><span class=p>.</span><span class=n>SetVector2</span><span class=p>(</span><span class=n>tmp</span><span class=p>);</span>
+            <span class=p>}</span>
+            <span class=k>break</span><span class=p>;</span>
+            <span class=k>case</span> <span class=nl>TDATA_VECTOR3</span><span class=p>:</span>
+            <span class=p>{</span>
+                <span class=k>if</span> <span class=p>(</span><span class=n>strlen</span><span class=p>(</span><span class=n>pstrConfigValue</span><span class=p>)</span> <span class=o>&lt;=</span> <span class=mi>0</span><span class=p>)</span>
+                <span class=p>{</span>
+                    <span class=n>NFASSERT</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=n>temProperty</span><span class=o>-&gt;</span><span class=n>GetKey</span><span class=p>(),</span> <span class=n>__FILE__</span><span class=p>,</span> <span class=n>__FUNCTION__</span><span class=p>);</span>
+                <span class=p>}</span>
+                <span class=n>NFVector3</span> <span class=n>tmp</span><span class=p>;</span>
+                <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>tmp</span><span class=p>.</span><span class=n>FromString</span><span class=p>(</span><span class=n>pstrConfigValue</span><span class=p>))</span>
+                <span class=p>{</span>
+                    <span class=n>NFASSERT</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=n>temProperty</span><span class=o>-&gt;</span><span class=n>GetKey</span><span class=p>(),</span> <span class=n>__FILE__</span><span class=p>,</span> <span class=n>__FUNCTION__</span><span class=p>);</span>
+                <span class=p>}</span>
+                <span class=n>var</span><span class=p>.</span><span class=n>SetVector3</span><span class=p>(</span><span class=n>tmp</span><span class=p>);</span>
+            <span class=p>}</span>
+            <span class=k>break</span><span class=p>;</span>
+            <span class=k>default</span><span class=o>:</span>
+                <span class=n>NFASSERT</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=n>temProperty</span><span class=o>-&gt;</span><span class=n>GetKey</span><span class=p>(),</span> <span class=n>__FILE__</span><span class=p>,</span> <span class=n>__FUNCTION__</span><span class=p>);</span>
+                <span class=k>break</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=n>temProperty</span><span class=o>-&gt;</span><span class=n>SetValue</span><span class=p>(</span><span class=n>var</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>eType</span> <span class=o>==</span> <span class=n>TDATA_STRING</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>temProperty</span><span class=o>-&gt;</span><span class=n>DeSerialization</span><span class=p>();</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=n>NFData</span> <span class=n>xDataClassName</span><span class=p>;</span>
+    <span class=n>xDataClassName</span><span class=p>.</span><span class=n>SetString</span><span class=p>(</span><span class=n>pLogicClass</span><span class=o>-&gt;</span><span class=n>GetClassName</span><span class=p>());</span>
+    <span class=n>pElementPropertyManager</span><span class=o>-&gt;</span><span class=n>SetProperty</span><span class=p>(</span><span class=s>&quot;ClassName&quot;</span><span class=p>,</span> <span class=n>xDataClassName</span><span class=p>);</span>
+
+
+    <span class=n>NFData</span> <span class=n>xDataID</span><span class=p>;</span>
+    <span class=n>xDataID</span><span class=p>.</span><span class=n>SetString</span><span class=p>(</span><span class=n>strConfigID</span><span class=p>);</span>
+    <span class=n>pElementPropertyManager</span><span class=o>-&gt;</span><span class=n>SetProperty</span><span class=p>(</span><span class=s>&quot;ID&quot;</span><span class=p>,</span> <span class=n>xDataID</span><span class=p>);</span>
+    <span class=n>pElementPropertyManager</span><span class=o>-&gt;</span><span class=n>SetProperty</span><span class=p>(</span><span class=s>&quot;ConfigID&quot;</span><span class=p>,</span> <span class=n>xDataID</span><span class=p>);</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>Save</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=n>NFINT64</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>GetPropertyInt</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPropertyName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIProperty</span><span class=o>&gt;</span> <span class=n>pProperty</span> <span class=o>=</span> <span class=n>GetProperty</span><span class=p>(</span><span class=n>strConfigName</span><span class=p>,</span> <span class=n>strPropertyName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>pProperty</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>pProperty</span><span class=o>-&gt;</span><span class=n>GetInt</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>int</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>GetPropertyInt32</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPropertyName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIProperty</span><span class=o>&gt;</span> <span class=n>pProperty</span> <span class=o>=</span> <span class=n>GetProperty</span><span class=p>(</span><span class=n>strConfigName</span><span class=p>,</span> <span class=n>strPropertyName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>pProperty</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>pProperty</span><span class=o>-&gt;</span><span class=n>GetInt32</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>double</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>GetPropertyFloat</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPropertyName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIProperty</span><span class=o>&gt;</span> <span class=n>pProperty</span> <span class=o>=</span> <span class=n>GetProperty</span><span class=p>(</span><span class=n>strConfigName</span><span class=p>,</span> <span class=n>strPropertyName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>pProperty</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>pProperty</span><span class=o>-&gt;</span><span class=n>GetFloat</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=mf>0.0</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>GetPropertyString</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPropertyName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIProperty</span><span class=o>&gt;</span> <span class=n>pProperty</span> <span class=o>=</span> <span class=n>GetProperty</span><span class=p>(</span><span class=n>strConfigName</span><span class=p>,</span> <span class=n>strPropertyName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>pProperty</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>pProperty</span><span class=o>-&gt;</span><span class=n>GetString</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span>  <span class=n>NULL_STR</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=k>const</span> <span class=n>NFVector2</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>GetPropertyVector2</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>strPropertyName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIProperty</span><span class=o>&gt;</span> <span class=n>pProperty</span> <span class=o>=</span> <span class=n>GetProperty</span><span class=p>(</span><span class=n>strConfigName</span><span class=p>,</span> <span class=n>strPropertyName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>pProperty</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>pProperty</span><span class=o>-&gt;</span><span class=n>GetVector2</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=n>NFVector2</span><span class=p>();</span>
+<span class=p>}</span>
+
+<span class=k>const</span> <span class=n>NFVector3</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>GetPropertyVector3</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>strPropertyName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIProperty</span><span class=o>&gt;</span> <span class=n>pProperty</span> <span class=o>=</span> <span class=n>GetProperty</span><span class=p>(</span><span class=n>strConfigName</span><span class=p>,</span> <span class=n>strPropertyName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>pProperty</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>pProperty</span><span class=o>-&gt;</span><span class=n>GetVector3</span><span class=p>();</span>
+    <span class=p>}</span>
+
+
+    <span class=k>return</span> <span class=n>NFVector3</span><span class=p>();</span>
+<span class=p>}</span>
+
+<span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&gt;</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>GetListByProperty</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>strClassName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>strPropertyName</span><span class=p>,</span> <span class=n>NFINT64</span> <span class=n>nValue</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&gt;</span> <span class=n>xList</span><span class=p>;</span>
+
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIClass</span><span class=o>&gt;</span> <span class=n>xClass</span> <span class=o>=</span> <span class=n>m_pClassModule</span><span class=o>-&gt;</span><span class=n>GetElement</span><span class=p>(</span><span class=n>strClassName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=k>nullptr</span> <span class=o>!=</span> <span class=n>xClass</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&gt;&amp;</span> <span class=n>xElementList</span> <span class=o>=</span> <span class=n>xClass</span><span class=o>-&gt;</span><span class=n>GetIDList</span><span class=p>();</span>
+        <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>xElementList</span><span class=p>.</span><span class=n>size</span><span class=p>();</span> <span class=o>++</span><span class=n>i</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigID</span> <span class=o>=</span> <span class=n>xElementList</span><span class=p>[</span><span class=n>i</span><span class=p>];</span>
+            <span class=n>NFINT64</span> <span class=n>nElementValue</span> <span class=o>=</span> <span class=n>GetPropertyInt</span><span class=p>(</span><span class=n>strConfigID</span><span class=p>,</span> <span class=n>strPropertyName</span><span class=p>);</span>
+            <span class=k>if</span> <span class=p>(</span><span class=n>nValue</span> <span class=o>==</span> <span class=n>nElementValue</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=n>xList</span><span class=p>.</span><span class=n>push_back</span><span class=p>(</span><span class=n>strConfigID</span><span class=p>);</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=n>xList</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&gt;</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>GetListByProperty</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>strClassName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>strPropertyName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>nValue</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&gt;</span> <span class=n>xList</span><span class=p>;</span>
+
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIClass</span><span class=o>&gt;</span> <span class=n>xClass</span> <span class=o>=</span> <span class=n>m_pClassModule</span><span class=o>-&gt;</span><span class=n>GetElement</span><span class=p>(</span><span class=n>strClassName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=k>nullptr</span> <span class=o>!=</span> <span class=n>xClass</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&gt;&amp;</span> <span class=n>xElementList</span> <span class=o>=</span> <span class=n>xClass</span><span class=o>-&gt;</span><span class=n>GetIDList</span><span class=p>();</span>
+        <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>xElementList</span><span class=p>.</span><span class=n>size</span><span class=p>();</span> <span class=o>++</span><span class=n>i</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigID</span> <span class=o>=</span> <span class=n>xElementList</span><span class=p>[</span><span class=n>i</span><span class=p>];</span>
+            <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strElementValue</span> <span class=o>=</span> <span class=n>GetPropertyString</span><span class=p>(</span><span class=n>strConfigID</span><span class=p>,</span> <span class=n>strPropertyName</span><span class=p>);</span>
+            <span class=k>if</span> <span class=p>(</span><span class=n>nValue</span> <span class=o>==</span> <span class=n>strElementValue</span><span class=p>)</span>
+            <span class=p>{</span>
+                <span class=n>xList</span><span class=p>.</span><span class=n>push_back</span><span class=p>(</span><span class=n>strConfigID</span><span class=p>);</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=n>xList</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIProperty</span><span class=o>&gt;</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>GetProperty</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strPropertyName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>ElementConfigInfo</span><span class=o>&gt;</span> <span class=n>pElementInfo</span> <span class=o>=</span> <span class=n>GetElement</span><span class=p>(</span><span class=n>strConfigName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>pElementInfo</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>pElementInfo</span><span class=o>-&gt;</span><span class=n>GetPropertyManager</span><span class=p>()</span><span class=o>-&gt;</span><span class=n>GetElement</span><span class=p>(</span><span class=n>strPropertyName</span><span class=p>);</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIPropertyManager</span><span class=o>&gt;</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>GetPropertyManager</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>ElementConfigInfo</span><span class=o>&gt;</span> <span class=n>pElementInfo</span> <span class=o>=</span> <span class=n>GetElement</span><span class=p>(</span><span class=n>strConfigName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>pElementInfo</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>pElementInfo</span><span class=o>-&gt;</span><span class=n>GetPropertyManager</span><span class=p>();</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIRecordManager</span><span class=o>&gt;</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>GetRecordManager</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>ElementConfigInfo</span><span class=o>&gt;</span> <span class=n>pElementInfo</span> <span class=o>=</span> <span class=n>GetElement</span><span class=p>(</span><span class=n>strConfigName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>pElementInfo</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=n>pElementInfo</span><span class=o>-&gt;</span><span class=n>GetRecordManager</span><span class=p>();</span>
+    <span class=p>}</span>
+    <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>LoadSceneInfo</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strFileName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strClassName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>strContent</span><span class=p>;</span>
+    <span class=n>pPluginManager</span><span class=o>-&gt;</span><span class=n>GetFileContent</span><span class=p>(</span><span class=n>strFileName</span><span class=p>,</span> <span class=n>strContent</span><span class=p>);</span>
+
+    <span class=n>rapidxml</span><span class=o>::</span><span class=n>xml_document</span><span class=o>&lt;&gt;</span> <span class=n>xDoc</span><span class=p>;</span>
+    <span class=n>xDoc</span><span class=p>.</span><span class=n>parse</span><span class=o>&lt;</span><span class=mi>0</span><span class=o>&gt;</span><span class=p>((</span><span class=kt>char</span><span class=o>*</span><span class=p>)</span><span class=n>strContent</span><span class=p>.</span><span class=n>c_str</span><span class=p>());</span>
+
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIClass</span><span class=o>&gt;</span> <span class=n>pLogicClass</span> <span class=o>=</span> <span class=n>m_pClassModule</span><span class=o>-&gt;</span><span class=n>GetElement</span><span class=p>(</span><span class=n>strClassName</span><span class=p>.</span><span class=n>c_str</span><span class=p>());</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>pLogicClass</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=c1>//support for unlimited layer class inherits</span>
+        <span class=n>rapidxml</span><span class=o>::</span><span class=n>xml_node</span><span class=o>&lt;&gt;*</span> <span class=n>root</span> <span class=o>=</span> <span class=n>xDoc</span><span class=p>.</span><span class=n>first_node</span><span class=p>();</span>
+        <span class=k>for</span> <span class=p>(</span><span class=n>rapidxml</span><span class=o>::</span><span class=n>xml_node</span><span class=o>&lt;&gt;*</span> <span class=n>attrNode</span> <span class=o>=</span> <span class=n>root</span><span class=o>-&gt;</span><span class=n>first_node</span><span class=p>();</span> <span class=n>attrNode</span><span class=p>;</span> <span class=n>attrNode</span> <span class=o>=</span> <span class=n>attrNode</span><span class=o>-&gt;</span><span class=n>next_sibling</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=n>Load</span><span class=p>(</span><span class=n>attrNode</span><span class=p>,</span> <span class=n>pLogicClass</span><span class=p>);</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+    <span class=k>else</span>
+    <span class=p>{</span>
+        <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;error load scene info failed, name is:&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>strClassName</span> <span class=o>&lt;&lt;</span> <span class=s>&quot; file name is :&quot;</span> <span class=o>&lt;&lt;</span> <span class=n>strFileName</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>ExistElement</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>ElementConfigInfo</span><span class=o>&gt;</span> <span class=n>pElementInfo</span> <span class=o>=</span> <span class=n>GetElement</span><span class=p>(</span><span class=n>strConfigName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>pElementInfo</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>ExistElement</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strClassName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strConfigName</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>ElementConfigInfo</span><span class=o>&gt;</span> <span class=n>pElementInfo</span> <span class=o>=</span> <span class=n>GetElement</span><span class=p>(</span><span class=n>strConfigName</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>pElementInfo</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strClass</span> <span class=o>=</span> <span class=n>pElementInfo</span><span class=o>-&gt;</span><span class=n>GetPropertyManager</span><span class=p>()</span><span class=o>-&gt;</span><span class=n>GetPropertyString</span><span class=p>(</span><span class=s>&quot;ClassName&quot;</span><span class=p>);</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>strClass</span> <span class=o>!=</span> <span class=n>strClassName</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>LegalNumber</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span><span class=o>*</span> <span class=n>str</span><span class=p>)</span>
+<span class=p>{</span>
+    <span class=kt>int</span> <span class=n>nLen</span> <span class=o>=</span> <span class=kt>int</span><span class=p>(</span><span class=n>strlen</span><span class=p>(</span><span class=n>str</span><span class=p>));</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>nLen</span> <span class=o>&lt;=</span> <span class=mi>0</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=kt>int</span> <span class=n>nStart</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>if</span> <span class=p>(</span><span class=sc>&#39;-&#39;</span> <span class=o>==</span> <span class=n>str</span><span class=p>[</span><span class=mi>0</span><span class=p>])</span>
+    <span class=p>{</span>
+        <span class=n>nStart</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=n>nStart</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>nLen</span><span class=p>;</span> <span class=o>++</span><span class=n>i</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>isdigit</span><span class=p>(</span><span class=n>str</span><span class=p>[</span><span class=n>i</span><span class=p>]))</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>LegalFloat</span><span class=p>(</span><span class=k>const</span> <span class=kt>char</span> <span class=o>*</span> <span class=n>str</span><span class=p>)</span>
+<span class=p>{</span>
+
+    <span class=kt>int</span> <span class=n>nLen</span> <span class=o>=</span> <span class=kt>int</span><span class=p>(</span><span class=n>strlen</span><span class=p>(</span><span class=n>str</span><span class=p>));</span>
+    <span class=k>if</span> <span class=p>(</span><span class=n>nLen</span> <span class=o>&lt;=</span> <span class=mi>0</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=kt>int</span> <span class=n>nStart</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=kt>int</span> <span class=n>nEnd</span> <span class=o>=</span> <span class=n>nLen</span><span class=p>;</span>
+    <span class=k>if</span> <span class=p>(</span><span class=sc>&#39;-&#39;</span> <span class=o>==</span> <span class=n>str</span><span class=p>[</span><span class=mi>0</span><span class=p>])</span>
+    <span class=p>{</span>
+        <span class=n>nStart</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span>
+    <span class=p>}</span>
+    <span class=k>if</span> <span class=p>(</span><span class=sc>&#39;f&#39;</span> <span class=o>==</span> <span class=n>std</span><span class=o>::</span><span class=n>tolower</span><span class=p>(</span><span class=n>str</span><span class=p>[</span><span class=n>nEnd</span> <span class=o>-</span><span class=mi>1</span><span class=p>]))</span>
+    <span class=p>{</span>
+        <span class=n>nEnd</span><span class=o>--</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>if</span> <span class=p>(</span><span class=n>nEnd</span> <span class=o>&lt;=</span> <span class=n>nStart</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=kt>int</span> <span class=n>pointNum</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+    <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=n>nStart</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>nEnd</span><span class=p>;</span> <span class=o>++</span><span class=n>i</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=sc>&#39;.&#39;</span> <span class=o>==</span> <span class=n>str</span><span class=p>[</span><span class=n>i</span><span class=p>])</span>
+        <span class=p>{</span>
+            <span class=n>pointNum</span><span class=o>++</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=n>isdigit</span><span class=p>(</span><span class=n>str</span><span class=p>[</span><span class=n>i</span><span class=p>])</span> <span class=o>&amp;&amp;</span> <span class=sc>&#39;.&#39;</span> <span class=o>!=</span> <span class=n>str</span><span class=p>[</span><span class=n>i</span><span class=p>])</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>if</span> <span class=p>(</span><span class=n>pointNum</span> <span class=o>&gt;</span> <span class=mi>1</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>AfterInit</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>CheckRef</span><span class=p>();</span>
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>BeforeShut</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>Execute</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+
+<span class=p>}</span>
+
+<span class=kt>bool</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>Clear</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=n>ClearAll</span><span class=p>();</span>
+
+    <span class=n>mbLoaded</span> <span class=o>=</span> <span class=nb>false</span><span class=p>;</span>
+    <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+<span class=p>}</span>
+
+<span class=n>NFIElementModule</span><span class=o>*</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>GetBackupElementModule</span><span class=p>()</span>
+<span class=p>{</span>
+    <span class=k>return</span> <span class=n>m_pBackupElementModule</span><span class=p>;</span>
+<span class=p>}</span>
+</code></pre></div> <br> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../../NFCore/NFConsistentHash_h/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../../NFCore/NFConsistentHash_h/ class="btn btn-xs btn-link"> NFConsistentHash_h </a> </div> <div class=wm-article-nav> <a href=../NFConfigPlugin/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../NFConfigPlugin/ class="btn btn-xs btn-link"> NFConfigPlugin </a> </div> </div> <br> </div> <footer class="container-fluid wm-page-content"><p>Copyright &copy; 2020 - 2020 张磊</p> <p>Documentation built with <a href=http://www.mkdocs.org/ >MkDocs</a> using <a href=https://github.com/gristlabs/mkdocs-windmill>Windmill</a> theme by Grist Labs.</p> </footer> </body> </html>
