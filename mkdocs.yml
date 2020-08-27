@@ -120,6 +120,7 @@ nav:
     - NFConfigPlugin:
       - NFClassModule:       NoahGameFrame/NFConfigPlugin/NFClassModule.md
       - NFConfigPlugin:      NoahGameFrame/NFConfigPlugin/NFConfigPlugin.md
+      - NFElementModule:     NoahGameFrame/NFConfigPlugin/NFElementModule.md
     - NFCore:
       - NFConsistentHash_h:  NoahGameFrame/NFCore/NFConsistentHash_h.md
       - NFDataList:          NoahGameFrame/NFCore/NFDataList_h.md
@@ -130,6 +131,7 @@ nav:
       - NFVector3:           NoahGameFrame/NFCore/NFVector3.md
     - NFHeaderFiles:
       - NFGUID:              NoahGameFrame/NFHeaderFiles/NFGUID_h.md
+      - NFIClassModule:      NoahGameFrame/NFHeaderFiles/NFIClassModule_h.md
       - NFIComponent:        NoahGameFrame/NFHeaderFiles/NFIComponent_h.md
       - NFIElementModule:    NoahGameFrame/NFHeaderFiles/NFIElementModule_h.md
       - NFIModule:           NoahGameFrame/NFHeaderFiles/NFIModule_h.md
