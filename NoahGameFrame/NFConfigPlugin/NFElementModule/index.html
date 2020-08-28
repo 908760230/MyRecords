@@ -506,12 +506,12 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
 <span class=p>}</span>
 
 <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&gt;</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>GetListByProperty</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>strClassName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=o>&amp;</span> <span class=n>strPropertyName</span><span class=p>,</span> <span class=n>NFINT64</span> <span class=n>nValue</span><span class=p>)</span>
-<span class=p>{</span>
+<span class=p>{</span>   <span class=c1>// 根据id 获得class对象。返回class里所有与nVlaue相同的id值</span>
     <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&gt;</span> <span class=n>xList</span><span class=p>;</span>
 
     <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>NFIClass</span><span class=o>&gt;</span> <span class=n>xClass</span> <span class=o>=</span> <span class=n>m_pClassModule</span><span class=o>-&gt;</span><span class=n>GetElement</span><span class=p>(</span><span class=n>strClassName</span><span class=p>);</span>
     <span class=k>if</span> <span class=p>(</span><span class=k>nullptr</span> <span class=o>!=</span> <span class=n>xClass</span><span class=p>)</span>
-    <span class=p>{</span>
+    <span class=p>{</span>   
         <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>vector</span><span class=o>&lt;</span><span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&gt;&amp;</span> <span class=n>xElementList</span> <span class=o>=</span> <span class=n>xClass</span><span class=o>-&gt;</span><span class=n>GetIDList</span><span class=p>();</span>
         <span class=k>for</span> <span class=p>(</span><span class=kt>int</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=n>xElementList</span><span class=p>.</span><span class=n>size</span><span class=p>();</span> <span class=o>++</span><span class=n>i</span><span class=p>)</span>
         <span class=p>{</span>
@@ -580,7 +580,7 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
     <span class=p>}</span>
     <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
 <span class=p>}</span>
-
+<span class=c1>// 指定场景xml文件 和 场景类，将xml的设置加载到class里面</span>
 <span class=kt>bool</span> <span class=n>NFElementModule</span><span class=o>::</span><span class=n>LoadSceneInfo</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strFileName</span><span class=p>,</span> <span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>strClassName</span><span class=p>)</span>
 <span class=p>{</span>
     <span class=n>std</span><span class=o>::</span><span class=n>string</span> <span class=n>strContent</span><span class=p>;</span>

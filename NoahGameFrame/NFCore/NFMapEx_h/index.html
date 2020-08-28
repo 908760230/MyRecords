@@ -1,0 +1,371 @@
+<!DOCTYPE html><html lang=en> <head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width, initial-scale=1.0"><link rel="shortcut icon" href=../../../img/favicon.ico><meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"><title>NFMapEx - 记录</title><link href=../../../css/bootstrap-3.3.7.min.css rel=stylesheet><link href=../../../css/font-awesome-4.7.0.css rel=stylesheet><link href=../../../css/base.css rel=stylesheet><link rel=stylesheet href=../../../css/highlight.css><!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries --><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]--><script src=../../../js/jquery-3.2.1.min.js></script><script src=../../../js/bootstrap-3.3.7.min.js></script><script src=../../../js/highlight.pack.js></script><base target=_top><script>
+      var base_url = '../../..';
+      var is_top_frame = false;
+        
+        var pageToc = [
+          {title: "NFMapEx", url: "#_top", children: [
+              {title: "NFMapEx", url: "#nfmapex_1" },
+              {title: "NFConsistentHashMapEx", url: "#nfconsistenthashmapex" },
+              {title: "\u5b8c\u6574\u6e90\u7801", url: "#_1" },
+          ]},
+        ];
+
+    </script><script src=../../../js/base.js></script></head> <body> <script>
+if (is_top_frame) { $('body').addClass('wm-top-page'); }
+</script> <div class="container-fluid wm-page-content"> <a name=_top></a> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../NFMemoryCounter_h/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../NFMemoryCounter_h/ class="btn btn-xs btn-link"> NFMemoryCounter_h </a> </div> <div class=wm-article-nav> <a href=../NFIProperty_h/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../NFIProperty_h/ class="btn btn-xs btn-link"> NFIProperty </a> </div> </div> <h1 id=nfmapex>NFMapEx<a class=headerlink href=#nfmapex title="Permanent link">&para;</a></h1> <h2 id=nfmapex_1>NFMapEx<a class=headerlink href=#nfmapex_1 title="Permanent link">&para;</a></h2> <p>对map 进行特写并定义相关操作</p> <h2 id=nfconsistenthashmapex>NFConsistentHashMapEx<a class=headerlink href=#nfconsistenthashmapex title="Permanent link">&para;</a></h2> <p>引入了NFConsistentHash，增加了一致性哈希的相关操作。</p> <h2 id=_1>完整源码<a class=headerlink href=#_1 title="Permanent link">&para;</a></h2> <div class=highlight><pre><span></span><code><span class=cp>#ifndef NF_MAPEX_H</span>
+<span class=cp>#define NF_MAPEX_H</span>
+
+<span class=cp>#include</span> <span class=cpf>&lt;map&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;list&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;string&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;typeinfo&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&lt;memory&gt;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFConsistentHash.hpp&quot;</span><span class=cp></span>
+<span class=cp>#include</span> <span class=cpf>&quot;NFComm/NFPluginModule/NFPlatform.h&quot;</span><span class=cp></span>
+
+<span class=k>template</span> <span class=o>&lt;</span><span class=k>typename</span> <span class=n>T</span> <span class=p>,</span> <span class=k>typename</span> <span class=n>TD</span><span class=o>&gt;</span>
+<span class=k>class</span> <span class=nc>NFMapEx</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=k>typedef</span> <span class=n>std</span><span class=o>::</span><span class=n>map</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>TD</span><span class=o>&gt;</span> <span class=o>&gt;</span> <span class=n>NFMapOBJECT</span><span class=p>;</span>
+
+    <span class=n>NFMapEx</span><span class=p>()</span>
+    <span class=p>{</span>
+    <span class=p>};</span>
+    <span class=k>virtual</span> <span class=o>~</span><span class=n>NFMapEx</span><span class=p>()</span>
+    <span class=p>{</span>
+    <span class=p>};</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>ExistElement</span><span class=p>(</span><span class=k>const</span> <span class=n>T</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>typename</span> <span class=n>NFMapOBJECT</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itr</span> <span class=o>=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>name</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>itr</span> <span class=o>!=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+        <span class=p>}</span>
+        <span class=k>else</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>AddElement</span><span class=p>(</span><span class=k>const</span> <span class=n>T</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>,</span> <span class=k>const</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>TD</span><span class=o>&gt;</span> <span class=n>data</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>data</span> <span class=o>==</span> <span class=k>nullptr</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=n>std</span><span class=o>::</span><span class=n>cout</span> <span class=o>&lt;&lt;</span> <span class=s>&quot;AddElement failed : &quot;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+            <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=k>typename</span> <span class=n>NFMapOBJECT</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itr</span> <span class=o>=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>name</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>itr</span> <span class=o>==</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=n>mObjectList</span><span class=p>.</span><span class=n>insert</span><span class=p>(</span><span class=k>typename</span> <span class=n>NFMapOBJECT</span><span class=o>::</span><span class=n>value_type</span><span class=p>(</span><span class=n>name</span><span class=p>,</span> <span class=n>data</span><span class=p>));</span>
+
+            <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=nf>RemoveElement</span><span class=p>(</span><span class=k>const</span> <span class=n>T</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>typename</span> <span class=n>NFMapOBJECT</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itr</span> <span class=o>=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>name</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>itr</span> <span class=o>!=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=n>mObjectList</span><span class=p>.</span><span class=n>erase</span><span class=p>(</span><span class=n>itr</span><span class=p>);</span>
+
+            <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=n>TD</span><span class=o>*</span> <span class=nf>GetElementNude</span><span class=p>(</span><span class=k>const</span> <span class=n>T</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>typename</span> <span class=n>NFMapOBJECT</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itr</span> <span class=o>=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>name</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>itr</span> <span class=o>!=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=n>itr</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>.</span><span class=n>get</span><span class=p>();</span>
+        <span class=p>}</span>
+        <span class=k>else</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>TD</span><span class=o>&gt;</span> <span class=n>GetElement</span><span class=p>(</span><span class=k>const</span> <span class=n>T</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>typename</span> <span class=n>NFMapOBJECT</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itr</span> <span class=o>=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>name</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>itr</span> <span class=o>!=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=n>itr</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>;</span>
+        <span class=p>}</span>
+        <span class=k>else</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=k>nullptr</span><span class=p>;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=n>TD</span><span class=o>*</span> <span class=n>FirstNude</span><span class=p>(</span><span class=n>T</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>mObjectList</span><span class=p>.</span><span class=n>size</span><span class=p>()</span> <span class=o>&lt;=</span> <span class=mi>0</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=n>mObjectCurIter</span> <span class=o>=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>mObjectCurIter</span> <span class=o>!=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=n>name</span> <span class=o>=</span> <span class=n>mObjectCurIter</span><span class=o>-&gt;</span><span class=n>first</span><span class=p>;</span>
+            <span class=k>return</span> <span class=n>mObjectCurIter</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>.</span><span class=n>get</span><span class=p>();</span>
+        <span class=p>}</span>
+        <span class=k>else</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=n>TD</span><span class=o>*</span> <span class=n>NextNude</span><span class=p>(</span><span class=n>T</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>mObjectCurIter</span> <span class=o>==</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=n>mObjectCurIter</span><span class=o>++</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>mObjectCurIter</span> <span class=o>!=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=n>name</span> <span class=o>=</span> <span class=n>mObjectCurIter</span><span class=o>-&gt;</span><span class=n>first</span><span class=p>;</span>
+            <span class=k>return</span> <span class=n>mObjectCurIter</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>.</span><span class=n>get</span><span class=p>();</span>
+        <span class=p>}</span>
+        <span class=k>else</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+    <span class=k>virtual</span> <span class=n>TD</span><span class=o>*</span> <span class=n>FirstNude</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>mObjectList</span><span class=p>.</span><span class=n>size</span><span class=p>()</span> <span class=o>&lt;=</span> <span class=mi>0</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=n>mObjectCurIter</span> <span class=o>=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>mObjectCurIter</span> <span class=o>!=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=n>mObjectCurIter</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>.</span><span class=n>get</span><span class=p>();</span>
+        <span class=p>}</span>
+        <span class=k>else</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+    <span class=k>virtual</span> <span class=n>TD</span><span class=o>*</span> <span class=n>NextNude</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>mObjectCurIter</span> <span class=o>==</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=n>mObjectCurIter</span><span class=o>++</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>mObjectCurIter</span> <span class=o>!=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=n>mObjectCurIter</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>.</span><span class=n>get</span><span class=p>();</span>
+        <span class=p>}</span>
+        <span class=k>else</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>TD</span><span class=o>&gt;</span> <span class=n>First</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>mObjectList</span><span class=p>.</span><span class=n>size</span><span class=p>()</span> <span class=o>&lt;=</span> <span class=mi>0</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=k>nullptr</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=n>mObjectCurIter</span> <span class=o>=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>mObjectCurIter</span> <span class=o>!=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=n>mObjectCurIter</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>;</span>
+        <span class=p>}</span>
+        <span class=k>else</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=k>nullptr</span><span class=p>;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>TD</span><span class=o>&gt;</span> <span class=n>Next</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>mObjectCurIter</span> <span class=o>==</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=k>nullptr</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=o>++</span><span class=n>mObjectCurIter</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>mObjectCurIter</span> <span class=o>!=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=n>mObjectCurIter</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>;</span>
+        <span class=p>}</span>
+        <span class=k>else</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=k>nullptr</span><span class=p>;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>TD</span><span class=o>&gt;</span> <span class=n>First</span><span class=p>(</span><span class=n>T</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>mObjectList</span><span class=p>.</span><span class=n>size</span><span class=p>()</span> <span class=o>&lt;=</span> <span class=mi>0</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=k>nullptr</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=n>mObjectCurIter</span> <span class=o>=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>begin</span><span class=p>();</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>mObjectCurIter</span> <span class=o>!=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=n>name</span> <span class=o>=</span> <span class=n>mObjectCurIter</span><span class=o>-&gt;</span><span class=n>first</span><span class=p>;</span>
+            <span class=k>return</span> <span class=n>mObjectCurIter</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>;</span>
+        <span class=p>}</span>
+        <span class=k>else</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=k>nullptr</span><span class=p>;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>TD</span><span class=o>&gt;</span> <span class=n>Next</span><span class=p>(</span><span class=n>T</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>mObjectCurIter</span> <span class=o>==</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=k>nullptr</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=n>mObjectCurIter</span><span class=o>++</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>mObjectCurIter</span> <span class=o>!=</span> <span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=n>name</span> <span class=o>=</span> <span class=n>mObjectCurIter</span><span class=o>-&gt;</span><span class=n>first</span><span class=p>;</span>
+            <span class=k>return</span> <span class=n>mObjectCurIter</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>;</span>
+        <span class=p>}</span>
+        <span class=k>else</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=k>nullptr</span><span class=p>;</span>
+        <span class=p>}</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>ClearAll</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=n>mObjectList</span><span class=p>.</span><span class=n>clear</span><span class=p>();</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=kt>int</span> <span class=n>Count</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=k>return</span> <span class=p>(</span><span class=kt>int</span><span class=p>)</span><span class=n>mObjectList</span><span class=p>.</span><span class=n>size</span><span class=p>();</span>
+    <span class=p>}</span>
+
+
+<span class=k>protected</span><span class=o>:</span>
+    <span class=n>NFMapOBJECT</span>     <span class=n>mObjectList</span><span class=p>;</span>
+    <span class=k>typename</span> <span class=n>NFMapOBJECT</span><span class=o>::</span><span class=n>iterator</span> <span class=n>mObjectCurIter</span><span class=p>;</span>
+<span class=p>};</span>
+
+<span class=k>template</span> <span class=o>&lt;</span><span class=k>typename</span> <span class=n>T</span><span class=p>,</span> <span class=k>typename</span> <span class=n>TD</span><span class=o>&gt;</span>
+<span class=k>class</span> <span class=nc>NFConsistentHashMapEx</span> <span class=o>:</span> <span class=k>public</span> <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TD</span><span class=o>&gt;</span>
+<span class=p>{</span>
+<span class=k>public</span><span class=o>:</span>
+    <span class=k>virtual</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>TD</span><span class=o>&gt;</span> <span class=n>GetElementBySuitRandom</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=n>vNode</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>mxConsistentHash</span><span class=p>.</span><span class=n>GetSuitNodeRandom</span><span class=p>(</span><span class=n>vNode</span><span class=p>))</span>
+        <span class=p>{</span>
+            <span class=k>typename</span> <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TD</span><span class=o>&gt;::</span><span class=n>NFMapOBJECT</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itr</span> <span class=o>=</span> <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TD</span><span class=o>&gt;::</span><span class=n>mObjectList</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>vNode</span><span class=p>.</span><span class=n>mxData</span><span class=p>);</span>
+            <span class=k>if</span> <span class=p>(</span><span class=n>itr</span> <span class=o>!=</span> <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TD</span><span class=o>&gt;::</span><span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+            <span class=p>{</span>
+                <span class=k>return</span> <span class=n>itr</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>;</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+
+        <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>TD</span><span class=o>&gt;</span> <span class=n>GetElementBySuitConsistent</span><span class=p>()</span>
+    <span class=p>{</span>
+        <span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=n>vNode</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>mxConsistentHash</span><span class=p>.</span><span class=n>GetSuitNodeConsistent</span><span class=p>(</span><span class=n>vNode</span><span class=p>))</span>
+        <span class=p>{</span>
+            <span class=k>typename</span> <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TD</span><span class=o>&gt;::</span><span class=n>NFMapOBJECT</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itr</span> <span class=o>=</span> <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TD</span><span class=o>&gt;::</span><span class=n>mObjectList</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>vNode</span><span class=p>.</span><span class=n>mxData</span><span class=p>);</span>
+            <span class=k>if</span> <span class=p>(</span><span class=n>itr</span> <span class=o>!=</span> <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TD</span><span class=o>&gt;::</span><span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+            <span class=p>{</span>
+                <span class=k>return</span> <span class=n>itr</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>;</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+
+        <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>TD</span><span class=o>&gt;</span> <span class=n>GetElementBySuit</span><span class=p>(</span><span class=k>const</span> <span class=n>T</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>)</span>
+    <span class=p>{</span>
+        <span class=n>NFVirtualNode</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=n>vNode</span><span class=p>;</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>mxConsistentHash</span><span class=p>.</span><span class=n>GetSuitNode</span><span class=p>(</span><span class=n>name</span><span class=p>,</span> <span class=n>vNode</span><span class=p>))</span>
+        <span class=p>{</span>
+            <span class=k>typename</span> <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TD</span><span class=o>&gt;::</span><span class=n>NFMapOBJECT</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itr</span> <span class=o>=</span> <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TD</span><span class=o>&gt;::</span><span class=n>mObjectList</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>vNode</span><span class=p>.</span><span class=n>mxData</span><span class=p>);</span>
+            <span class=k>if</span> <span class=p>(</span><span class=n>itr</span> <span class=o>!=</span> <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TD</span><span class=o>&gt;::</span><span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+            <span class=p>{</span>
+                <span class=k>return</span> <span class=n>itr</span><span class=o>-&gt;</span><span class=n>second</span><span class=p>;</span>
+            <span class=p>}</span>
+        <span class=p>}</span>
+
+        <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>AddElement</span><span class=p>(</span><span class=k>const</span> <span class=n>T</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>,</span> <span class=k>const</span> <span class=n>NF_SHARE_PTR</span><span class=o>&lt;</span><span class=n>TD</span><span class=o>&gt;</span> <span class=n>data</span><span class=p>)</span> <span class=k>override</span>
+    <span class=p>{</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>data</span> <span class=o>==</span> <span class=k>nullptr</span><span class=p>)</span>
+        <span class=p>{</span>
+            <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=k>typename</span> <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TD</span><span class=o>&gt;::</span><span class=n>NFMapOBJECT</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itr</span> <span class=o>=</span> <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TD</span><span class=o>&gt;::</span><span class=n>mObjectList</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>name</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>itr</span> <span class=o>==</span> <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TD</span><span class=o>&gt;::</span><span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TD</span><span class=o>&gt;::</span><span class=n>mObjectList</span><span class=p>.</span><span class=n>insert</span><span class=p>(</span><span class=k>typename</span> <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TD</span><span class=o>&gt;::</span><span class=n>NFMapOBJECT</span><span class=o>::</span><span class=n>value_type</span><span class=p>(</span><span class=n>name</span><span class=p>,</span> <span class=n>data</span><span class=p>));</span>
+
+            <span class=n>mxConsistentHash</span><span class=p>.</span><span class=n>Insert</span><span class=p>(</span><span class=n>name</span><span class=p>);</span>
+
+            <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>RemoveElement</span><span class=p>(</span><span class=k>const</span> <span class=n>T</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>)</span> <span class=k>override</span>
+    <span class=p>{</span>
+        <span class=k>typename</span> <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TD</span><span class=o>&gt;::</span><span class=n>NFMapOBJECT</span><span class=o>::</span><span class=n>iterator</span> <span class=n>itr</span> <span class=o>=</span> <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TD</span><span class=o>&gt;::</span><span class=n>mObjectList</span><span class=p>.</span><span class=n>find</span><span class=p>(</span><span class=n>name</span><span class=p>);</span>
+        <span class=k>if</span> <span class=p>(</span><span class=n>itr</span> <span class=o>!=</span> <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TD</span><span class=o>&gt;::</span><span class=n>mObjectList</span><span class=p>.</span><span class=n>end</span><span class=p>())</span>
+        <span class=p>{</span>
+            <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TD</span><span class=o>&gt;::</span><span class=n>mObjectList</span><span class=p>.</span><span class=n>erase</span><span class=p>(</span><span class=n>itr</span><span class=p>);</span>
+            <span class=n>mxConsistentHash</span><span class=p>.</span><span class=n>Erase</span><span class=p>(</span><span class=n>name</span><span class=p>);</span>
+
+            <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+        <span class=p>}</span>
+
+        <span class=k>return</span> <span class=nb>false</span><span class=p>;</span>
+    <span class=p>}</span>
+
+    <span class=k>virtual</span> <span class=kt>bool</span> <span class=n>ClearAll</span><span class=p>()</span> <span class=k>override</span>
+    <span class=p>{</span>
+        <span class=n>NFMapEx</span><span class=o>&lt;</span><span class=n>T</span><span class=p>,</span> <span class=n>TD</span><span class=o>&gt;::</span><span class=n>mObjectList</span><span class=p>.</span><span class=n>clear</span><span class=p>();</span>
+        <span class=n>mxConsistentHash</span><span class=p>.</span><span class=n>ClearAll</span><span class=p>();</span>
+        <span class=k>return</span> <span class=nb>true</span><span class=p>;</span>
+    <span class=p>}</span>
+
+<span class=k>private</span><span class=o>:</span>
+    <span class=n>NFConsistentHash</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span> <span class=n>mxConsistentHash</span><span class=p>;</span>
+<span class=p>};</span>
+<span class=cp>#endif</span>
+</code></pre></div> <br> <div class="row wm-article-nav-buttons" role=navigation aria-label=navigation> <div class="wm-article-nav pull-right"> <a href=../NFMemoryCounter_h/ class="btn btn-xs btn-default pull-right"> Next <i class="fa fa-chevron-right" aria-hidden=true></i> </a> <a href=../NFMemoryCounter_h/ class="btn btn-xs btn-link"> NFMemoryCounter_h </a> </div> <div class=wm-article-nav> <a href=../NFIProperty_h/ class="btn btn-xs btn-default pull-left"> <i class="fa fa-chevron-left" aria-hidden=true></i> Previous</a><a href=../NFIProperty_h/ class="btn btn-xs btn-link"> NFIProperty </a> </div> </div> <br> </div> <footer class="container-fluid wm-page-content"><p>Copyright &copy; 2020 - 2020 张磊</p> <p>Documentation built with <a href=http://www.mkdocs.org/ >MkDocs</a> using <a href=https://github.com/gristlabs/mkdocs-windmill>Windmill</a> theme by Grist Labs.</p> </footer> </body> </html>

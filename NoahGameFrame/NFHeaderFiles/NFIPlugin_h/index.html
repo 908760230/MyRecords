@@ -111,9 +111,9 @@ if (is_top_frame) { $('body').addClass('wm-top-page'); }
     <span class=k>virtual</span> <span class=kt>void</span> <span class=nf>Uninstall</span><span class=p>()</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
 
 
-    <span class=kt>void</span> <span class=nf>AddElement</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>,</span> <span class=n>NFIModule</span><span class=o>*</span> <span class=n>module</span><span class=p>)</span>
+    <span class=kt>void</span> <span class=nf>AddElement</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>,</span> <span class=n>NFIModule</span><span class=o>*</span> <span class=k>module</span><span class=p>)</span>
     <span class=p>{</span>
-        <span class=n>mModules</span><span class=p>[</span><span class=n>name</span><span class=p>]</span> <span class=o>=</span> <span class=n>module</span><span class=p>;</span>
+        <span class=n>mModules</span><span class=p>[</span><span class=n>name</span><span class=p>]</span> <span class=o>=</span> <span class=k>module</span><span class=p>;</span>
     <span class=p>}</span>
 
     <span class=n>NFIModule</span><span class=o>*</span> <span class=nf>GetElement</span><span class=p>(</span><span class=k>const</span> <span class=n>std</span><span class=o>::</span><span class=n>string</span><span class=o>&amp;</span> <span class=n>name</span><span class=p>)</span>
