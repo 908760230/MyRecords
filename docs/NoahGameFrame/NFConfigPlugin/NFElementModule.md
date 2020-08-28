@@ -503,12 +503,12 @@ const NFVector3 NFElementModule::GetPropertyVector3(const std::string & strConfi
 }
 
 const std::vector<std::string> NFElementModule::GetListByProperty(const std::string & strClassName, const std::string & strPropertyName, NFINT64 nValue)
-{
+{   // 根据id 获得class对象。返回class里所有与nVlaue相同的id值
 	std::vector<std::string> xList;
 
 	NF_SHARE_PTR<NFIClass> xClass = m_pClassModule->GetElement(strClassName);
 	if (nullptr != xClass)
-	{
+	{   
 		const std::vector<std::string>& xElementList = xClass->GetIDList();
 		for (int i = 0; i < xElementList.size(); ++i)
 		{
@@ -577,7 +577,7 @@ NF_SHARE_PTR<NFIRecordManager> NFElementModule::GetRecordManager(const std::stri
     }
     return NULL;
 }
-
+// 指定场景xml文件 和 场景类，将xml的设置加载到class里面
 bool NFElementModule::LoadSceneInfo(const std::string& strFileName, const std::string& strClassName)
 {
 	std::string strContent;

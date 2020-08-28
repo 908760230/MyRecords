@@ -1,0 +1,366 @@
+# NFMapEx
+
+## NFMapEx
+对map 进行特写并定义相关操作
+
+## NFConsistentHashMapEx
+引入了NFConsistentHash，增加了一致性哈希的相关操作。
+
+
+## 完整源码
+```c++
+
+#ifndef NF_MAPEX_H
+#define NF_MAPEX_H
+
+#include <map>
+#include <list>
+#include <string>
+#include <iostream>
+#include <typeinfo>
+#include <memory>
+#include "NFConsistentHash.hpp"
+#include "NFComm/NFPluginModule/NFPlatform.h"
+
+template <typename T , typename TD>
+class NFMapEx
+{
+public:
+    typedef std::map<T, NF_SHARE_PTR<TD> > NFMapOBJECT;
+
+    NFMapEx()
+	{
+	};
+    virtual ~NFMapEx()
+    {
+    };
+
+	virtual bool ExistElement(const T& name)
+	{
+		typename NFMapOBJECT::iterator itr = mObjectList.find(name);
+		if (itr != mObjectList.end())
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+    virtual bool AddElement(const T& name, const NF_SHARE_PTR<TD> data)
+    {
+		if (data == nullptr)
+		{
+			std::cout << "AddElement failed : " << std::endl;
+			return false;
+		}
+
+        typename NFMapOBJECT::iterator itr = mObjectList.find(name);
+        if (itr == mObjectList.end())
+        {
+            mObjectList.insert(typename NFMapOBJECT::value_type(name, data));
+
+            return true;
+        }
+
+        return false;
+    }
+
+    virtual bool RemoveElement(const T& name)
+    {
+        typename NFMapOBJECT::iterator itr = mObjectList.find(name);
+        if (itr != mObjectList.end())
+        {
+            mObjectList.erase(itr);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    virtual TD* GetElementNude(const T& name)
+    {
+        typename NFMapOBJECT::iterator itr = mObjectList.find(name);
+        if (itr != mObjectList.end())
+        {
+            return itr->second.get();
+        }
+        else
+        {
+            return NULL;
+        }
+    }
+
+    virtual NF_SHARE_PTR<TD> GetElement(const T& name)
+    {
+        typename NFMapOBJECT::iterator itr = mObjectList.find(name);
+        if (itr != mObjectList.end())
+        {
+            return itr->second;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+
+    virtual TD* FirstNude(T& name)
+    {
+        if (mObjectList.size() <= 0)
+        {
+            return NULL;
+        }
+
+        mObjectCurIter = mObjectList.begin();
+        if (mObjectCurIter != mObjectList.end())
+        {
+            name = mObjectCurIter->first;
+            return mObjectCurIter->second.get();
+        }
+        else
+        {
+            return NULL;
+        }
+    }
+
+    virtual TD* NextNude(T& name)
+    {
+        if (mObjectCurIter == mObjectList.end())
+        {
+            return NULL;
+        }
+
+        mObjectCurIter++;
+        if (mObjectCurIter != mObjectList.end())
+        {
+            name = mObjectCurIter->first;
+            return mObjectCurIter->second.get();
+        }
+        else
+        {
+            return NULL;
+        }
+    }
+    virtual TD* FirstNude()
+    {
+        if (mObjectList.size() <= 0)
+        {
+            return NULL;
+        }
+
+        mObjectCurIter = mObjectList.begin();
+        if (mObjectCurIter != mObjectList.end())
+        {
+            return mObjectCurIter->second.get();
+        }
+        else
+        {
+            return NULL;
+        }
+    }
+    virtual TD* NextNude()
+    {
+        if (mObjectCurIter == mObjectList.end())
+        {
+            return NULL;
+        }
+
+        mObjectCurIter++;
+        if (mObjectCurIter != mObjectList.end())
+        {
+            return mObjectCurIter->second.get();
+        }
+        else
+        {
+            return NULL;
+        }
+    }
+
+    virtual NF_SHARE_PTR<TD> First()
+    {
+        if (mObjectList.size() <= 0)
+        {
+            return nullptr;
+        }
+
+        mObjectCurIter = mObjectList.begin();
+        if (mObjectCurIter != mObjectList.end())
+        {
+            return mObjectCurIter->second;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+
+    virtual NF_SHARE_PTR<TD> Next()
+    {
+        if (mObjectCurIter == mObjectList.end())
+        {
+            return nullptr;
+        }
+
+        ++mObjectCurIter;
+        if (mObjectCurIter != mObjectList.end())
+        {
+            return mObjectCurIter->second;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+
+    virtual NF_SHARE_PTR<TD> First(T& name)
+    {
+        if (mObjectList.size() <= 0)
+        {
+            return nullptr;
+        }
+
+        mObjectCurIter = mObjectList.begin();
+        if (mObjectCurIter != mObjectList.end())
+        {
+            name = mObjectCurIter->first;
+            return mObjectCurIter->second;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+
+    virtual NF_SHARE_PTR<TD> Next(T& name)
+    {
+        if (mObjectCurIter == mObjectList.end())
+        {
+            return nullptr;
+        }
+
+        mObjectCurIter++;
+        if (mObjectCurIter != mObjectList.end())
+        {
+            name = mObjectCurIter->first;
+            return mObjectCurIter->second;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+
+    virtual bool ClearAll()
+    {
+        mObjectList.clear();
+        return true;
+    }
+
+    int Count()
+    {
+        return (int)mObjectList.size();
+    }
+
+
+protected:
+    NFMapOBJECT     mObjectList;
+    typename NFMapOBJECT::iterator mObjectCurIter;
+};
+
+template <typename T, typename TD>
+class NFConsistentHashMapEx : public NFMapEx<T, TD>
+{
+public:
+	virtual NF_SHARE_PTR<TD> GetElementBySuitRandom()
+	{
+		NFVirtualNode<T> vNode;
+		if (mxConsistentHash.GetSuitNodeRandom(vNode))
+		{
+			typename NFMapEx<T, TD>::NFMapOBJECT::iterator itr = NFMapEx<T, TD>::mObjectList.find(vNode.mxData);
+			if (itr != NFMapEx<T, TD>::mObjectList.end())
+			{
+				return itr->second;
+			}
+		}
+
+		return NULL;
+	}
+
+	virtual NF_SHARE_PTR<TD> GetElementBySuitConsistent()
+	{
+		NFVirtualNode<T> vNode;
+		if (mxConsistentHash.GetSuitNodeConsistent(vNode))
+		{
+			typename NFMapEx<T, TD>::NFMapOBJECT::iterator itr = NFMapEx<T, TD>::mObjectList.find(vNode.mxData);
+			if (itr != NFMapEx<T, TD>::mObjectList.end())
+			{
+				return itr->second;
+			}
+		}
+
+		return NULL;
+	}
+
+	virtual NF_SHARE_PTR<TD> GetElementBySuit(const T& name)
+	{
+		NFVirtualNode<T> vNode;
+		if (mxConsistentHash.GetSuitNode(name, vNode))
+		{
+			typename NFMapEx<T, TD>::NFMapOBJECT::iterator itr = NFMapEx<T, TD>::mObjectList.find(vNode.mxData);
+			if (itr != NFMapEx<T, TD>::mObjectList.end())
+			{
+				return itr->second;
+			}
+		}
+
+		return NULL;
+	}
+
+	virtual bool AddElement(const T& name, const NF_SHARE_PTR<TD> data) override
+	{
+		if (data == nullptr)
+		{
+			return false;
+		}
+
+		typename NFMapEx<T, TD>::NFMapOBJECT::iterator itr = NFMapEx<T, TD>::mObjectList.find(name);
+		if (itr == NFMapEx<T, TD>::mObjectList.end())
+		{
+			NFMapEx<T, TD>::mObjectList.insert(typename NFMapEx<T, TD>::NFMapOBJECT::value_type(name, data));
+
+			mxConsistentHash.Insert(name);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	virtual bool RemoveElement(const T& name) override
+	{
+		typename NFMapEx<T, TD>::NFMapOBJECT::iterator itr = NFMapEx<T, TD>::mObjectList.find(name);
+		if (itr != NFMapEx<T, TD>::mObjectList.end())
+		{
+			NFMapEx<T, TD>::mObjectList.erase(itr);
+			mxConsistentHash.Erase(name);
+
+			return true;
+		}
+
+		return false;
+	}
+
+    virtual bool ClearAll() override
+	{
+		NFMapEx<T, TD>::mObjectList.clear();
+		mxConsistentHash.ClearAll();
+		return true;
+	}
+
+private:
+	NFConsistentHash<T> mxConsistentHash;
+};
+#endif
+```
