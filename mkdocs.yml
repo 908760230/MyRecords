@@ -125,7 +125,8 @@ nav:
     - NFCore:
       - NFConsistentHash_h:     NoahGameFrame/NFCore/NFConsistentHash_h.md
       - NFDataList:             NoahGameFrame/NFCore/NFDataList_h.md
-      - NFIProperty:            NoahGameFrame/NFCore/NFIProperty_h.md   
+      - NFIProperty:            NoahGameFrame/NFCore/NFIProperty_h.md
+      - NFMapEx:              NoahGameFrame/NFCore/NFMapEx_h.md
       - NFMemoryCounter_h:      NoahGameFrame/NFCore/NFMemoryCounter_h.md
       - NFQueue:                NoahGameFrame/NFCore/NFQueue_h.md
       - NFVector2:              NoahGameFrame/NFCore/NFVector2.md
